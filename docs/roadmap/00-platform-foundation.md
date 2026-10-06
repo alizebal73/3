@@ -1,17 +1,21 @@
 # Stage 0 — Platform Foundation
 
-Exit gates:
-- .NET 10 LTS baseline pinned.
-- Node requirement documented.
-- warnings are errors.
-- Server health has an integration test.
-- Agent has a runnable skeleton.
-- Shared contracts exist outside HTTP code.
-- one self-hosted CI workflow.
-- main/develop roles documented.
-- module boundaries established.
+## Completed structure
+- Modular-monolith Server boundary
+- Composition layer
+- Module ownership folders
+- Shared API/error/result/primitives
+- Separate unit/integration/contract test layers
+- Client Agent sub-boundaries
+- Dashboard feature boundaries
+- Main/develop branch policy
+- One self-hosted CI workflow
 
-Next vertical slice:
+## Exit gate
+The foundation is complete only when the self-hosted Runner for repo 3 passes the CI workflow on the exact main commit.
+
+## Next
+Build the first vertical slice only:
 Station → Customer → Agent → Session.
 
-Do not start reports, settings, buffet, or installers before the core state machine is tested.
+Do not begin Reports, Settings, Buffet, VIP, or installers before that slice has real state transitions, concurrency tests, authorization, audit, and integration coverage.
