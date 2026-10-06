@@ -2,7 +2,7 @@ name: GameNet 3 CI
 
 on:
   push:
-    branches: [main, develop, foundation/platform-hardening]
+    branches: [main, develop, foundation/platform-hardening, foundation/hardening]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -31,6 +31,10 @@ jobs:
       - name: Source-size guard
         shell: pwsh
         run: ./scripts/check-source-size.ps1
+
+      - name: Foundation completeness
+        shell: pwsh
+        run: ./scripts/check-foundation-completeness.ps1
 
       - name: Restore EF tool
         shell: pwsh

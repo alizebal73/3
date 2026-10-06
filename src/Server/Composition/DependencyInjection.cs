@@ -2,6 +2,7 @@ using GameNet.Server.Infrastructure.Audit;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Jobs;
+using GameNet.Server.Infrastructure.Outbox;
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Server.Infrastructure.Transactions;
@@ -32,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentActor, HttpCurrentActor>();
         services.AddScoped<IAuditWriter, EfAuditWriter>();
         services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
+        services.AddScoped<IOutboxWriter, EfOutboxWriter>();
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
 
         services.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();

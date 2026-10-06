@@ -1,0 +1,60 @@
+using GameNet.Shared.Contracts.V1.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
+namespace GameNet.Server.Infrastructure.Security;
+
+public static class AuthExtensions
+{
+    public static IServiceCollection AddGameNetAuthentication(
+        this IServiceCollection services,
+        GameNet.Server.Infrastructure.Configuration.GameNetOptions options)
+    {
+        if (options.Authentication.Enabled)
+        {
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(jwt =>
+                {
+                    jwt.RequireHttpsMetadata = true;
+                    jwt.SaveToken = false;
+                    jwt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = options.Authentication.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = options.Authentication.Audience,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            System.Text.Encoding.UTF8.GetBytes(options.Authentication.SigningKey!)),
+                        ClockSkew = TimeSpan.FromSeconds(30)
+                    };
+                });
+        }
+
+        services.AddAuthorization();
+        return services;
+    }
+
+    public static IServiceCollection AddGameNetAuthorization(
+        this IServiceCollection services)
+    {
+        services.AddAuthorization(options =>
+        {
+            foreach (var permission in typeof(Permissions)
+                         .GetFields(System.Reflection.BindingFlags.Public |
+                                    System.Reflection.BindingFlags.Static)
+                         .Where(x => x.FieldType == typeof(string))
+                         .Select(x => (string)x.GetValue(null)!)
+                         .Distinct(StringComparer.Ordinal))
+            {
+                options.AddPolicy(permission, policy =>
+                    policy.RequireAuthenticatedUser()
+                          .RequireClaim("permission", permission));
+            }
+        });
+
+        return services;
+    }
+}

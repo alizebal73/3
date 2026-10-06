@@ -22,6 +22,12 @@ public static class StartupChecks
                 "GameNet:DatabaseConnectionString is required in Production.");
         }
 
+        if (app.Environment.IsProduction() && !options.Authentication.Enabled)
+        {
+            throw new InvalidOperationException(
+                "GameNet:Authentication must be enabled in Production.");
+        }
+
         if (!string.IsNullOrWhiteSpace(options.DatabaseConnectionString))
         {
             var db = app.Services.GetRequiredService<GameNetDbContext>();
