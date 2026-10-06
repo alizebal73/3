@@ -1,32 +1,37 @@
 # Stage 0 Foundation Audit
 
-This document records the actual state of the clean-slate foundation.
+## Implemented in repository
 
-## Confirmed in repository
+- Modular-monolith composition boundary.
+- Explicit module folder boundaries.
+- Architecture rules and CI architecture guard.
+- Shared V1 system, Agent protocol and permission contracts.
+- Money, CorrelationId, CommandId and IdempotencyKey primitives.
+- PostgreSQL EF Core provider and DbContext boundary.
+- Serializable transaction coordinator.
+- Idempotency persistence boundary.
+- Audit persistence boundary.
+- JWT authentication configuration and permission-policy foundation.
+- Correlation and exception middleware.
+- Business-time clock abstraction.
+- Background-job queue and dispatcher boundary.
+- Recovery, security, configuration, compatibility, domain and observability specifications.
+- dotnet-ef local tool manifest.
+- CI architecture/source-size gates and deterministic dashboard verification.
+- Main remains free of business features.
 
-- Modular-monolith Server boundary.
-- Composition layer separate from business modules.
-- 15 business-module boundaries with Domain/Application/Infrastructure/Api directories.
-- Shared Api/Contracts/Errors/Results/Primitives boundaries.
-- Client Agent/Transport/Identity/GameLaunch boundaries.
-- Dashboard feature boundaries.
-- Separate Server Unit, Server Integration, Client Unit, Contract, Shared, and Agent test projects.
-- One CI workflow.
-- Warnings treated as errors.
-- .NET SDK baseline and Node baseline documented.
-- Source-size architecture guard enforced locally and in CI.
-- API contract versioning policy documented.
-- main and develop are aligned to the same exact commit.
+## Not yet claimed complete
 
-## Not yet verifiable or not yet configured
+- No Customer, Station, Session, Billing, Inventory or other business mutation.
+- No business database migration is claimed; migration will be generated and reviewed before the vertical slice.
+- No real user/token issuance flow; authentication validation is infrastructure only.
+- No durable distributed job scheduler; current queue is process-local.
+- No SignalR hub or real Agent command dispatcher; only protocol contracts exist.
+- No real E2E business workflow.
+- package-lock.json still needs generation on the approved Node environment.
+- GitHub branch protection/rulesets remain an external repository setting.
+- CI cannot be certified green until repo 3 has its self-hosted runner connected.
 
-1. Self-hosted runner for repo 3: the latest CI run remains queued, so no green build/test claim is made.
-2. GitHub branch protection/ruleset: GitHub currently reports no repository rulesets for repo 3. The desired policy is documented in docs/operations/github-settings.md, but it is not active yet.
-3. npm lockfile: there is no package-lock.json yet. Until one is generated and committed, CI must use npm install; deterministic npm ci is not yet possible.
-4. Real persistence: PostgreSQL boundary is documented, but no DbContext, migrations, transaction infrastructure, or database provider is implemented yet. This is intentional because persistence belongs to the next foundational implementation stage.
-5. Real authorization/audit/idempotency/concurrency implementation: the invariants and boundaries are defined, but the implementations will be built before the first business mutation is considered complete.
-6. Real E2E harness: only the test boundary exists; no fake green E2E suite is claimed.
+## Policy
 
-## Foundation verdict
-
-The repository structure is sound and materially different from repo 2, but Stage 0 is not yet certified green. Certification requires the external runner/rules configuration and the deterministic Node lockfile, followed by a green exact-SHA CI run.
+No business feature is considered complete without Domain Rule, Use Case, Persistence, Contract, Authorization, Audit, Unit, Integration, Concurrency, Retry/Idempotency and Failure/Recovery coverage.

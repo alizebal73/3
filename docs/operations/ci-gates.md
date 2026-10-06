@@ -1,11 +1,15 @@
-# CI gates
+# CI Foundation Gates
 
-Foundation gate:
-1. Restore
-2. Build with warnings as errors
-3. Unit tests
-4. Integration tests
-5. Contract tests
-6. Dashboard typecheck/build
+The single CI workflow must enforce:
+1. toolchain baseline
+2. architecture guard
+3. source-size guard
+4. dotnet tool restore
+5. restore
+6. release build
+7. tests
+8. deterministic Dashboard install with npm ci
+9. Dashboard typecheck
+10. Dashboard production build
 
-E2E and installer smoke are explicit later gates and are not represented as fake passing steps before their real harness exists.
+A green CI result is necessary but not sufficient for feature completion. Business features also need integration, concurrency, retry/idempotency, authorization, audit and recovery coverage.

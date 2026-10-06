@@ -2,7 +2,7 @@ name: GameNet 3 CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, foundation/platform-hardening]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -26,7 +26,15 @@ jobs:
 
       - name: Architecture guard
         shell: pwsh
+        run: ./scripts/check-architecture.ps1
+
+      - name: Source-size guard
+        shell: pwsh
         run: ./scripts/check-source-size.ps1
+
+      - name: Restore EF tool
+        shell: pwsh
+        run: dotnet tool restore
 
       - name: Restore
         shell: pwsh
@@ -40,17 +48,6 @@ jobs:
         shell: pwsh
         run: dotnet test GameNet.slnx --configuration Release --no-build --no-restore
 
-      - name: Dashboard install
+      - name: Dashboard
         shell: pwsh
-        working-directory: src/Dashboard
-        run: npm install
-
-      - name: Dashboard typecheck
-        shell: pwsh
-        working-directory: src/Dashboard
-        run: npm run typecheck
-
-      - name: Dashboard build
-        shell: pwsh
-        working-directory: src/Dashboard
-        run: npm run build
+        run: ./scripts/verify-dashboard.ps1

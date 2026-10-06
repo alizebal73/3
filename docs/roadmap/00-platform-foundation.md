@@ -1,21 +1,35 @@
 # Stage 0 — Platform Foundation
 
-## Completed structure
-- Modular-monolith Server boundary
-- Composition layer
-- Module ownership folders
-- Shared API/error/result/primitives
-- Separate unit/integration/contract test layers
-- Client Agent sub-boundaries
-- Dashboard feature boundaries
-- Main/develop branch policy
-- One self-hosted CI workflow
+No business feature is started until the foundation gates below are satisfied.
 
-## Exit gate
-The foundation is complete only when the self-hosted Runner for repo 3 passes the CI workflow on the exact main commit.
+Required foundation:
+1. Product/domain specification and module ownership.
+2. Invariants and explicit state machines.
+3. Shared IDs, Money, Time and Result/Error primitives.
+4. Versioned API contracts.
+5. PostgreSQL provider and DbContext boundary.
+6. Transaction, concurrency and idempotency infrastructure.
+7. Authentication and authorization foundation.
+8. Audit infrastructure.
+9. Agent realtime command, acknowledgement and state protocol.
+10. Recovery and reconciliation rules.
+11. Background-job boundary.
+12. Observability and correlation IDs.
+13. Configuration and secret provisioning rules.
+14. Test infrastructure.
+15. Architecture enforcement.
+16. CI and repository protection.
+17. Release compatibility and rollback foundation.
 
-## Next
-Build the first vertical slice only:
-Station → Customer → Agent → Session.
+Exit gates:
+- dedicated self-hosted Windows/X64 runner for repo 3
+- exact-commit CI green
+- active main/develop protection
+- committed package-lock.json and npm ci in CI
+- architecture guard green
+- PostgreSQL-backed integration lane executable
+- migration strategy tested on a clean database
+- no fake green E2E
 
-Do not begin Reports, Settings, Buffet, VIP, or installers before that slice has real state transitions, concurrency tests, authorization, audit, and integration coverage.
+Only then start:
+Station -> Customer -> Agent -> Customer Login -> Session -> Timing -> Transfer -> Invoice -> Payment -> Audit.

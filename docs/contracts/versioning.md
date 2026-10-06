@@ -1,17 +1,15 @@
 # API Contract Versioning
 
-Shared contracts are the compatibility boundary between Server, Dashboard, and Agent.
+Shared contracts are the compatibility boundary between Server, Dashboard and Agent.
 
-## Rules
+Rules:
+- new backward-compatible fields are additive
+- semantic changes require a new contract version
+- removing or renaming a field requires a new version
+- endpoints declare the contract version they implement
+- Dashboard and Agent do not recreate server DTOs when a shared contract exists
+- contract changes require ContractTests and a migration note
 
-- New fields should be additive and optional when backward compatible.
-- Meaning changes require a new contract version.
-- Removing or renaming a field requires a new version.
-- Server endpoints must declare the contract version they implement once the first versioned API is introduced.
-- Dashboard and Agent must not recreate server DTOs locally when a shared contract exists.
-- Contract changes require ContractTests and an explicit migration note.
+Initial namespace is GameNet.Shared.Contracts.V1.
 
-Initial namespace:
-- `GameNet.Shared.Contracts.V1`
-
-No business feature may silently change an existing contract's meaning.
+Protocol messages, error envelopes, health responses and security permissions in V1 are shared foundation contracts. Business contracts are added only when their domain specification is approved.

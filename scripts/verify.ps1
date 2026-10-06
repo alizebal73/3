@@ -6,17 +6,11 @@ node --version
 npm --version
 
 & "$PSScriptRoot/check-source-size.ps1"
+& "$PSScriptRoot/check-architecture.ps1"
 
+dotnet tool restore
 dotnet restore GameNet.slnx
 dotnet build GameNet.slnx --configuration Release --no-restore
 dotnet test GameNet.slnx --configuration Release --no-build --no-restore
 
-Push-Location (Join-Path $PSScriptRoot "..\src\Dashboard")
-try {
-    npm install
-    npm run typecheck
-    npm run build
-}
-finally {
-    Pop-Location
-}
+& "$PSScriptRoot/verify-dashboard.ps1"

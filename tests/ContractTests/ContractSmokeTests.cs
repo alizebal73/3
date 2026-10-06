@@ -1,5 +1,8 @@
 using GameNet.Shared.Api;
 using GameNet.Shared.Contracts.Errors;
+using GameNet.Shared.Contracts.V1.Protocol;
+using GameNet.Shared.Contracts.V1.System;
+using GameNet.Shared.Primitives;
 
 namespace GameNet.ContractTests;
 
@@ -14,5 +17,34 @@ public sealed class ContractSmokeTests
 
         Assert.Equal("foundation.error", failure.Error.Code);
         Assert.Equal("trace-1", failure.TraceId);
+    }
+
+    [Fact]
+    public void Health_contract_is_versioned()
+    {
+        var health = new HealthResponse(
+            "ok",
+            "GameNet.Server",
+            "0.2.0-foundation",
+            "ready",
+            CorrelationId.New().Value);
+
+        Assert.Equal("GameNet.Server", health.Service);
+        Assert.Equal("ready", health.Readiness);
+    }
+
+    [Fact]
+    public void Agent_command_has_stable_command_identity()
+    {
+        var id = CommandId.New();
+        var command = new AgentCommand<string>(
+            id,
+            "device-1",
+            DateTimeOffset.UtcNow,
+            "server.test",
+            "payload");
+
+        Assert.Equal(id, command.CommandId);
+        Assert.Equal("device-1", command.DeviceId);
     }
 }
