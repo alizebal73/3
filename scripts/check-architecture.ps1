@@ -1,10 +1,10 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$moduleRoot = Join-Path $PSScriptRoot "..srcServerModules"
-$serverRoot = Join-Path $PSScriptRoot "..srcServer"
-$clientRoot = Join-Path $PSScriptRoot "..srcClient"
-$dashboardRoot = Join-Path $PSScriptRoot "..srcDashboard"
+$moduleRoot = Join-Path $PSScriptRoot "..\src\Server\Modules"
+$serverRoot = Join-Path $PSScriptRoot "..\src\Server"
+$clientRoot = Join-Path $PSScriptRoot "..\src\Client"
+$desktopRoot = Join-Path $PSScriptRoot "..\src\Desktop"
 
 function Assert-NoMatch {
     param(
@@ -27,15 +27,15 @@ function Assert-NoMatch {
     }
 }
 
-Assert-NoMatch -Root (Join-Path $moduleRoot "*Domain") -Pattern "Microsoft.EntityFrameworkCore|GameNet.Server.Persistence|GameNet.Server.Infrastructure" -Message "Domain code must not access EF, Persistence or Infrastructure."
-Assert-NoMatch -Root (Join-Path $moduleRoot "*Application") -Pattern "Microsoft.EntityFrameworkCore|GameNet.Server.Persistence" -Message "Application code must not access EF or Persistence directly."
-Assert-NoMatch -Root (Join-Path $moduleRoot "*Api") -Pattern "Microsoft.EntityFrameworkCore|GameNet.Server.Persistence" -Message "API code must not access EF or Persistence directly."
+Assert-NoMatch -Root (Join-Path $moduleRoot "*\Domain") -Pattern "Microsoft\.EntityFrameworkCore|GameNet\.Server\.Persistence|GameNet\.Server\.Infrastructure" -Message "Domain code must not access EF, Persistence or Infrastructure."
+Assert-NoMatch -Root (Join-Path $moduleRoot "*\Application") -Pattern "Microsoft\.EntityFrameworkCore|GameNet\.Server\.Persistence" -Message "Application code must not access EF or Persistence directly."
+Assert-NoMatch -Root (Join-Path $moduleRoot "*\Api") -Pattern "Microsoft\.EntityFrameworkCore|GameNet\.Server\.Persistence" -Message "API code must not access EF or Persistence directly."
 
 $moduleDirectories = Get-ChildItem $moduleRoot -Directory
 foreach ($module in $moduleDirectories) {
     foreach ($file in Get-ChildItem $module.FullName -Recurse -File -Filter *.cs) {
         $text = Get-Content -Raw $file.FullName
-        $refs = [regex]::Matches($text, "GameNet.Server.Modules.([A-Za-z0-9_]+)") |
+        $refs = [regex]::Matches($text, "GameNet\.Server\.Modules\.([A-Za-z0-9_]+)") |
             ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
 
         foreach ($ref in $refs) {
@@ -46,15 +46,17 @@ foreach ($module in $moduleDirectories) {
     }
 }
 
-Assert-NoMatch -Root $serverRoot -Pattern "DateTime.Now|DateTime.UtcNow|DateTimeOffset.Now|DateTimeOffset.UtcNow" -Message "Server code must use IGameClock/TimeProvider instead of wall-clock statics."
+Assert-NoMatch -Root $serverRoot -Pattern "DateTime\.Now|DateTime\.UtcNow|DateTimeOffset\.Now|DateTimeOffset\.UtcNow" -Message "Server code must use IGameClock/TimeProvider instead of wall-clock statics."
 
 $program = Join-Path $serverRoot "Program.cs"
 if ((Get-Content $program).Count -gt 200) {
     throw "Program.cs exceeded the composition-only 200 line limit."
 }
 
-Assert-NoMatch -Root $clientRoot -Pattern "GameNet.Server.(Persistence|Modules|Infrastructure)" -Message "Client Agent must not reference Server implementation namespaces."
-Assert-NoMatch -Root $dashboardRoot -Pattern "GameNet.Server.(Persistence|Modules|Infrastructure)" -Message "Dashboard must not reference Server implementation namespaces." -Include @("*.ts","*.tsx")
-Assert-NoMatch -Root $dashboardRoot -Pattern "Microsoft.EntityFrameworkCore|DbContext|GameNetDbContext" -Message "Dashboard must not contain persistence/business database access." -Include @("*.ts","*.tsx")
+Assert-NoMatch -Root $clientRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)" -Message "Client Agent must not reference Server implementation namespaces."
+
+Assert-NoMatch -Root $desktopRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)|Microsoft\.EntityFrameworkCore|Npgsql|DbContext|GameNetDbContext" -Message "Desktop must not reference Server implementation or direct database namespaces." -Include @("*.cs","*.xaml","*.csproj")
+
+Assert-NoMatch -Root $desktopRoot -Pattern "http(s)?://|iframe|WebView|Chromium|Vite|React|package\.json|node_modules" -Message "Desktop must remain a native WPF app with no browser/web UI dependency." -Include @("*.cs","*.xaml","*.csproj","*.json")
 
 Write-Host "Architecture guard passed."
