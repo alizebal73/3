@@ -16,9 +16,11 @@
 - Business-time clock abstraction.
 - Durable transactional outbox writer boundary.
 - Background-job queue and dispatcher boundary.
+- Transaction-side-effect rules.
 - Recovery, security, configuration, compatibility, domain and observability specifications.
 - dotnet-ef local tool manifest.
 - CI architecture/source-size/foundation-completeness gates and deterministic dashboard verification.
+- Exactly one CI workflow.
 - Placeholder Foundation tests removed.
 - Main remains free of business features.
 
@@ -29,6 +31,7 @@
 - No real user/token issuance flow; JWT validation is infrastructure only.
 - No durable distributed job scheduler; current background queue is process-local.
 - No SignalR hub or transport-specific Agent command dispatcher; only protocol contracts and durable outbox persistence exist.
+- No durable Agent connection lease implementation; this belongs with the first Agent vertical slice.
 - No real E2E business workflow.
 - package-lock.json still needs generation on the approved Node environment.
 - GitHub branch protection/rulesets remain an external repository setting.

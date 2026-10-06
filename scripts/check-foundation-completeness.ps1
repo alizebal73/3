@@ -22,6 +22,12 @@ foreach ($relativePath in $requiredFiles) {
     }
 }
 
+$workflowDirectory = Join-Path $root ".github\workflows"
+$workflowFiles = @(Get-ChildItem $workflowDirectory -File -Include *.yml,*.yaml)
+if ($workflowFiles.Count -ne 1) {
+    throw "Foundation requires exactly one GitHub Actions workflow; found $($workflowFiles.Count)."
+}
+
 $placeholderTests = Get-ChildItem (Join-Path $root "tests") -Recurse -File -Filter *.cs |
     Select-String -Pattern "Assert\.True\(true\)"
 
