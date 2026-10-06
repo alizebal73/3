@@ -16,29 +16,40 @@ jobs:
     runs-on: [self-hosted, Windows, X64]
     steps:
       - uses: actions/checkout@v4
+
       - name: Verify toolchain
         shell: pwsh
         run: |
           dotnet --info
           node --version
           npm --version
+
+      - name: Architecture guard
+        shell: pwsh
+        run: ./scripts/check-source-size.ps1
+
       - name: Restore
         shell: pwsh
         run: dotnet restore GameNet.slnx
+
       - name: Build
         shell: pwsh
         run: dotnet build GameNet.slnx --configuration Release --no-restore
+
       - name: Test
         shell: pwsh
         run: dotnet test GameNet.slnx --configuration Release --no-build --no-restore
+
       - name: Dashboard install
         shell: pwsh
         working-directory: src/Dashboard
         run: npm install
+
       - name: Dashboard typecheck
         shell: pwsh
         working-directory: src/Dashboard
         run: npm run typecheck
+
       - name: Dashboard build
         shell: pwsh
         working-directory: src/Dashboard
