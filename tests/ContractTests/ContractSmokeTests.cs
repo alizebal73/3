@@ -40,7 +40,7 @@ public sealed class ContractSmokeTests
         var command = new AgentCommand<string>(
             id,
             "device-1",
-            DateTimeOffset.UtcNow,
+            DateTimeOffset.UnixEpoch,
             "server.test",
             "payload");
 
