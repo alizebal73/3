@@ -3,11 +3,10 @@ Set-StrictMode -Version Latest
 
 $reviewLines = 600
 $hardLines = 800
-$roots = @("src/Server", "src/Shared", "src/Client", "src/Dashboard/src")
+$roots = @("src/Server", "src/Shared", "src/Client", "src/Desktop")
 
 $excluded = @(
-    "\bin\", "\obj\", "\node_modules\", "\dist\",
-    "\Migrations\", ".Designer.cs", "ModelSnapshot.cs"
+    "\bin\", "\obj\", "\Migrations\", ".Designer.cs", "ModelSnapshot.cs"
 )
 
 $reviewViolations = @()
@@ -16,7 +15,7 @@ $hardViolations = @()
 foreach ($root in $roots) {
     if (-not (Test-Path $root)) { continue }
 
-    Get-ChildItem $root -Recurse -File -Include *.cs,*.ts,*.tsx |
+    Get-ChildItem $root -Recurse -File -Include *.cs,*.tsx,*.ts,*.xaml |
         Where-Object {
             $path = $_.FullName
             -not ($excluded | Where-Object { $path.Contains($_) })
