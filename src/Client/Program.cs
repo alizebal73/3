@@ -20,6 +20,13 @@ builder.Services
         "HeartbeatIntervalSeconds must be between 2 and 60.")
     .ValidateOnStart();
 
+builder.Services
+    .AddOptions<AgentIdentityOptions>()
+    .BindConfiguration(AgentIdentityOptions.SectionName)
+    .Validate(options => !string.IsNullOrWhiteSpace(options.RootPath),
+        "GameNet:AgentIdentity:RootPath is required.")
+    .ValidateOnStart();
+
 builder.Services.AddSingleton<IAgentIdentityStore, AgentIdentityStore>();
 builder.Services.AddSingleton<IAgentTransport, SignalRAgentTransport>();
 builder.Services.AddHostedService<AgentWorker>();
