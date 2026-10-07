@@ -18,6 +18,7 @@
 - durable transactional outbox with atomic lease/claim boundary
 - serializable transaction coordinator with bounded PostgreSQL retry
 - Agent command/ack/heartbeat/reconciliation contracts
+- DeviceId/ConnectionId separation with connection lease/fencing contract
 - transaction side-effect rules
 - state machines and module blueprints
 - initial permission matrix
