@@ -1,5 +1,14 @@
 <Application x:Class="GameNet.Desktop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Application.Resources />
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/GameNet.Manager.Desktop;component/Resources/Styles/Theme.xaml"/>
+                <ResourceDictionary Source="/GameNet.Manager.Desktop;component/Resources/Styles/Converters.xaml"/>
+                <ResourceDictionary Source="/GameNet.Manager.Desktop;component/Resources/Styles/Controls.xaml"/>
+                <ResourceDictionary Source="/GameNet.Manager.Desktop;component/Resources/Styles/DataTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
