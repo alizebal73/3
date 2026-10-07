@@ -163,7 +163,7 @@ if ($runtimePlaceholders) {
 }
 
 if (Test-Path (Join-Path $root ".github\workflows")) {
-    $workflows = Get-ChildItem (Join-Path $root ".github\workflows") -File
+    $workflows = @(Get-ChildItem (Join-Path $root ".github\workflows") -File)
     if ($workflows.Count -ne 1 -or $workflows[0].Name -ne "foundation-local.yml") {
         throw "Foundation permits only the single manual self-hosted workflow: .github/workflows/foundation-local.yml"
     }
