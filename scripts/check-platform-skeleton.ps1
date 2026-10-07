@@ -92,8 +92,8 @@ foreach ($relativePath in $forbiddenArtifacts) {
     }
 }
 
-$moduleBusinessFiles = Get-ChildItem (Join-Path $root "src\Server\Modules") -Recurse -File -Include *.cs |
-    Where-Object { $_.Name -notlike "*.Designer.cs" }
+$moduleBusinessFiles = @(Get-ChildItem (Join-Path $root "src\Server\Modules") -Recurse -File -Include *.cs |
+    Where-Object { $_.Name -notlike "*.Designer.cs" })
 
 if ($moduleBusinessFiles.Count -gt 0) {
     $moduleBusinessFiles | ForEach-Object {
