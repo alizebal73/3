@@ -1,13 +1,13 @@
 # Release Compatibility
 
-GameNet releases have at least four compatibility dimensions:
-- application version
-- database schema version
+The authoritative compatibility dimensions are:
+- ProductVersion
+- SchemaVersion
 - API contract version
-- Agent version
+- Agent protocol version
 
-Every update declares the supported Server, Agent and Dashboard compatibility matrix.
+The canonical rules are in docs/contracts/release-compatibility.md and are enforced by Shared release compatibility primitives and certification tests.
 
-Database migrations are forward-only unless a release plan explicitly defines rollback-safe data handling.
+Database migrations are forward-only during supported upgrades.
 
-Rollback must not silently reinterpret committed financial or inventory records.
+Rollback must not silently reinterpret committed financial, inventory or Session records.
