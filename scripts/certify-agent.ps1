@@ -17,8 +17,8 @@ $serverUrl = if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_SERVER_URL)) {
     "http://127.0.0.1:5080"
 } else { $env:GAMENET_AGENT_SERVER_URL }
 
-if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET)) {
-    throw "Set GAMENET_AGENT_BOOTSTRAP_SECRET for Agent certification."
+if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET) -or [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_DEVICE_ID)) {
+    throw "Set GAMENET_AGENT_BOOTSTRAP_SECRET and GAMENET_AGENT_DEVICE_ID for real Agent certification. The credential must belong to that DeviceId."
 }
 
 $identityRoot = Join-Path $env:TEMP ("GameNet-Agent-Cert-" + [guid]::NewGuid().ToString("N"))
@@ -30,7 +30,8 @@ foreach ($name in @(
     "GameNet__AgentTransport__ServerBaseUrl",
     "GameNet__AgentTransport__AllowInsecureHttpForDevelopment",
     "GameNet__AgentIdentity__RootPath",
-    "DOTNET_ENVIRONMENT"
+    "DOTNET_ENVIRONMENT",
+    "GAMENET_AGENT_DEVICE_ID"
 )) { $old[$name] = [Environment]::GetEnvironmentVariable($name) }
 
 try {
@@ -38,6 +39,7 @@ try {
     $env:GameNet__AgentTransport__AllowInsecureHttpForDevelopment = "true"
     $env:GameNet__AgentIdentity__RootPath = $identityRoot
     $env:DOTNET_ENVIRONMENT = "Development"
+    $env:GAMENET_AGENT_DEVICE_ID = $env:GAMENET_AGENT_DEVICE_ID
 
     $health = Invoke-RestMethod -Uri "$($serverUrl.TrimEnd('/'))/health" -Method Get -TimeoutSec 10
     if ($health.status -ne "ok" -or $health.readiness -ne "ready") {
