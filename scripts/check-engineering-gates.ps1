@@ -27,10 +27,10 @@ foreach ($pattern in @(
 
 $verify = Get-Content $verifyPath -Raw
 foreach ($pattern in @(
-    'dotnet", "--version"',
-    'dotnet", "restore", "GameNet\.slnx"',
-    'dotnet", "build", "GameNet\.slnx".*Release',
-    'dotnet", "test", "GameNet\.slnx".*Release'
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("--version"\)',
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("restore", "GameNet\\.slnx"\)',
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("build", "GameNet\\.slnx".*Release',
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("test", "GameNet\\.slnx".*Release'
 )) {
     if ($verify -notmatch $pattern) {
         throw "Canonical verify.ps1 is missing required command: $pattern"
@@ -46,7 +46,7 @@ if ($testProjects.Count -eq 0) {
 }
 
 foreach ($project in $testProjects) {
-    $relative = $project.FullName.Substring($root.Length + 1).Replace("", "/")
+    $relative = $project.FullName.Substring($root.Length + 1).Replace([string][char]92, "/")
     [xml]$projectXml = Get-Content $project.FullName -Raw
     $isTestProject = @($projectXml.Project.PropertyGroup.IsTestProject) |
         Where-Object { "$_" -eq "true" } |
