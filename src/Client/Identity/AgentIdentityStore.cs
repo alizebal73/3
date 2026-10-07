@@ -20,17 +20,6 @@ public sealed class AgentIdentityStore(
 
         var path = Path.Combine(rootPath, "identity.json");
 
-        var configuredDeviceId = Environment.GetEnvironmentVariable("GAMENET_AGENT_DEVICE_ID");
-        if (!string.IsNullOrWhiteSpace(configuredDeviceId))
-        {
-            var configuredIdentity = AgentIdentity.FromDeviceId(configuredDeviceId);
-            await File.WriteAllTextAsync(
-                path,
-                JsonSerializer.Serialize(new IdentityFile(configuredIdentity.DeviceId)),
-                cancellationToken);
-            return configuredIdentity;
-        }
-
         if (File.Exists(path))
         {
             await using var read = File.OpenRead(path);
