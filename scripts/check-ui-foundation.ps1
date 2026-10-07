@@ -17,9 +17,9 @@ $mainText = Get-Content $mainWindow -Raw
 $faText = Get-Content $fa -Raw
 $enText = Get-Content $en -Raw
 
-$dynamicKeys = [regex]::Matches($mainText, 'DynamicResource\s+([A-Za-z0-9_.-]+)') |
+$dynamicKeys = @([regex]::Matches($mainText, 'DynamicResource\s+([A-Za-z0-9_.-]+)') |
     ForEach-Object { $_.Groups[1].Value } |
-    Sort-Object -Unique
+    Sort-Object -Unique)
 
 foreach ($key in $dynamicKeys) {
     $escaped = [regex]::Escape($key)
@@ -32,9 +32,9 @@ foreach ($key in $dynamicKeys) {
 }
 
 $navigationCatalog = Get-Content (Join-Path $desktop "UI\Navigation\NavigationCatalog.cs") -Raw
-$navigationKeys = [regex]::Matches($navigationCatalog, 'new\("[^"]+",\s*"([^"]+)"') |
+$navigationKeys = @([regex]::Matches($navigationCatalog, 'new\("[^"]+",\s*"([^"]+)"') |
     ForEach-Object { $_.Groups[1].Value } |
-    Sort-Object -Unique
+    Sort-Object -Unique)
 
 foreach ($key in $navigationKeys) {
     $escaped = [regex]::Escape($key)
