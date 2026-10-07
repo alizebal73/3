@@ -2,6 +2,7 @@ using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Shared.Contracts.V1.Api;
 using GameNet.Shared.Contracts.V1.Protocol;
+using GameNet.Shared.Primitives;
 
 namespace GameNet.Server.Infrastructure.Realtime;
 
