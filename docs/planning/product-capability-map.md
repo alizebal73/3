@@ -27,6 +27,15 @@
 | Inventory stock/provenance | Inventory | Admin/Operator | Server | Audit/Billing | Required |
 | Buffet products/sales/returns | Buffet | Operator | Server | Inventory/Billing | Required |
 | Reports | Reports | Owner/Admin/Operator | Read-only projections/queries | All read models | Required |
+| Cash register and reconciliation | Billing/Users | Owner/Admin/Operator | Server | Payments/Shift/Audit | Required |
+| Staff shifts and payroll | Users/Shift | Owner/Admin | Server | Billing/Audit/Approvals | Required |
+| Reservations and waitlist | Sessions/Stations | Operator/Admin | Server | Customer/Station/Tariff | Required |
+| Maintenance and asset lifecycle | Stations/ClientControl | Admin/Operator | Server | Stations/Audit | Required |
+| Suppliers and purchasing | Inventory | Admin/Owner/Operator | Server | Inventory/Billing/Audit | Required |
+| Notifications and event queue | Observability/Notifications | All roles by scope | Server | Outbox/Permissions | Required |
+| Printing and receipts | Platform/Reports/Billing | Operator/Admin | Desktop + Server | Billing/Shift | Required |
+| Network profiles and station assignment | Settings/Stations | Admin/Owner | Server | Network integration | Required |
+| Diagnostics/support center | Platform Observability | Admin/Owner/Support | Server | Health/Correlation | Required |
 | Audit | Platform Audit | Owner/Admin | Append-only Server store | Every sensitive module | Required |
 | Settings | Settings | Owner/Admin | Server | Permissions/Audit | Required |
 | Backup/restore | Backup | Owner/Admin | Server/storage | PostgreSQL/Release | Required |
