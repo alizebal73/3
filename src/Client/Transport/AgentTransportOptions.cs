@@ -4,7 +4,7 @@ public sealed class AgentTransportOptions
 {
     public const string SectionName = "GameNet:AgentTransport";
 
-    public string ServerBaseUrl { get; init; } = "http://127.0.0.1:5080";
+    public string ServerBaseUrl { get; init; } = "https://127.0.0.1:5080";
     public bool AllowInsecureHttpForDevelopment { get; init; } = false;
     public string BootstrapCredentialEnvironmentVariableName { get; init; } =
         "GAMENET_AGENT_BOOTSTRAP_SECRET";
