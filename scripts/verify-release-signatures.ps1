@@ -13,8 +13,8 @@ if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
 }
 
 $rootPath = (Resolve-Path $Root).Path
-$files = Get-ChildItem $rootPath -Recurse -File |
-    Where-Object { $_.Extension -in ".exe", ".dll" }
+$files = @(Get-ChildItem $rootPath -Recurse -File |
+    Where-Object { $_.Extension -in ".exe", ".dll" })
 
 if ($files.Count -eq 0) {
     throw "No signable binaries were found under '$rootPath'."
