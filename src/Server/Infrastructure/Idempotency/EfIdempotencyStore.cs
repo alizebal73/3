@@ -16,6 +16,10 @@ public sealed class EfIdempotencyStore(
         DateTimeOffset expiresAtUtc,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(scope);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(operation);
+
         var now = clock.UtcNow;
         var token = Guid.NewGuid().ToString("N");
 
@@ -31,6 +35,10 @@ public sealed class EfIdempotencyStore(
 
         var record = await dbContext.IdempotencyRecords
             .SingleAsync(x => x.Scope == scope && x.Key == key, cancellationToken);
+
+        if (!string.Equals(record.Operation, operation, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                "The idempotency key is already associated with a different operation.");
 
         if (record.State == "completed" && record.ExpiresAtUtc > now)
         {
@@ -72,12 +80,19 @@ public sealed class EfIdempotencyStore(
         string responseJson,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(scope);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
+        ArgumentNullException.ThrowIfNull(responseJson);
+
         var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"""
             UPDATE idempotency_records
             SET state = {"completed"},
                 status_code = {statusCode},
-                response_json = CAST({responseJson} AS jsonb)
+                response_json = CAST({responseJson} AS jsonb),
+                lease_token = {null},
+                lease_expires_at_utc = {null}
             WHERE scope = {scope}
               AND key = {key}
               AND lease_token = {leaseToken}
