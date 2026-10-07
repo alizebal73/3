@@ -21,13 +21,21 @@ $requiredFiles = @(
     "src\Desktop\Localization\LanguageService.cs",
     "src\Desktop\Resources\Languages\Strings.fa-IR.xaml",
     "src\Desktop\Resources\Languages\Strings.en-US.xaml",
-    "tests\Desktop.Tests\LocalizationFoundationTests.cs"
+    "tests\Desktop.Tests\LocalizationFoundationTests.cs",
+    "tests\E2E\GameNet.E2E.Tests.csproj",
+    "docs\architecture\module-boundary-manifest.md",
+    "docs\domain\game-module-blueprints.md",
+    "docs\architecture\actor-and-auth-model.md",
+    "docs\contracts\api-envelope.md",
+    "docs\contracts\release-compatibility.md",
+    "docs\operations\deployment-and-update.md",
+    "docs\operations\foundation-certification.md"
 )
 
 foreach ($relativePath in $requiredFiles) {
     $path = Join-Path $root $relativePath
     if (-not (Test-Path $path)) {
-        throw "Required Foundation implementation is missing: $relativePath"
+        throw "Required Foundation implementation/document is missing: $relativePath"
     }
 }
 
@@ -41,8 +49,34 @@ if ($placeholderTests) {
     throw "Placeholder tests are not accepted as Foundation evidence."
 }
 
-if (Test-Path (Join-Path $root ".github\workflows")) {
-    throw "GitHub Actions workflows are forbidden. GameNet 3 is certified locally only."
+$forbiddenRuntimeWords = @(
+    "src\Dashboard",
+    "package-lock.json",
+    ".nvmrc",
+    ".github\workflows"
+)
+
+foreach ($relativePath in $forbiddenRuntimeWords) {
+    if (Test-Path (Join-Path $root $relativePath)) {
+        throw "Forbidden browser/remote-CI artifact exists: $relativePath"
+    }
+}
+
+$docRoots = @(
+    Join-Path $root "docs\architecture",
+    Join-Path $root "docs\security",
+    Join-Path $root "docs\contracts"
+)
+
+foreach ($docRoot in $docRoots) {
+    $stale = Get-ChildItem $docRoot -Recurse -File -Include *.md |
+        Select-String -Pattern "\bDashboard\b|React|Vite|WebView"
+    if ($stale) {
+        $stale | ForEach-Object {
+            Write-Host "STALE ARCHITECTURE DOC: $($_.Path):$($_.LineNumber): $($_.Line.Trim())"
+        }
+        throw "Active architecture/security/contract documentation contains retired web-runtime references."
+    }
 }
 
 Write-Host "Foundation completeness guard passed."
