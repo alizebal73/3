@@ -70,7 +70,7 @@ foreach ($module in $modules) {
 $desktopFeatures = @(
     "Home","Agents","Stations","Customers","Sessions","Billing","Wallet",
     "Inventory","Buffet","Tariffs","Vip","Reports","Settings","Users",
-    "Approvals","Backup","Audit"
+    "Approvals","Backup","Audit","Games","GameAccounts","ClientManagement"
 )
 
 foreach ($feature in $desktopFeatures) {
