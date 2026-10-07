@@ -53,6 +53,7 @@ foreach ($relativePath in $requiredPaths) {
 }
 
 $modules = @(
+    "Games","GameAccounts","ClientControl",
     "Agents","Approvals","Auth","Backup","Billing","Buffet","Customers",
     "Inventory","Reports","Sessions","Settings","Stations","Tariffs","Users","Vip","Wallet"
 )
