@@ -25,6 +25,10 @@ public sealed class ExceptionHandlingMiddleware(
                 ? id.Value
                 : context.TraceIdentifier;
 
+            var operationId = context.Items[typeof(OperationId)] is OperationId operation
+                ? operation.Value
+                : null;
+
             logger.LogError(
                 exception,
                 "Unhandled request failure. CorrelationId={CorrelationId}",
@@ -40,7 +44,8 @@ public sealed class ExceptionHandlingMiddleware(
                 new ApiError(
                     "server.unhandled",
                     "An unexpected server error occurred."),
-                correlationId);
+                correlationId,
+                operationId);
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
         }
