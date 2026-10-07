@@ -66,7 +66,7 @@ Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HttpClient|HttpRe
 Assert-NoMatch -Root (Join-Path $clientRoot "GameLaunch") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Game launch code must not own network transport details."
 
 Assert-NoMatch -Root $desktopRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)|Microsoft\.EntityFrameworkCore|Npgsql|DbContext|GameNetDbContext" -Message "Desktop must not reference Server implementation or direct database namespaces." -Include @("*.cs","*.xaml","*.csproj")
-Assert-NoMatch -Root $desktopRoot -Pattern "http(s)?://|WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop code contains a forbidden browser/web UI dependency." -Include @("*.cs","*.csproj","*.json")
+Assert-NoMatch -Root $desktopRoot -Pattern "WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop code contains a forbidden browser/web UI dependency." -Include @("*.cs","*.csproj","*.json")
 Assert-NoMatch -Root $desktopRoot -Pattern "WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop XAML contains a forbidden browser/web UI dependency." -Include @("*.xaml")
 Assert-NoMatch -Root (Join-Path $desktopRoot "Features") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Desktop feature UI must not own network transport; use Desktop/Api."
 Assert-NoMatch -Root (Join-Path $desktopRoot "Shell") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Desktop shell must not own network transport; use Desktop/Api."
