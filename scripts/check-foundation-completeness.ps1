@@ -81,6 +81,7 @@ $requiredFiles = @(
     "docs\operations\agent-transport.md",
     "docs\research\foundation-research-and-repo2-failure-analysis.md",
     "docs\research\repo2-to-repo3-foundation-gap-matrix.md",
+    "docs\research\repo2-to-repo3-comprehensive-audit.md",
     "docs\operations\environment-matrix.md",
     "docs\release\release-gates.md",
     "docs\planning\pre-coding-master-plan.md",
