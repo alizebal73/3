@@ -37,7 +37,7 @@ $files = Get-ChildItem $root -Recurse -File |
 
 $entries = foreach ($file in $files) {
     $relative = [System.IO.Path]::GetRelativePath($root, $file.FullName)
-    $relative = $relative.Replace("", "/")
+    $relative = $relative.Replace("\", "/")
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $file.FullName).Hash.ToLowerInvariant()
 
     [ordered]@{
