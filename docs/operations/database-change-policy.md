@@ -17,11 +17,15 @@ PostgreSQL schema evolution is part of the application release contract.
 11. Large or long-running migrations must state locking, duration and operational risk.
 12. Database version is part of release compatibility.
 
-## EF Core rule
+## Controlled deployment
 
-EF Core migrations are the schema history and source-controlled migration definition. The production deployment process controls when migrations execute; the Server must not silently perform an uncontrolled production migration merely because it started.
+Production deployment uses a dedicated migration artifact:
+- a reviewable idempotent SQL script when the SQL requires human/DBA review;
+- or a self-contained EF migration bundle for automated deployment.
 
-This separation prevents “application start” from becoming an implicit schema deployment.
+The normal Server runtime identity must not be granted schema-altering permissions merely because the application starts.
+
+The Server startup gate checks that the database is reachable and at the expected migration level; it does not silently migrate Production.
 
 ## Evidence
 
