@@ -57,6 +57,7 @@ Development-only local certification:
 - `GameNet__AgentIdentity__RootPath=<temporary>`
 - `DOTNET_ENVIRONMENT=Development`
 - `GAMENET_AGENT_BOOTSTRAP_SECRET=<provisioned credential>`
+- `GAMENET_AGENT_DEVICE_ID` is consumed by the certification script only; the Agent runtime reads DeviceId from its durable identity file.
 - Server authentication must be enabled for the real Token -> SignalR -> Lease -> Heartbeat -> Reconciliation path, with issuer/audience/signing/provisioning values supplied by the certification environment.
 
 Production:
