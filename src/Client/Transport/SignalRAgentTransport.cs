@@ -6,7 +6,8 @@ namespace GameNet.Agent.Transport;
 
 public sealed class SignalRAgentTransport(
     IOptions<AgentTransportOptions> options,
-    ILogger<SignalRAgentTransport> logger) : IAgentTransport
+    ILogger<SignalRAgentTransport> logger,
+    TimeProvider timeProvider) : IAgentTransport
 {
     private readonly SemaphoreSlim _gate = new(1, 1);
     private HubConnection? _connection;
@@ -137,7 +138,7 @@ public sealed class SignalRAgentTransport(
 
         return await connection.InvokeAsync<ReconciliationResponse>(
             "ReconcileAsync",
-            new ReconciliationRequest(deviceId, DateTimeOffset.UtcNow, reason),
+            new ReconciliationRequest(deviceId, timeProvider.GetUtcNow(), reason),
             cancellationToken);
     }
 
@@ -162,7 +163,7 @@ public sealed class SignalRAgentTransport(
             new AgentConnectionLeaseRequest(
                 identity.DeviceId,
                 connection.ConnectionId ?? string.Empty,
-                DateTimeOffset.UtcNow),
+                timeProvider.GetUtcNow()),
             cancellationToken);
 
         if (!lease.IsAuthoritative)
