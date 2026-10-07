@@ -28,6 +28,13 @@ public sealed class GameNetOptionsValidator : IValidateOptions<GameNetOptions>
         if (string.IsNullOrWhiteSpace(options.BackupRoot))
             return ValidateOptionsResult.Fail("GameNet:BackupRoot is required.");
 
+        if (string.IsNullOrWhiteSpace(options.Backup.PgDumpPath) ||
+            string.IsNullOrWhiteSpace(options.Backup.PgRestorePath))
+        {
+            return ValidateOptionsResult.Fail(
+                "GameNet:Backup must define PgDumpPath and PgRestorePath.");
+        }
+
         if (options.Authentication.Enabled &&
             (string.IsNullOrWhiteSpace(options.Authentication.Issuer) ||
              string.IsNullOrWhiteSpace(options.Authentication.Audience) ||
