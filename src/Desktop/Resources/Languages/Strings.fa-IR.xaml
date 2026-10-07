@@ -16,7 +16,7 @@
     <x:String x:Key="StatusOffline">سرور در دسترس نیست</x:String>
     <x:String x:Key="StatusUnknown">وضعیت نامشخص</x:String>
     <x:String x:Key="SelectedModule">بخش انتخاب‌شده</x:String>
-    <x:String x:Key="FoundationPlaceholder">این بخش در Foundation فقط جایگاه و قرارداد خود را دارد. منطق کسب‌وکار بعد از Certification پایه اضافه می‌شود.</x:String>
+    <x:String x:Key="FoundationContent">این بخش در Foundation فقط جایگاه و قرارداد خود را دارد. منطق کسب‌وکار بعد از Certification پایه اضافه می‌شود.</x:String>
     <x:String x:Key="OfflineMessage">ارتباط با Server برقرار نیست. برنامه باید بتواند پوسته را بدون خطا نمایش دهد؛ عملیات authoritative تا بازگشت اتصال قابل اجرا نیستند.</x:String>
     <x:String x:Key="BusyMessage">در حال دریافت وضعیت Server...</x:String>
     <x:String x:Key="NavHome">خانه</x:String>
