@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-07  
 **Repository:** `alizebal73/3`  
-**Current canonical baseline:** `62d3814c23302a3c358c5fc0462e507187e1a520`
+**Current canonical baseline:** the exact `HEAD` commit containing this document; record `git rev-parse HEAD` in the certification evidence. Never hard-code a mutable SHA here.
 
 ## Purpose
 
