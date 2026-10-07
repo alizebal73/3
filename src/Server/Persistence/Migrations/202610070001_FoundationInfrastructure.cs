@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GameNet.Server.Persistence.Migrations;
 
+[Migration("202610070001_FoundationInfrastructure")]
 public partial class FoundationInfrastructure : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
