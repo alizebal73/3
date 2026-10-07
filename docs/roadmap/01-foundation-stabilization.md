@@ -14,7 +14,7 @@ This is the active execution matrix for closing Foundation before the first busi
 | FS-01 | Build truth | Keep one canonical `verify.ps1` path for restore, Release build and Release tests. | In progress | Self-hosted Runner green on current head |
 | FS-02 | Automatic gate | Run the same canonical verification on Foundation branch pushes and PRs targeting `main`. | Implemented | Workflow config + green run |
 | FS-03 | Contract coherence | Eliminate compile-time drift between Shared contracts and Server/Agent/Desktop consumers. | In progress | Clean Release build |
-| FS-04 | Test coherence | Ensure all Foundation test projects are discoverable and executable by the solution test command. | In progress | Clean `dotnet test` with all expected test projects |
+| FS-04 | Test coherence | Ensure all Foundation test projects are discoverable and executable by the solution test command. | Implemented; runtime proof pending | Green `dotnet test` with all expected test projects |
 | FS-05 | Architecture guards | Keep structural guards, but treat compile/test as mandatory gates rather than substitutes. | Implemented | Verify script ordering + green run |
 | FS-06 | Agent identity | Keep durable DeviceId separate from authentication credentials; define secure provisioning/rotation/revocation path. | Open | Documented credential lifecycle + implementation + smoke evidence |
 | FS-07 | Agent lease | Prove one authoritative lease per DeviceId, stale-token rejection and reconnect fencing. | Pending platform proof | Real PostgreSQL concurrency/certification evidence |
