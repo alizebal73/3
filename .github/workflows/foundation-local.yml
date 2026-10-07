@@ -13,6 +13,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: PowerShell parser gate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $files = @(Get-ChildItem .scripts -Recurse -File -Filter *.ps1)
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              $file.FullName,
+              [ref]$tokens,
+              [ref]$errors)
+            if ($errors.Count -gt 0) {
+              $details = $errors | ForEach-Object { "$($_.Message) at line $($_.Extent.StartLineNumber)" }
+              throw "PowerShell syntax error(s) in $($file.FullName): $($details -join '; ')"
+            }
+          }
+          Write-Host "PowerShell parser gate passed."
+
       - name: Canonical local Foundation verification
         shell: pwsh
-        run: .\scripts\verify.ps1
+        run: .scriptserify.ps1
