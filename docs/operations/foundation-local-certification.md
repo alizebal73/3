@@ -1,110 +1,133 @@
 # Foundation Local Certification
 
-GitHub Actions is an orchestration layer for the approved self-hosted Windows runner; it is not the certification authority. The canonical local scripts remain the source of truth for Build, Restore, Test, migration, packaging and certification. GitHub-hosted execution is not used.
+GitHub Actions is orchestration only. The approved Windows self-hosted machine is the certification environment and the exact commit being certified is authoritative.
 
-## Repository gate
-
-Run:
-
-scripts/verify.ps1
-
-This verifies:
-1. platform/project skeleton;
-2. architecture boundaries;
-3. source-size limits;
-4. Foundation completeness;
-5. supply-chain guard;
-6. final Foundation structural readiness check;
-7. .NET restore;
-8. Release build;
-9. all ordinary tests.
-
-## Desktop certification
+## 1. Repository gate
 
 Run:
 
-scripts/certify-desktop.ps1
+scripts\verify.ps1
 
-It builds the native WPF WinExe and launches the actual executable as a Windows process.
+This verifies the platform skeleton, architecture boundaries, source-size limits, Foundation completeness, supply-chain guard, restore, Release build and ordinary tests.
 
-Verify on the machine:
-- Desktop launches without a browser;
-- fa-IR loads with RTL;
-- en-US loads with LTR;
-- the application can be started from the produced executable.
+## 2. Native Desktop gate
 
-## PostgreSQL certification
+Run:
+
+scripts\certify-desktop.ps1
+
+The script builds and launches the real WPF WinExe. The operator must additionally verify:
+- no browser runtime is involved;
+- fa-IR is RTL;
+- en-US is LTR;
+- Server online/offline state is visible and recovers.
+
+## 3. PostgreSQL gate
 
 Set:
-
 - GAMENET_DATABASE = disposable clean certification database;
-- GAMENET_RESTORE_DATABASE = separate disposable restore target.
+- GAMENET_RESTORE_DATABASE = separate empty disposable restore target.
 
 Run:
 
-scripts/certify-postgresql.ps1
+scripts\certify-postgresql.ps1
 
-This:
-- applies the committed Foundation migrations;
-- checks that no migrations remain pending;
-- runs real PostgreSQL idempotency-concurrency tests;
-- runs database-level Audit immutability tests;
-- runs Outbox claim/expiry fencing tests;
-- runs Agent connection lease and heartbeat fencing tests;
-- creates and verifies a real PostgreSQL backup;
-- restores the verified backup into the isolated target.
+The script now:
+- applies committed migrations;
+- runs real PostgreSQL Foundation invariant/concurrency tests;
+- creates a real custom-format pg_dump backup;
+- restores it into the isolated target;
+- probes the restored database.
 
-## Agent certification
+The evidence is invalid if the restore target is not disposable and isolated.
 
-The selected production transport is authenticated ASP.NET Core SignalR.
+## 4. Agent gate
 
-Local evidence must cover:
-- durable DeviceId survives Agent restart;
-- one DeviceId cannot hold two authoritative connections;
-- heartbeat renews the lease;
-- stale lease tokens cannot renew or release;
-- reconnect reacquires the lease;
-- Server restart followed by Agent reconnect is deterministic;
-- Agent credential provisioning succeeds without storing the secret in source/config;
-- Agent credential rotation makes the old secret unusable and the new secret usable;
-- credential revocation blocks renewal after the current short-lived JWT expires;
-- the Agent stores its secret using Windows DPAPI under the actual Windows service identity;
-- production credential/token exchange uses HTTPS;
-- unauthorized/non-Agent tokens cannot use the Agent hub;
-- network loss does not produce a duplicate authoritative business command.
+Set:
+- GAMENET_AGENT_BOOTSTRAP_SECRET = disposable provisioning secret;
+- optionally GAMENET_AGENT_SERVER_URL = the certification Server URL.
 
-## Database deployment artifacts
+Run:
 
-Before release, generate and review:
+scripts\certify-agent.ps1
 
-- scripts/prepare-release-package.ps1 for the signed package and manifest chain;
-- scripts/create-migration-sql.ps1;
-- scripts/create-migration-bundle.ps1;
-- scripts/verify-release-signatures.ps1 for the final package.
+This builds the Windows Agent, runs Agent tests and performs a real executable/process smoke. The Agent test suite plus runtime evidence must cover:
+- durable DeviceId across restart;
+- one authoritative connection per DeviceId;
+- heartbeat renewal;
+- stale lease fencing;
+- reconnect;
+- Server restart/reconnect;
+- provisioning;
+- credential rotation;
+- credential revocation after short-lived JWT expiry;
+- DPAPI persistence under the actual Windows service identity;
+- HTTPS in production;
+- rejection of unauthorized/non-Agent tokens;
+- no duplicate command after network loss.
 
-The application runtime does not silently apply production migrations.
+A process that merely stays alive is not sufficient by itself for Foundation sign-off.
 
-## SBOM
+## 5. Combined Foundation gate
 
-Provision the pinned Microsoft SBOM tool version recorded in tools/sbom-tool.version and run:
+Run:
 
-scripts/create-sbom.ps1
+scripts\certify-foundation.ps1
 
-Record the generated SPDX SBOM with the release evidence and complete the dependency/license/vulnerability review.
+The combined command executes repository, Desktop, PostgreSQL and Agent gates and writes:
 
-## Recovery and deployment evidence
+artifacts\foundation\foundation-evidence.json
 
-Before Foundation sign-off, perform and record:
-- Server restart with clean/known database;
-- Desktop launch after Server restart;
-- Agent restart/reconnect boundary verification;
-- verified backup and restore smoke test on an isolated target;
-- install/update/rollback smoke test using the local update package boundary.
+The evidence records exact Git revision, machine, OS, tool versions and SHA-256 hashes of the certified Desktop and Agent binaries.
 
-## Final gate
+Environment-variable presence is only prerequisite metadata; it is never accepted as proof that a certification scenario passed.
 
-Foundation is not certified until the exact final Foundation commit passes the local repository gate plus Desktop, PostgreSQL and Agent platform certification, and the required recovery/deployment/release evidence is recorded.
+## 6. Deployment and release gates
 
-Until that evidence exists, no business feature may start. The final Foundation commit must be the exact commit that was certified; later commits reset the certification requirement.
+Before sign-off, on the same approved Windows environment:
+- generate idempotent migration SQL;
+- generate the Windows migration bundle;
+- create the release package;
+- verify Authenticode signatures;
+- generate the pinned SPDX SBOM;
+- review dependencies/licenses/vulnerabilities;
+- perform clean install;
+- start Server/Agent services;
+- launch Desktop;
+- apply a local update package;
+- verify health after update;
+- execute rollback;
+- verify health and service recovery after rollback.
 
-GitHub is source control only; a remote status/checkmark can never replace local evidence.
+The final package, manifest, migration artifacts, SBOM and evidence must all reference the same certified Git revision.
+
+## 7. Recovery gate
+
+Perform and record:
+- Server restart;
+- Desktop reconnect;
+- Agent restart/reconnect;
+- lease/fencing behavior across network interruption;
+- backup creation;
+- isolated restore;
+- update failure/rollback.
+
+Record timestamps, exact commit, machine and result for every scenario.
+
+## Final rule
+
+Foundation is not Certified merely because CI is green or scripts exist.
+
+Foundation Certified means:
+1. exact final commit passes scripts\verify.ps1;
+2. native Desktop runtime evidence exists;
+3. real PostgreSQL migration/concurrency/backup/restore evidence exists;
+4. real Agent authentication/lease/reconnect/fencing evidence exists;
+5. clean install/update/rollback evidence exists;
+6. SBOM/signature/migration release evidence exists;
+7. recovery evidence exists;
+8. the closure matrix is reviewed and contains no unresolved required row.
+
+Any commit after the certified SHA invalidates the certification and requires re-certification.
+
+No business feature development starts before this rule is satisfied.
