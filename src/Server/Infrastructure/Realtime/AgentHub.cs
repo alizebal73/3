@@ -1,16 +1,19 @@
 using System.Security.Cryptography;
 using System.Text;
+using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Shared.Contracts.V1.Protocol;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 
 namespace GameNet.Server.Infrastructure.Realtime;
 
 [Authorize(Policy = "AgentTransport")]
 public sealed class AgentHub(
     IAgentConnectionLeaseStore leases,
-    IGameClock clock) : Hub
+    IGameClock clock,
+    IOptions<GameNetOptions> options) : Hub
 {
     private const string LeaseTokenKey = "GameNet.Agent.LeaseToken";
     private const string DeviceIdKey = "GameNet.Agent.DeviceId";
@@ -24,7 +27,7 @@ public sealed class AgentHub(
 
         var lease = await leases.TryAcquireAsync(
             request with { ConnectionId = Context.ConnectionId },
-            TimeSpan.FromSeconds(15),
+            TimeSpan.FromSeconds(options.Value.Agent.LeaseDurationSeconds),
             Context.ConnectionAborted);
 
         if (lease is null)
@@ -48,7 +51,7 @@ public sealed class AgentHub(
             heartbeat,
             Context.ConnectionId,
             token,
-            TimeSpan.FromSeconds(15),
+            TimeSpan.FromSeconds(options.Value.Agent.LeaseDurationSeconds),
             Context.ConnectionAborted);
     }
 
