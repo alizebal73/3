@@ -25,6 +25,7 @@ $requiredPaths = @(
     "src\Client\Transport\IAgentTransport.cs",
     "src\Client\Transport\SignalRAgentTransport.cs",
     "src\Client\Transport\AgentTransportOptions.cs",
+    "src\Client\Identity\AgentIdentityOptions.cs",
     "src\Client\Identity\AgentIdentityStore.cs",
     "src\Client\appsettings.json",
     "src\Server\Infrastructure\Realtime\AgentHub.cs",
