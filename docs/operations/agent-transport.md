@@ -20,7 +20,7 @@ The Agent is a native .NET Windows Service; no browser runtime is involved.
 2. Agent connects to /hubs/agent.
 3. Agent acquires a persistent Server lease.
 4. Agent sends periodic heartbeats.
-5. Agent can request reconciliation.
+5. Agent can request V1 Lease/Identity Reconciliation.
 6. SignalR reconnects after transient network loss.
 7. Reconnected Agent reacquires the lease before continuing.
 8. Stale connections cannot renew or release the newer lease.
@@ -48,3 +48,10 @@ Required local evidence:
 - old connection cannot release the new lease;
 - Server restart followed by Agent reconnect is deterministic;
 - network loss followed by reconnect does not duplicate a business command.
+
+
+## Reconciliation boundary
+
+V1 reconciliation proves transport authority, DeviceId binding, protocol compatibility and lease ownership. It does not claim to reconcile future business state such as Session, game runtime, billing, inventory or policy versions.
+
+Business-state reconciliation must be added with the first vertical slice that owns that state, using the same evidence rules as every other authoritative workflow. This prevents the Foundation from pretending that a connection heartbeat is a full application-state reconciliation.

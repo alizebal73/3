@@ -52,7 +52,8 @@ public sealed class AgentWorker(
                         "Agent heartbeat accepted. DeviceId={DeviceId} ServerTime={ServerTime} AuthoritativeConnection={AuthoritativeConnection}",
                         identity.DeviceId,
                         reconciliation.ServerTimeUtc,
-                        reconciliation.AuthoritativeConnection);
+                        reconciliation.AuthoritativeConnection,
+                        reconciliation.Scope);
 
                     succeeded = true;
                 }

@@ -67,7 +67,8 @@ public sealed class AgentHub(
                 deviceId,
                 clock.UtcNow,
                 AgentProtocolVersions.V1,
-                true));
+                true,
+                AgentReconciliationScope.LeaseAndIdentity));
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

@@ -21,7 +21,7 @@ This matrix is the authoritative pre-feature closure list. A row is not closed m
 | Durable Outbox claim fencing | yes | yes | PostgreSQL concurrency | Platform-proof pending |
 | Agent connection lease/fencing | yes | yes | PostgreSQL concurrent lease test | Platform-proof pending |
 | Agent SignalR transport | yes | yes | authenticated Windows Agent smoke | Platform-proof pending |
-| Agent heartbeat/reconciliation | yes | yes | reconnect/heartbeat/fencing smoke | Platform-proof pending |
+| Agent heartbeat/reconciliation | yes | yes, V1 lease/identity reconciliation | reconnect/heartbeat/fencing smoke; business-state reconciliation is vertical-slice-specific | Platform-proof pending |
 | Agent durable DeviceId | yes | yes | Agent restart/reload smoke | Platform-proof pending |
 | JWT/authentication policy | yes | JWT transport policy + credential lifecycle + short-lived token issuance | real credential provisioning/rotation/revocation/expiry flow | Platform-proof pending |
 | Native WPF shell | yes | yes | native process launch | Platform-proof pending |
