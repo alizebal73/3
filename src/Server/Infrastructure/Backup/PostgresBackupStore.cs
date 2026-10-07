@@ -218,7 +218,7 @@ public sealed class PostgresBackupStore(
 
         await process.WaitForExitAsync(cancellationToken);
 
-        var output = await outputTask;
+        await outputTask;
         var error = await errorTask;
 
         if (process.ExitCode != 0)
