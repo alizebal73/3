@@ -17,7 +17,7 @@ public static class Routing
             .WithName("LiveHealth");
 
         app.MapGet("/health", (
-            StartupState state,
+            [FromServices] StartupState state,
             [FromServices] ServerReadiness readiness,
             HttpContext context) =>
         {
