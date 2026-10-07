@@ -70,6 +70,22 @@ foreach ($dictionary in @("Theme.xaml", "Controls.xaml", "Converters.xaml", "Dat
     }
 }
 
+$connectivity = Join-Path $desktop "UI\Services\ServerConnectivityMonitor.cs"
+$connectivityText = Get-Content $connectivity -Raw
+if ($connectivityText -match 'State\.ErrorMessage\s*=\s*"') {
+    throw "ServerConnectivityMonitor must store error codes, not hard-coded presentation messages."
+}
+
+foreach ($key in @("ErrorServerNotReady", "ErrorServerUnavailable")) {
+    $escaped = [regex]::Escape($key)
+    if ($faText -notmatch ('x:Key="' + $escaped + '"')) {
+        throw "fa-IR resource is missing error resource key: $key"
+    }
+    if ($enText -notmatch ('x:Key="' + $escaped + '"')) {
+        throw "en-US resource is missing error resource key: $key"
+    }
+}
+
 $featureFiles = Get-ChildItem (Join-Path $desktop "Features") -Recurse -File -Include *.cs,*.xaml
 foreach ($file in $featureFiles) {
     $text = Get-Content $file.FullName -Raw
