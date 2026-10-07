@@ -10,6 +10,7 @@ using GameNet.Server.Persistence.Entities;
 using GameNet.Shared.Contracts.V1.Protocol;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 
 namespace GameNet.Postgres.CertificationTests;
 
@@ -248,11 +249,11 @@ public sealed class PostgresFoundationTests
 
         await using var mutate = new GameNetDbContext(Options());
 
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsAsync<PostgresException>(async () =>
             await mutate.Database.ExecuteSqlInterpolatedAsync(
                 $"update audit_entries set operation = {"mutated"} where id = {audit.Id};"));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsAsync<PostgresException>(async () =>
             await mutate.Database.ExecuteSqlInterpolatedAsync(
                 $"delete from audit_entries where id = {audit.Id};"));
     }
