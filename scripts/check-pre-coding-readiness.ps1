@@ -61,7 +61,7 @@ if ($featureImpl.Count -gt 0) {
 
 $workflowRoot = Join-Path $root ".github\workflows"
 if (Test-Path $workflowRoot) {
-    $files = Get-ChildItem $workflowRoot -File
+    $files = @(Get-ChildItem $workflowRoot -File)
     if ($files.Count -ne 1 -or $files[0].Name -ne "foundation-local.yml") {
         throw "Only foundation-local.yml is allowed during Foundation."
     }
