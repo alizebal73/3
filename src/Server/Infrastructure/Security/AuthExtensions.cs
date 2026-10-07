@@ -59,6 +59,11 @@ public static class AuthExtensions
     {
         services.AddAuthorization(options =>
         {
+            options.AddPolicy("AgentTransport", policy =>
+                policy.RequireAuthenticatedUser()
+                    .RequireClaim("actor_type", "Agent")
+                    .RequireClaim("device_id"));
+
             foreach (var permission in typeof(Permissions)
                          .GetFields(System.Reflection.BindingFlags.Public |
                                     System.Reflection.BindingFlags.Static)
