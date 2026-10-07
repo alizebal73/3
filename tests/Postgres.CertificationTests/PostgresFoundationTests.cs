@@ -1,9 +1,11 @@
 using GameNet.Server.Infrastructure.Audit;
 using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Outbox;
+using GameNet.Server.Infrastructure.Realtime;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Server.Persistence;
 using GameNet.Server.Persistence.Entities;
+using GameNet.Shared.Contracts.V1.Protocol;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameNet.Postgres.CertificationTests;
@@ -33,6 +35,55 @@ public sealed class PostgresFoundationTests
             .SingleAsync();
 
         Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public async Task Idempotency_first_claim_is_owned_by_the_request_that_inserted_it()
+    {
+        await using var db = new GameNetDbContext(Options());
+        await db.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'first-claim';");
+
+        var clock = new FixedClock(DateTimeOffset.UtcNow);
+        var store = new EfIdempotencyStore(db, clock);
+
+        var claim = await store.TryClaimAsync(
+            "foundation-cert",
+            "first-claim",
+            "operation-one",
+            clock.UtcNow.AddMinutes(5),
+            clock.UtcNow.AddHours(1));
+
+        Assert.True(claim.Acquired);
+        Assert.False(claim.InProgress);
+        Assert.False(claim.Completed);
+        Assert.False(string.IsNullOrWhiteSpace(claim.LeaseToken));
+
+        await db.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'first-claim';");
+    }
+
+    [Fact]
+    public async Task Concurrent_idempotency_claims_produce_one_owner()
+    {
+        await using (var setup = new GameNetDbContext(Options()))
+        {
+            await setup.Database.ExecuteSqlRawAsync(
+                "delete from idempotency_records where scope = 'foundation-cert' and key = 'same-owner';");
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var first = ClaimAsync(now);
+        var second = ClaimAsync(now);
+
+        var claims = await Task.WhenAll(first, second);
+
+        Assert.Single(claims, x => x.Acquired);
+        Assert.Single(claims, x => x.InProgress);
+
+        await using var cleanup = new GameNetDbContext(Options());
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'same-owner';");
     }
 
     [Fact]
@@ -82,7 +133,7 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
-    public async Task Audit_entries_are_append_only()
+    public async Task Audit_entries_are_append_only_at_the_database_boundary()
     {
         var audit = new AuditEntry
         {
@@ -99,18 +150,15 @@ public sealed class PostgresFoundationTests
             await write.SaveChangesAsync();
         }
 
-        await using (var mutate = new GameNetDbContext(Options()))
-        {
-            var loaded = await mutate.AuditEntries.SingleAsync(x => x.Id == audit.Id);
-            mutate.Entry(loaded).Property(x => x.Operation).CurrentValue = "mutated";
+        await using var mutate = new GameNetDbContext(Options());
 
-            Assert.Throws<InvalidOperationException>(() => mutate.SaveChanges());
-            mutate.Entry(loaded).State = EntityState.Unchanged;
-        }
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await mutate.Database.ExecuteSqlInterpolatedAsync(
+                $"update audit_entries set operation = {"mutated"} where id = {audit.Id};"));
 
-        await using var cleanup = new GameNetDbContext(Options());
-        await cleanup.Database.ExecuteSqlInterpolatedAsync(
-            $"delete from audit_entries where id = {audit.Id};");
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await mutate.Database.ExecuteSqlInterpolatedAsync(
+                $"delete from audit_entries where id = {audit.Id};"));
     }
 
     [Fact]
@@ -155,6 +203,45 @@ public sealed class PostgresFoundationTests
             "delete from outbox_messages where type = 'foundation-cert';");
     }
 
+    [Fact]
+    public async Task Agent_connection_lease_fences_competing_connections()
+    {
+        await using var cleanup = new GameNetDbContext(Options());
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from agent_connection_leases where device_id = 'foundation-device';");
+
+        var now = DateTimeOffset.UtcNow;
+        var first = new EfAgentConnectionLeaseStore(new GameNetDbContext(Options()), new FixedClock(now));
+        var second = new EfAgentConnectionLeaseStore(new GameNetDbContext(Options()), new FixedClock(now));
+
+        var results = await Task.WhenAll(
+            first.TryAcquireAsync(
+                new AgentConnectionLeaseRequest("foundation-device", "connection-a", now),
+                TimeSpan.FromMinutes(1)),
+            second.TryAcquireAsync(
+                new AgentConnectionLeaseRequest("foundation-device", "connection-b", now),
+                TimeSpan.FromMinutes(1)));
+
+        Assert.Single(results, x => x.IsAuthoritative);
+        Assert.Single(results, x => !x.IsAuthoritative);
+
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from agent_connection_leases where device_id = 'foundation-device';");
+    }
+
+    private static async Task<IdempotencyClaim> ClaimAsync(DateTimeOffset now)
+    {
+        await using var db = new GameNetDbContext(Options());
+        var store = new EfIdempotencyStore(db, new FixedClock(now));
+
+        return await store.TryClaimAsync(
+            "foundation-cert",
+            "same-owner",
+            "operation-one",
+            now.AddMinutes(5),
+            now.AddHours(1));
+    }
+
     private static Task InsertIdempotencyAsync() =>
         InsertIdempotencyAsync("same-key", "test");
 
@@ -168,7 +255,9 @@ public sealed class PostgresFoundationTests
             insert into idempotency_records
                 (scope, key, operation, state, lease_token, status_code, response_json, created_at_utc, lease_expires_at_utc, expires_at_utc)
             values
-                ({"foundation-cert"}, {key}, {operation}, {"processing"}, {Guid.NewGuid().ToString("N")}, {0}, {("{}")}, {DateTimeOffset.UtcNow}, {DateTimeOffset.UtcNow.AddMinutes(5)}, {DateTimeOffset.UtcNow.AddHours(1)})
+                ({"foundation-cert"}, {key}, {operation}, {"processing"}, {Guid.NewGuid().ToString("N")},
+                 {0}, {("{}")}, {DateTimeOffset.UtcNow}, {DateTimeOffset.UtcNow.AddMinutes(5)},
+                 {DateTimeOffset.UtcNow.AddHours(1)})
             on conflict (scope, key) do nothing;""");
     }
 
