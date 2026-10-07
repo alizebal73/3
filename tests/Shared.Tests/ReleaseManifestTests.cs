@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using GameNet.Shared.Contracts.V1.System;
 using GameNet.Shared.Primitives;
 
@@ -11,6 +12,59 @@ public sealed class ReleaseManifestTests
         var manifest = CreateManifest();
 
         ReleaseManifestValidator.Validate(manifest);
+    }
+
+    [Fact]
+    public async Task Release_package_files_are_verified()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "gamenet-release-test", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "server"));
+
+        try
+        {
+            var path = Path.Combine(root, "server", "GameNet.dll");
+            await File.WriteAllTextAsync(path, "foundation");
+            var bytes = await File.ReadAllBytesAsync(path);
+            var manifest = CreateManifest(
+                new ReleaseFileEntry(
+                    "server/GameNet.dll",
+                    Convert.ToHexString(SHA256.HashData(bytes)),
+                    bytes.Length));
+
+            await ReleasePackageVerifier.VerifyAsync(root, manifest);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task Release_package_checksum_mismatch_is_rejected()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "gamenet-release-test", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "server"));
+
+        try
+        {
+            var path = Path.Combine(root, "server", "GameNet.dll");
+            await File.WriteAllTextAsync(path, "foundation");
+
+            var manifest = CreateManifest(
+                new ReleaseFileEntry(
+                    "server/GameNet.dll",
+                    new string('a', 64),
+                    new FileInfo(path).Length));
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                ReleasePackageVerifier.VerifyAsync(root, manifest));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
     }
 
     [Fact]
