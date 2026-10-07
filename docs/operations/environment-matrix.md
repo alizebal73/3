@@ -47,6 +47,24 @@ Requires:
 - recovery procedure;
 - support/rollback procedure.
 
+## Agent transport certification profile
+
+The Agent/Server pair is configured through normal .NET configuration keys; certification must not rely on custom environment variables that are invisible to options binding.
+
+Development-only local certification:
+- `GameNet__AgentTransport__ServerBaseUrl`
+- `GameNet__AgentTransport__AllowInsecureHttpForDevelopment=true`
+- `GameNet__AgentIdentity__RootPath=<temporary>`
+- `DOTNET_ENVIRONMENT=Development`
+- `GAMENET_AGENT_BOOTSTRAP_SECRET=<provisioned credential>`
+- Server authentication must be enabled for the real Token -> SignalR -> Lease -> Heartbeat -> Reconciliation path, with issuer/audience/signing/provisioning values supplied by the certification environment.
+
+Production:
+- HTTPS only.
+- No development HTTP override.
+- Agent credential is provisioned and stored by the Agent credential store.
+- Authentication remains a server authority; the Agent never receives business authorization.
+
 ## Rule
 
 An environment-specific value belongs in configuration, not source-code forks.
