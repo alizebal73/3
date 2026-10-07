@@ -8,14 +8,17 @@ A release is a package plus evidence.
 - SBOM generated and validated;
 - vulnerability review complete;
 - license review complete;
-- no unresolved secret scan findings.
+- no unresolved secret scan findings;
+- Agent credential and provisioning secrets are supplied only through approved protected deployment channels.
 
 ## Gate 2 — Build and tests
 - local restore;
 - Release build;
 - unit/integration/contract/E2E as applicable;
 - source/architecture/governance guards;
-- real PostgreSQL certification where applicable.
+- real PostgreSQL certification where applicable;
+- Agent credential/token lifecycle tests;
+- HTTPS-only Production Agent transport validation.
 
 ## Gate 3 — Compatibility
 - ProductVersion recorded;
@@ -37,7 +40,8 @@ A release is a package plus evidence.
 - manifest/checksum compatibility is valid;
 - selected component install paths are verified;
 - scripts/apply-local-update.ps1 is used for local incremental updates and rollback testing;
-- health/readiness is verified after install/update.
+- health/readiness is verified after install/update;
+- Windows Service installation preserves the Agent credential/DeviceId lifecycle without plaintext secrets in installed configuration.
 
 ## Gate 6 — Deployment
 - install/update package manifest valid;

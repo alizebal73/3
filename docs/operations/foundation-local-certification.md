@@ -1,8 +1,6 @@
 # Foundation Local Certification
 
-There is no GitHub Actions execution dependency for GameNet 3.
-
-GitHub is source control, review and history only. Build, restore, test, migration, packaging and certification are performed on the approved Windows machine.
+GitHub Actions is an orchestration layer for the approved self-hosted Windows runner; it is not the certification authority. The canonical local scripts remain the source of truth for Build, Restore, Test, migration, packaging and certification. GitHub-hosted execution is not used.
 
 ## Repository gate
 
@@ -67,6 +65,11 @@ Local evidence must cover:
 - stale lease tokens cannot renew or release;
 - reconnect reacquires the lease;
 - Server restart followed by Agent reconnect is deterministic;
+- Agent credential provisioning succeeds without storing the secret in source/config;
+- Agent credential rotation makes the old secret unusable and the new secret usable;
+- credential revocation blocks renewal after the current short-lived JWT expires;
+- the Agent stores its secret using Windows DPAPI under the actual Windows service identity;
+- production credential/token exchange uses HTTPS;
 - unauthorized/non-Agent tokens cannot use the Agent hub;
 - network loss does not produce a duplicate authoritative business command.
 
@@ -102,6 +105,6 @@ Before Foundation sign-off, perform and record:
 
 Foundation is not certified until the exact final Foundation commit passes the local repository gate plus Desktop, PostgreSQL and Agent platform certification, and the required recovery/deployment/release evidence is recorded.
 
-Until that evidence exists, no business feature may start.
+Until that evidence exists, no business feature may start. The final Foundation commit must be the exact commit that was certified; later commits reset the certification requirement.
 
 GitHub is source control only; a remote status/checkmark can never replace local evidence.

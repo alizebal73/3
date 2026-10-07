@@ -60,3 +60,11 @@ Business-state reconciliation must be added with the first vertical slice that o
 
 The Agent may use HTTP only in Development when `AllowInsecureHttpForDevelopment=true` is explicitly configured. Production must use HTTPS so the bootstrap credential and short-lived token exchange are never sent over plaintext transport.
 
+
+## Bootstrap and installation
+
+Production installation must provision a DeviceId and an Agent credential before starting the service. The supported deployment flow may supply the one-time bootstrap secret through the protected Windows environment only long enough for the Windows Service to consume it.
+
+The Agent Service then stores the credential with Windows DPAPI under its service identity and no longer requires the plaintext bootstrap variable. The deployment script removes the machine bootstrap environment variable after the protected credential file is confirmed.
+
+A rotation changes the server-side active credential and requires the replacement secret to be delivered to the Agent through an approved deployment/maintenance operation. Rotation must not be implemented by committing the secret into appsettings or source control.

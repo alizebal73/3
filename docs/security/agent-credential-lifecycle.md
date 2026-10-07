@@ -45,3 +45,7 @@ This is an explicit Foundation Stabilization item, not a business-feature depend
 ## Transport requirement
 
 Credential provisioning and token exchange must use HTTPS outside Development. The Agent configuration contains an explicit development-only HTTP escape hatch; Production validation rejects HTTP.
+
+## Windows service deployment invariant
+
+The credential store is bound to the Windows identity that runs the Agent Service. The installation process must provision the durable DeviceId before the first authenticated connection and may expose the bootstrap secret only for the bounded first-start window. After DPAPI storage succeeds, the bootstrap environment variable must be removed.
