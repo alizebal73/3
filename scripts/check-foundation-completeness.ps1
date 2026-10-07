@@ -113,6 +113,7 @@ $requiredFiles = @(
     "scripts\sign-release-artifacts.ps1",
     "scripts\write-foundation-evidence.ps1",
     "scripts\check-supply-chain.ps1",
+    "scripts\check-powershell-scripts.ps1",
     "scripts\create-migration-bundle.ps1",
     "scripts\create-migration-sql.ps1",
     "scripts\create-sbom.ps1",
