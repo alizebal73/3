@@ -52,12 +52,21 @@ public sealed class EfOutboxDispatcher(GameNetDbContext dbContext, IGameClock cl
         DateTimeOffset publishedAtUtc,
         CancellationToken cancellationToken = default)
     {
-        var message = await dbContext.OutboxMessages.SingleAsync(x => x.Id == messageId, cancellationToken);
+        var now = clock.UtcNow;
+        var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            UPDATE outbox_messages
+            SET published_at_utc = {publishedAtUtc},
+                lease_token = NULL,
+                lease_expires_at_utc = NULL
+            WHERE id = {messageId}
+              AND published_at_utc IS NULL
+              AND lease_token = {leaseToken}
+              AND lease_expires_at_utc > {now}
+            """,
+            cancellationToken);
 
-        if (!string.Equals(message.LeaseToken, leaseToken, StringComparison.Ordinal))
-            throw new InvalidOperationException("Outbox lease is no longer owned.");
-
-        message.MarkPublished(publishedAtUtc);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        if (updated != 1)
+            throw new InvalidOperationException("Outbox lease is no longer owned or has expired.");
     }
 }
