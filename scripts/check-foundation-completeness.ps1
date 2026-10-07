@@ -94,6 +94,7 @@ $requiredFiles = @(
     "scripts\certify-desktop.ps1",
     "scripts\certify-postgresql.ps1",
     "scripts\create-release-manifest.ps1",
+    "scripts\write-foundation-evidence.ps1",
     "scripts\certify-foundation.ps1"
 )
 
