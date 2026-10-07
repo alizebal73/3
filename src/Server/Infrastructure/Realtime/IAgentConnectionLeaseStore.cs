@@ -29,4 +29,10 @@ public interface IAgentConnectionLeaseStore
         string leaseToken,
         CancellationToken cancellationToken = default);
 
+    Task<bool> IsCurrentOwnerAsync(
+        string deviceId,
+        string connectionId,
+        string leaseToken,
+        CancellationToken cancellationToken = default);
+
 }
