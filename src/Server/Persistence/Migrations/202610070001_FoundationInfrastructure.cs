@@ -27,7 +27,7 @@ public partial class FoundationInfrastructure : Migration
                 before_json = table.Column<string>(type: "jsonb", nullable: true),
                 after_json = table.Column<string>(type: "jsonb", nullable: true)
             },
-            constraints: table => table.PrimaryKey("PK_audit_entries", x => x.id));
+            constraints: table => table.PrimaryKey("pk_audit_entries", x => x.id));
 
         migrationBuilder.CreateTable(
             name: "idempotency_records",
@@ -46,7 +46,7 @@ public partial class FoundationInfrastructure : Migration
                 lease_expires_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                 expires_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
             },
-            constraints: table => table.PrimaryKey("PK_idempotency_records", x => x.id));
+            constraints: table => table.PrimaryKey("pk_idempotency_records", x => x.id));
 
         migrationBuilder.CreateTable(
             name: "outbox_messages",
@@ -62,42 +62,42 @@ public partial class FoundationInfrastructure : Migration
                 lease_token = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
                 lease_expires_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
             },
-            constraints: table => table.PrimaryKey("PK_outbox_messages", x => x.id));
+            constraints: table => table.PrimaryKey("pk_outbox_messages", x => x.id));
 
         migrationBuilder.CreateIndex(
-            name: "IX_audit_entries_OccurredAtUtc_Operation",
+            name: "ix_audit_entries_occurred_at_utc_operation",
             table: "audit_entries",
             columns: new[] { "occurred_at_utc", "operation" });
 
         migrationBuilder.CreateIndex(
-            name: "IX_audit_entries_ReferenceType_ReferenceId",
+            name: "ix_audit_entries_reference_type_reference_id",
             table: "audit_entries",
             columns: new[] { "reference_type", "reference_id" });
 
         migrationBuilder.CreateIndex(
-            name: "IX_idempotency_records_ExpiresAtUtc",
+            name: "ix_idempotency_records_expires_at_utc",
             table: "idempotency_records",
             column: "expires_at_utc");
 
         migrationBuilder.CreateIndex(
-            name: "IX_idempotency_records_Scope_Key",
+            name: "ix_idempotency_records_scope_key",
             table: "idempotency_records",
             columns: new[] { "scope", "key" },
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "IX_outbox_messages_EventId",
+            name: "ix_outbox_messages_event_id",
             table: "outbox_messages",
             column: "event_id",
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "IX_outbox_messages_LeaseExpiresAtUtc_Id",
+            name: "ix_outbox_messages_lease_expires_at_utc_id",
             table: "outbox_messages",
             columns: new[] { "lease_expires_at_utc", "id" });
 
         migrationBuilder.CreateIndex(
-            name: "IX_outbox_messages_PublishedAtUtc_OccurredAtUtc",
+            name: "ix_outbox_messages_published_at_utc_occurred_at_utc",
             table: "outbox_messages",
             columns: new[] { "published_at_utc", "occurred_at_utc" });
     }

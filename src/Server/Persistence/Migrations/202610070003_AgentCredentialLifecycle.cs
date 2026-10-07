@@ -22,7 +22,7 @@ public partial class AgentCredentialLifecycle : Migration
                 revoked_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                 last_authenticated_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
             },
-            constraints: table => table.PrimaryKey("PK_agent_credentials", x => x.id));
+            constraints: table => table.PrimaryKey("pk_agent_credentials", x => x.id));
 
         migrationBuilder.CreateIndex(
             name: "IX_agent_credentials_Device_Created",
