@@ -29,9 +29,9 @@ $secretPatterns = @(
 )
 
 $scanRoots = @(
-    Join-Path $root "src",
-    Join-Path $root "scripts",
-    Join-Path $root "deploy"
+    (Join-Path $root "src"),
+    (Join-Path $root "scripts"),
+    (Join-Path $root "deploy")
 )
 
 foreach ($scanRoot in $scanRoots) {
