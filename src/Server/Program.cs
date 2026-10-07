@@ -3,9 +3,15 @@ using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Observability;
 using GameNet.Server.Infrastructure.Security;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Hosting.WindowsServices;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseWindowsService(options =>
+{
+    options.ServiceName = "GameNet Server";
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddGameNet();
