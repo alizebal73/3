@@ -13,4 +13,6 @@ Repository policy:
 
 There is intentionally no GitHub Actions workflow. The authoritative build/test result comes from the approved Windows machine running scripts/verify.ps1.
 
-The repository should never contain secrets, machine-local credentials or generated release artifacts that belong outside source control.
+The repository should never contain secrets, machine-local credentials or generated release artifacts.
+
+GitHub-side branch protection is an operational setting, not application correctness. Before Foundation certification, protect main/develop against force-push and require pull-request review where repository plan permits it.
