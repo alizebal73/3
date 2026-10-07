@@ -8,6 +8,14 @@
 | Permissions and approvals | Users/Auth/Approvals | Owner/Admin | Server | Audit | Required |
 | Customer identity/profile/PIN | Customers | Operator/Customer | Server | Auth/Sessions | Required |
 | Device pairing and Agent health | Agents | Admin/Operator | Server + Agent observation | SignalR/Lease | Required |
+| Game catalog and launch policy | Games | Admin/Owner/Operator | Server | Stations/Agents/GameAccounts | Required |
+| Game account pools and allocation | GameAccounts | Admin/Owner/Operator | Server | Customers/Agents/Games/Audit | Required |
+| Client control and lifecycle | Agents/ClientControl | Admin/Operator | Server command authority + Agent observation | Lease/Permissions/Audit | Required |
+| Client configuration/policy | Agents/ClientControl/Settings | Admin/Owner | Server policy + Agent local application | Permissions/Release | Required |
+| Game process supervision | Agents/ClientControl | Server-authorized | Agent observation/execution only | Game catalog/Session/Lease | Required |
+| Remote lock/unlock/restart/shutdown | Agents/ClientControl | Admin/Operator | Server command authority | Lease/Approvals/Audit | Required |
+| Client diagnostics/health/maintenance | Agents/ClientControl | Admin/Operator | Agent observation + Server record | Health/Audit | Required |
+| Client update and component rollout | Platform Release/Agents | Admin/Owner | Release artifacts | Manifest/Signature/Compatibility | Required |
 | Station management | Stations | Operator | Server | Agents/Tariffs | Required |
 | PC/PS5/Foosball categories | Stations | Operator | Server | Tariffs | Required |
 | Session start/pause/resume/transfer/end | Sessions | Operator | Server | Customers/Stations/Tariffs/Agents | Required |
@@ -27,7 +35,7 @@
 
 ## First usable product path
 
-Authentication → choose Customer → choose Station → resolve Tariff/VIP → start Session → Agent/Station state → pause/resume/transfer → settle → payment/debt/wallet → audit → recovery.
+Authentication → choose Customer → choose Station → resolve Tariff/VIP → inspect Client/Game readiness → start Session → Agent/Station state → pause/resume/transfer → settle → payment/debt/wallet → audit → recovery.
 
 Buffet/Inventory extends the same financial and audit path rather than inventing a separate accounting authority.
 
