@@ -28,3 +28,5 @@ public interface IAgentConnectionLeaseStore
         string connectionId,
         string leaseToken,
         CancellationToken cancellationToken = default);
+
+}
