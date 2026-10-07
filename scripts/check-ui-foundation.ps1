@@ -17,12 +17,29 @@ $mainText = Get-Content $mainWindow -Raw
 $faText = Get-Content $fa -Raw
 $enText = Get-Content $en -Raw
 
+$styleTexts = foreach ($dictionary in @("Theme.xaml", "Controls.xaml", "Converters.xaml", "DataTemplates.xaml")) {
+    $path = Join-Path $desktop "Resources\Styles\$dictionary"
+    Get-Content $path -Raw
+}
+
 $dynamicKeys = @([regex]::Matches($mainText, 'DynamicResource\s+([A-Za-z0-9_.-]+)') |
     ForEach-Object { $_.Groups[1].Value } |
     Sort-Object -Unique)
 
 foreach ($key in $dynamicKeys) {
     $escaped = [regex]::Escape($key)
+    $inStyleResources = $false
+    foreach ($styleText in $styleTexts) {
+        if ($styleText -match ('x:Key="' + $escaped + '"')) {
+            $inStyleResources = $true
+            break
+        }
+    }
+
+    if ($inStyleResources) {
+        continue
+    }
+
     if ($faText -notmatch ('x:Key="' + $escaped + '"')) {
         throw "fa-IR resource is missing UI key: $key"
     }
