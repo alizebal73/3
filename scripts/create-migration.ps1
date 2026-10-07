@@ -1,9 +1,14 @@
+param(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]$MigrationName
+)
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-if ([string]::IsNullOrWhiteSpace($env:GAMENET_DATABASE_CONNECTION)) {
-    throw "Set GAMENET_DATABASE_CONNECTION before creating a migration."
+if ([string]::IsNullOrWhiteSpace($env:GAMENET_DATABASE)) {
+    throw "Set GAMENET_DATABASE before creating a migration."
 }
 
 $project = Join-Path $PSScriptRoot "..\src\Server\GameNet.Server.csproj"
-dotnet ef migrations add $args[0] --project $project --startup-project $project --output-dir "Persistence\Migrations"
+dotnet ef migrations add $MigrationName --project $project --startup-project $project --output-dir "Persistence\Migrations"
