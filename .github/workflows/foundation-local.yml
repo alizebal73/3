@@ -46,3 +46,43 @@ jobs:
       - name: Canonical local Foundation verification
         shell: pwsh
         run: .\scripts\verify.ps1
+  ef-model-diagnostic:
+    if: ${{ always() }}
+    runs-on: [self-hosted, Windows, X64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore and build Server
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          dotnet tool restore
+          dotnet restore src\\Server\\GameNet.Server.csproj
+          dotnet build src\\Server\\GameNet.Server.csproj --configuration Release --no-restore
+
+      - name: Generate EF diagnostic migration
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force artifacts\\ef-diagnostic | Out-Null
+          dotnet ef migrations add "__DiagnosticPendingModel" `
+            --project "src\\Server\\GameNet.Server.csproj" `
+            --startup-project "src\\Server\\GameNet.Server.csproj" `
+            --configuration Release `
+            --output-dir "artifacts\\ef-diagnostic" `
+            --namespace "GameNet.Server.Persistence.Migrations.Diagnostic"
+          Get-ChildItem artifacts\\ef-diagnostic -File |
+            ForEach-Object {
+              Write-Host "===== $($_.FullName) ====="
+              Get-Content $_.FullName
+            }
+
+      - name: Upload EF diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ef-model-diagnostic
+          path: artifacts/ef-diagnostic
+          if-no-files-found: warn
+
