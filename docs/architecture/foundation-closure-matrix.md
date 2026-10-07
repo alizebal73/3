@@ -1,6 +1,8 @@
 # Foundation Closure Matrix
 
-This matrix is the authoritative pre-feature closure list. A row is not closed merely because a file, interface, README, or test project exists.
+This matrix is the authoritative pre-feature closure summary. A row is not closed merely because a file, interface, README, or test project exists.
+
+The atomic closure register is `docs/architecture/foundation-closure-contract.md`. Every Foundation obligation that can cause a later product bug must have an explicit FND-xxx row there, and `scripts/verify.ps1` enforces that the register remains structurally complete.
 
 ## Status definitions
 
