@@ -67,6 +67,8 @@ $requiredFiles = @(
     "docs\architecture\actor-and-auth-model.md",
     "docs\security\permission-matrix.md",
     "docs\security\data-classification-and-supply-chain.md",
+    "docs\security\design-review.md",
+    "docs\development\engineering-workflow.md",
     "docs\contracts\api-envelope.md",
     "docs\contracts\release-compatibility.md",
     "docs\operations\deployment-and-update.md",
