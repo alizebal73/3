@@ -31,6 +31,8 @@ $required = @(
     "docs\templates\feature-spec-template.md",
     "docs\templates\vertical-slice-template.md",
     "docs\templates\adr-template.md",
+    "docs\security\design-review.md",
+    "docs\development\engineering-workflow.md",
     "scripts\check-architecture.ps1",
     "scripts\check-foundation-completeness.ps1"
 )
