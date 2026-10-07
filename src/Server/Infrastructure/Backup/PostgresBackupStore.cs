@@ -82,6 +82,8 @@ public sealed class PostgresBackupStore(
     public async Task RestoreAsync(
         BackupArtifact artifact,
         string targetConnectionString,
+        bool explicitOperatorApproval,
+        bool serverStopped,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(targetConnectionString);
@@ -89,9 +91,23 @@ public sealed class PostgresBackupStore(
         if (!await VerifyAsync(artifact, cancellationToken))
             throw new InvalidOperationException("Only a verified backup may be restored.");
 
+        BackupRestoreRules.EnsureRestoreAllowed(
+            verificationPassed: true,
+            explicitOperatorApproval,
+            serverStopped);
+
+        var source = CreateConnectionBuilder();
+        var target = CreateConnectionBuilder(targetConnectionString);
+
+        if (SameDatabase(source, target))
+        {
+            throw new InvalidOperationException(
+                "Restore target must be isolated from the authoritative source database.");
+        }
+
         await RunPgToolAsync(
             options.Value.Backup.PgRestorePath,
-            CreateConnectionBuilder(targetConnectionString),
+            target,
             artifact.FilePath,
             restore: true,
             cancellationToken,
@@ -180,7 +196,17 @@ public sealed class PostgresBackupStore(
             startInfo.Environment["PGPASSWORD"] = connection.Password;
 
         if (connection.SslMode != SslMode.Disable)
-            startInfo.Environment["PGSSLMODE"] = connection.SslMode.ToString().ToLowerInvariant();
+        {
+            startInfo.Environment["PGSSLMODE"] = connection.SslMode switch
+            {
+                SslMode.Allow => "allow",
+                SslMode.Prefer => "prefer",
+                SslMode.Require => "require",
+                SslMode.VerifyCA => "verify-ca",
+                SslMode.VerifyFull => "verify-full",
+                _ => "prefer"
+            };
+        }
 
         using var process = new Process { StartInfo = startInfo };
 
@@ -201,6 +227,13 @@ public sealed class PostgresBackupStore(
                 $"PostgreSQL tool '{executable}' failed with exit code {process.ExitCode}. {error}".Trim());
         }
     }
+
+    private static bool SameDatabase(
+        NpgsqlConnectionStringBuilder left,
+        NpgsqlConnectionStringBuilder right) =>
+        string.Equals(left.Host, right.Host, StringComparison.OrdinalIgnoreCase) &&
+        left.Port == right.Port &&
+        string.Equals(left.Database, right.Database, StringComparison.OrdinalIgnoreCase);
 
     private static string BuildDatabaseTarget(NpgsqlConnectionStringBuilder connection)
     {
