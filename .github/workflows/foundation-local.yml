@@ -17,7 +17,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $files = @(Get-ChildItem .scripts -Recurse -File -Filter *.ps1)
+          $files = @(Get-ChildItem .\scripts -Recurse -File -Filter *.ps1)
           foreach ($file in $files) {
             $tokens = $null
             $errors = $null
@@ -34,4 +34,4 @@ jobs:
 
       - name: Canonical local Foundation verification
         shell: pwsh
-        run: .scriptserify.ps1
+        run: .\scripts\verify.ps1
