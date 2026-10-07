@@ -1,5 +1,4 @@
 using GameNet.Agent;
-using Microsoft.Extensions.Hosting.WindowsServices;
 
 var builder = Host.CreateApplicationBuilder(args);
 
