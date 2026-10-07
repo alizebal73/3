@@ -19,6 +19,7 @@ These obligations protect the first real business chain from the failure modes l
 - native WPF shell and Desktop↔Server runtime smoke;
 - resilient UI state model;
 - Agent command safety contract, even though real command execution remains deferred;
+- fail-closed Outbox delivery boundary with no implicit or mock publisher;
 - baseline backup/restore and restart/reconnect recovery proof needed by the first session slice.
 
 ## Required before production release, but not a blocker for starting the first Vertical Slice
