@@ -9,12 +9,15 @@ $requiredPaths = @(
     "src\Shared\GameNet.Shared.csproj",
     "src\Desktop\GameNet.Desktop.csproj",
     "tests\Desktop.Tests\GameNet.Desktop.Tests.csproj",
+    "tests\E2E\GameNet.E2E.Tests.csproj",
     "src\Desktop\App.xaml",
     "src\Desktop\Shell\MainWindow.xaml",
     "src\Desktop\Localization\LanguageService.cs",
     "src\Desktop\Resources\Languages\Strings.fa-IR.xaml",
     "src\Desktop\Resources\Languages\Strings.en-US.xaml",
-    "src\Server\Modules\README.md"
+    "src\Server\Modules\README.md",
+    "src\Server\Persistence\Migrations\202610070001_FoundationInfrastructure.cs",
+    "src\Server\Persistence\Migrations\GameNetDbContextModelSnapshot.cs"
 )
 
 foreach ($relativePath in $requiredPaths) {
@@ -53,7 +56,6 @@ foreach ($feature in $desktopFeatures) {
 
 $forbiddenArtifacts = @(
     "src\Dashboard",
-    "src\Dashboard\package.json",
     "package-lock.json",
     ".nvmrc",
     ".github\workflows"
@@ -61,7 +63,7 @@ $forbiddenArtifacts = @(
 
 foreach ($relativePath in $forbiddenArtifacts) {
     if (Test-Path (Join-Path $root $relativePath)) {
-        throw "Browser/remote-CI artifact is forbidden by the Desktop/local-only foundation: $relativePath"
+        throw "Browser/remote-CI artifact is forbidden by the foundation: $relativePath"
     }
 }
 
