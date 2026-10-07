@@ -44,14 +44,15 @@ The evidence is invalid if the restore target is not disposable and isolated.
 ## 4. Agent gate
 
 Set:
-- GAMENET_AGENT_BOOTSTRAP_SECRET = disposable provisioning secret;
+- GAMENET_AGENT_PROVISIONING_KEY = disposable provisioning authority;
+- optionally GAMENET_AGENT_DEVICE_ID = a disposable certification DeviceId;
 - optionally GAMENET_AGENT_SERVER_URL = the certification Server URL.
 
 Run:
 
 scripts\certify-agent.ps1
 
-This builds the Windows Agent, runs Agent tests and performs a real executable/process smoke. The Agent test suite plus runtime evidence must cover:
+This builds the Windows Agent, provisions a temporary credential through the Server, runs the real executable/process smoke using the returned secret, and revokes the temporary credential during cleanup. The Agent test suite plus runtime evidence must cover:
 - durable DeviceId across restart;
 - one authoritative connection per DeviceId;
 - heartbeat renewal;
