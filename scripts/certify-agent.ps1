@@ -67,6 +67,9 @@ try {
     }
     finally {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
+        $output = (Get-Content $logPath -Raw -ErrorAction SilentlyContinue) + (Get-Content (Join-Path $identityRoot "agent-error.log") -Raw -ErrorAction SilentlyContinue)
+        if ($output -notmatch "Agent heartbeat accepted") { throw "Agent process stayed alive but did not prove Token -> SignalR -> Lease -> Heartbeat -> Reconciliation. Output: $output" }
+        Write-Host "REAL AGENT TRANSPORT CERTIFICATION PASSED: Token -> SignalR -> Lease -> Heartbeat -> Reconciliation."
     }
 }
 finally {
