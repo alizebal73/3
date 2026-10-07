@@ -1,4 +1,3 @@
-using System.Net;
 using GameNet.Desktop.Api;
 using GameNet.Desktop.Localization;
 using GameNet.Desktop.Shell;
