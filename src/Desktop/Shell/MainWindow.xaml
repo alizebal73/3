@@ -95,8 +95,7 @@
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding NavigationItems}"
-                                      ItemTemplate="{StaticResource NavigationItemTemplate}">
+                        <ItemsControl ItemsSource="{Binding NavigationItems}">
                             <ItemsControl.ItemContainerStyle>
                                 <Style TargetType="{x:Type ContentPresenter}">
                                     <Setter Property="Margin" Value="0,1"/>
