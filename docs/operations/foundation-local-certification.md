@@ -72,10 +72,12 @@ Local evidence must cover:
 
 ## Database deployment artifacts
 
-Before release, generate and review both forms as appropriate:
+Before release, generate and review:
 
-- scripts/create-migration-sql.ps1
-- scripts/create-migration-bundle.ps1
+- scripts/prepare-release-package.ps1 for the signed package and manifest chain;
+- scripts/create-migration-sql.ps1;
+- scripts/create-migration-bundle.ps1;
+- scripts/verify-release-signatures.ps1 for the final package.
 
 The application runtime does not silently apply production migrations.
 
