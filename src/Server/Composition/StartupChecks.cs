@@ -34,6 +34,13 @@ public static class StartupChecks
 
             if (!await db.Database.CanConnectAsync())
                 throw new InvalidOperationException("Configured PostgreSQL database is not reachable.");
+
+            var pendingMigrations = (await db.Database.GetPendingMigrationsAsync()).ToArray();
+            if (pendingMigrations.Length > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Database schema is behind the application. Pending migrations: {string.Join(", ", pendingMigrations)}");
+            }
         }
 
         app.Services.GetRequiredService<ServerReadiness>().MarkReady();
