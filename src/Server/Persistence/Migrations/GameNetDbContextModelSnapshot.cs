@@ -17,6 +17,25 @@ partial class GameNetDbContextModelSnapshot : ModelSnapshot
     {
         modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
+        modelBuilder.Entity<AgentCredential>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.HasIndex(x => x.DeviceId)
+                .IsUnique()
+                .HasFilter("revoked_at_utc IS NULL")
+                .HasDatabaseName("IX_agent_credentials_ActiveDevice");
+            b.HasIndex(x => new { x.DeviceId, x.CreatedAtUtc })
+                .HasDatabaseName("IX_agent_credentials_Device_Created");
+
+            b.Property(x => x.Id).HasColumnName("id");
+            b.Property(x => x.DeviceId).HasMaxLength(128).HasColumnName("device_id");
+            b.Property(x => x.SecretHash).HasMaxLength(128).HasColumnName("secret_hash");
+            b.Property(x => x.CreatedAtUtc).HasColumnName("created_at_utc");
+            b.Property(x => x.RevokedAtUtc).HasColumnName("revoked_at_utc");
+            b.Property(x => x.LastAuthenticatedAtUtc).HasColumnName("last_authenticated_at_utc");
+            b.ToTable("agent_credentials");
+        });
+
         modelBuilder.Entity<AuditEntry>(b =>
         {
             b.HasKey(x => x.Id);

@@ -26,7 +26,7 @@ The Agent credential lifecycle must be explicit before Foundation certification.
 
 ## Current implementation boundary
 
-Repo 3 currently has durable DeviceId persistence and authenticated transport policy, but the full provisioning/rotation/revocation lifecycle is not yet implemented.
+Repo 3 now has the Foundation implementation for credential provisioning, rotation, revocation, short-lived JWT issuance, and Windows DPAPI-protected Agent bootstrap-secret storage. Runtime certification remains required.
 
 This is an explicit Foundation Stabilization item, not a business-feature dependency. Foundation certification must not claim Agent authentication is fully closed until the lifecycle and its Windows smoke tests exist.
 

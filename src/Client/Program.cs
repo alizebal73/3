@@ -23,6 +23,10 @@ builder.Services
         "HeartbeatIntervalSeconds must be between 2 and 60.")
     .Validate(options => options.InitialRetrySeconds is >= 1 and <= 120,
         "InitialRetrySeconds must be between 1 and 120.")
+    .Validate(
+        options => !string.IsNullOrWhiteSpace(
+            options.BootstrapCredentialEnvironmentVariableName),
+        "BootstrapCredentialEnvironmentVariableName is required.")
     .ValidateOnStart();
 
 builder.Services
@@ -32,7 +36,11 @@ builder.Services
         "GameNet:AgentIdentity:RootPath is required.")
     .ValidateOnStart();
 
+builder.Services.AddHttpClient("GameNetAgentCredentialClient");
+
 builder.Services.AddSingleton<IAgentIdentityStore, AgentIdentityStore>();
+builder.Services.AddSingleton<IAgentCredentialStore, AgentCredentialStore>();
+builder.Services.AddSingleton<IAgentAccessTokenProvider, AgentAccessTokenProvider>();
 builder.Services.AddSingleton<IAgentTransport, SignalRAgentTransport>();
 builder.Services.AddHostedService<AgentWorker>();
 

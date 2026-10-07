@@ -19,6 +19,7 @@ public sealed class GameNetOptions
             "GameNet Manager",
             "Server",
             "Backups");
+
     public string? DatabaseConnectionString { get; init; }
     public AuthenticationOptions Authentication { get; init; } = new();
     public BackupOptions Backup { get; init; } = new();
@@ -44,4 +45,6 @@ public sealed class AgentOptions
 {
     public int LeaseDurationSeconds { get; init; } = 15;
     public int HeartbeatIntervalSeconds { get; init; } = 5;
+    public int AccessTokenLifetimeSeconds { get; init; } = 300;
+    public string? ProvisioningKey { get; init; }
 }

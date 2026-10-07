@@ -47,5 +47,7 @@ public static class Routing
 
         app.MapGameNetModules(
             app.Services.GetServices<IGameNetModule>());
+
+        app.MapAgentCredentialRoutes();
     }
 }

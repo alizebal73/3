@@ -7,6 +7,7 @@ namespace GameNet.Agent.Transport;
 
 public sealed class SignalRAgentTransport(
     IOptions<AgentTransportOptions> options,
+    IAgentAccessTokenProvider accessTokenProvider,
     ILogger<SignalRAgentTransport> logger,
     TimeProvider timeProvider) : IAgentTransport
 {
@@ -24,7 +25,6 @@ public sealed class SignalRAgentTransport(
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(options.Value.ServerBaseUrl);
-        ArgumentException.ThrowIfNullOrWhiteSpace(options.Value.AccessToken);
 
         await _gate.WaitAsync(cancellationToken);
         try
@@ -41,7 +41,9 @@ public sealed class SignalRAgentTransport(
                     .WithUrl(hubUrl, builder =>
                     {
                         builder.AccessTokenProvider = () =>
-                            Task.FromResult<string?>(options.Value.AccessToken);
+                            accessTokenProvider.GetAccessTokenAsync(
+                                identity.DeviceId,
+                                CancellationToken.None);
                     })
                     .WithAutomaticReconnect(new[]
                     {

@@ -7,6 +7,7 @@ namespace GameNet.Server.Persistence;
 
 public sealed class GameNetDbContext(DbContextOptions<GameNetDbContext> options) : DbContext(options)
 {
+    public DbSet<AgentCredential> AgentCredentials => Set<AgentCredential>();
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<IdempotencyRecord> IdempotencyRecords => Set<IdempotencyRecord>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
@@ -48,6 +49,7 @@ public sealed class GameNetDbContext(DbContextOptions<GameNetDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new AgentCredentialConfiguration());
         modelBuilder.ApplyConfiguration(new AuditEntryConfiguration());
         modelBuilder.ApplyConfiguration(new IdempotencyRecordConfiguration());
         modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());

@@ -23,7 +23,7 @@ This matrix is the authoritative pre-feature closure list. A row is not closed m
 | Agent SignalR transport | yes | yes | authenticated Windows Agent smoke | Platform-proof pending |
 | Agent heartbeat/reconciliation | yes | yes | reconnect/heartbeat/fencing smoke | Platform-proof pending |
 | Agent durable DeviceId | yes | yes | Agent restart/reload smoke | Platform-proof pending |
-| JWT/authentication policy | yes | transport/auth policy exists; Agent credential lifecycle incomplete | real credential provisioning/rotation/revocation flow | Implementation gap |
+| JWT/authentication policy | yes | JWT transport policy + credential lifecycle + short-lived token issuance | real credential provisioning/rotation/revocation/expiry flow | Platform-proof pending |
 | Native WPF shell | yes | yes | native process launch | Platform-proof pending |
 | Desktop ↔ Server | yes | API boundary + central connectivity state | real Server/Desktop smoke | Platform-proof pending |
 | UI Foundation | yes | reusable shell/navigation/state/command/theme/accessibility baseline | native shell workflow | Platform-proof pending |

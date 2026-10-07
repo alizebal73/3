@@ -59,6 +59,20 @@ public sealed class GameNetOptionsValidator : IValidateOptions<GameNetOptions>
                 "Enabled JWT authentication requires Issuer, Audience and a 32+ character SigningKey.");
         }
 
+        if (options.Agent.AccessTokenLifetimeSeconds is < 60 or > 1800)
+        {
+            return ValidateOptionsResult.Fail(
+                "GameNet:Agent:AccessTokenLifetimeSeconds must be between 60 and 1800 seconds.");
+        }
+
+        if (options.Authentication.Enabled &&
+            (string.IsNullOrWhiteSpace(options.Agent.ProvisioningKey) ||
+             options.Agent.ProvisioningKey.Length < 32))
+        {
+            return ValidateOptionsResult.Fail(
+                "Enabled Agent authentication requires a 32+ character provisioning key.");
+        }
+
         return ValidateOptionsResult.Success;
     }
 }
