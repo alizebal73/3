@@ -12,6 +12,15 @@ namespace GameNet.Desktop.Infrastructure.Hosting;
 
 public static class DesktopHost
 {
+    private static bool IsSupportedServerUri(string value)
+    {
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || uri is null)
+            return false;
+
+        return uri.Scheme == Uri.UriSchemeHttp ||
+               uri.Scheme == Uri.UriSchemeHttps;
+    }
+
     public static IHost Build()
     {
         var builder = Host.CreateApplicationBuilder();
@@ -21,11 +30,8 @@ public static class DesktopHost
         builder.Services
             .AddOptions<DesktopOptions>()
             .BindConfiguration(DesktopOptions.SectionName)
-            .Validate(options => Uri.TryCreate(
-                options.ServerBaseUrl,
-                UriKind.Absolute,
-                out var uri) &&
-                uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps,
+.Validate(
+                options => IsSupportedServerUri(options.ServerBaseUrl),
                 "GameNet:Desktop:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
             .Validate(options =>
                 options.HealthRefreshSeconds is >= 5 and <= 300,
