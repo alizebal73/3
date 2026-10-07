@@ -51,8 +51,6 @@ public sealed class ContractSmokeTests
         Assert.Equal("lease-1", command.LeaseToken);
         Assert.Equal(DateTimeOffset.UnixEpoch.AddMinutes(1), command.ExpiresAtUtc);
     }
-}
-
 
     [Fact]
     public void Agent_command_acknowledgement_preserves_duplicate_state()
