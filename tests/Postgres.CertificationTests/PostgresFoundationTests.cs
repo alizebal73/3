@@ -1,3 +1,5 @@
+using GameNet.Server.Infrastructure.Audit;
+using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Outbox;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Server.Persistence;
@@ -27,7 +29,7 @@ public sealed class PostgresFoundationTests
         Assert.Empty(await db.Database.GetPendingMigrationsAsync());
 
         var result = await db.Database
-            .SqlQueryRaw<int>("select 1 as "Value"")
+            .SqlQueryRaw<int>("select 1 as \"Value\"")
             .SingleAsync();
 
         Assert.Equal(1, result);
@@ -65,7 +67,7 @@ public sealed class PostgresFoundationTests
 
         await using var contender = new GameNetDbContext(Options());
         var clock = new FixedClock(DateTimeOffset.UtcNow);
-        var store = new GameNet.Server.Infrastructure.Idempotency.EfIdempotencyStore(contender, clock);
+        var store = new EfIdempotencyStore(contender, clock);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             store.TryClaimAsync(
@@ -82,7 +84,7 @@ public sealed class PostgresFoundationTests
     [Fact]
     public async Task Audit_entries_are_append_only()
     {
-        var audit = new GameNet.Server.Infrastructure.Audit.AuditEntry
+        var audit = new AuditEntry
         {
             OccurredAtUtc = DateTimeOffset.UtcNow,
             ActorType = "test",
@@ -100,7 +102,8 @@ public sealed class PostgresFoundationTests
         await using (var mutate = new GameNetDbContext(Options()))
         {
             var loaded = await mutate.AuditEntries.SingleAsync(x => x.Id == audit.Id);
-            loaded.Operation = "mutated";
+            mutate.Entry(loaded).Property(x => x.Operation).CurrentValue = "mutated";
+
             Assert.Throws<InvalidOperationException>(() => mutate.SaveChanges());
             mutate.Entry(loaded).State = EntityState.Unchanged;
         }
@@ -152,9 +155,12 @@ public sealed class PostgresFoundationTests
             "delete from outbox_messages where type = 'foundation-cert';");
     }
 
-    private static Task InsertIdempotencyAsync() => InsertIdempotencyAsync("same-key", "test");
+    private static Task InsertIdempotencyAsync() =>
+        InsertIdempotencyAsync("same-key", "test");
 
-    private static async Task InsertIdempotencyAsync(string key, string operation)
+    private static async Task InsertIdempotencyAsync(
+        string key,
+        string operation)
     {
         await using var db = new GameNetDbContext(Options());
 
@@ -162,7 +168,7 @@ public sealed class PostgresFoundationTests
             insert into idempotency_records
                 (scope, key, operation, state, lease_token, status_code, response_json, created_at_utc, lease_expires_at_utc, expires_at_utc)
             values
-                ({"foundation-cert"}, {"same-key"}, {"test"}, {"processing"}, {Guid.NewGuid().ToString("N")}, {0}, {("{}")}, {DateTimeOffset.UtcNow}, {DateTimeOffset.UtcNow.AddMinutes(5)}, {DateTimeOffset.UtcNow.AddHours(1)})
+                ({"foundation-cert"}, {key}, {operation}, {"processing"}, {Guid.NewGuid().ToString("N")}, {0}, {("{}")}, {DateTimeOffset.UtcNow}, {DateTimeOffset.UtcNow.AddMinutes(5)}, {DateTimeOffset.UtcNow.AddHours(1)})
             on conflict (scope, key) do nothing;""");
     }
 
