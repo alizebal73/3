@@ -2,16 +2,9 @@
 
 There is no GitHub Actions execution dependency for GameNet 3.
 
-GitHub is used for source control, review and history only. Build, restore, test, migration generation and certification are performed on the approved Windows machine.
+GitHub is source control, review and history only. Build, restore, test, migration, packaging and certification are performed on the approved Windows machine.
 
-## Required local environment
-
-- Windows x64.
-- .NET 10 SDK matching global.json.
-- PostgreSQL access for database integration certification.
-- WPF desktop build support.
-
-## Local certification
+## Repository gate
 
 Run:
 
@@ -24,28 +17,47 @@ This verifies:
 4. Foundation completeness;
 5. .NET restore;
 6. Release build;
-7. all tests;
-8. desktop build.
-
-## PostgreSQL certification
-
-Before the first business vertical slice:
-- configure GAMENET_DATABASE on the local build/test machine;
-- verify the committed foundation migration with scripts/certify-postgresql.ps1;
-- review the migration;
-- apply it to a clean PostgreSQL database;
-- execute the isolated real PostgreSQL integration and concurrency tests.
+7. all ordinary tests.
 
 ## Desktop certification
 
-The local machine must produce a native Windows executable from src/Desktop/GameNet.Desktop.csproj.
+Run:
 
-The application must launch as a normal Windows process and must not require a browser.
+scripts/certify-desktop.ps1
 
-Both fa-IR and en-US must load from application resources.
+It builds the native WPF WinExe and launches the actual executable as a Windows process.
 
-## Release gate
+Verify on the machine:
+- Desktop launches without a browser;
+- fa-IR loads with RTL;
+- en-US loads with LTR;
+- the application can be started from the produced executable.
 
-The Foundation is not certified until the exact final commit passes scripts/verify.ps1 on the approved local Windows machine and the PostgreSQL certification is complete.
+## PostgreSQL certification
 
-Until then, no business feature may start.
+Set GAMENET_DATABASE to a disposable clean PostgreSQL database and run:
+
+scripts/certify-postgresql.ps1
+
+This:
+- applies the committed Foundation migration;
+- checks that no migrations remain pending;
+- runs real PostgreSQL idempotency-concurrency tests;
+- runs real PostgreSQL Outbox claim-fencing tests.
+
+## Recovery and deployment evidence
+
+Before Foundation sign-off, perform and record:
+- Server restart with clean/known database;
+- Desktop launch after Server restart;
+- Agent restart/reconnect boundary verification;
+- verified backup and restore smoke test on an isolated target;
+- install/update/rollback smoke test using the local update package boundary.
+
+## Final gate
+
+Foundation is not certified until the exact final Foundation commit passes the local repository gate plus Desktop and PostgreSQL certification, and the required recovery/deployment evidence is recorded.
+
+Until that evidence exists, no business feature may start.
+
+GitHub is source control only; a remote status/checkmark can never replace local evidence.
