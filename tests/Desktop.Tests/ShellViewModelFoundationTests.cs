@@ -12,7 +12,7 @@ namespace GameNet.Desktop.Tests;
 public sealed class ShellViewModelFoundationTests
 {
     [Fact]
-    public void Shell_exposes_one_central_navigation_catalog_with_home_selected()
+    public async Task Shell_exposes_one_central_navigation_catalog_with_home_selected()
     {
         await using var shell = CreateShell();
 
@@ -30,7 +30,7 @@ public sealed class ShellViewModelFoundationTests
     }
 
     [Fact]
-    public void Global_command_surface_is_registered_once()
+    public async Task Global_command_surface_is_registered_once()
     {
         await using var shell = CreateShell();
 
@@ -44,7 +44,7 @@ public sealed class ShellViewModelFoundationTests
     }
 
     [Fact]
-    public void Command_palette_filters_central_navigation_without_creating_new_routes()
+    public async Task Command_palette_filters_central_navigation_without_creating_new_routes()
     {
         await using var shell = CreateShell();
 
@@ -59,7 +59,7 @@ public sealed class ShellViewModelFoundationTests
     }
 
     [Fact]
-    public void Global_overlays_are_mutually_exclusive_and_escape_closes_them()
+    public async Task Global_overlays_are_mutually_exclusive_and_escape_closes_them()
     {
         await using var shell = CreateShell();
 
