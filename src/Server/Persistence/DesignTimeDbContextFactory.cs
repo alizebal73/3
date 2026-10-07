@@ -13,7 +13,7 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Gam
             throw new InvalidOperationException("Set GAMENET_DATABASE before running Entity Framework migration commands.");
 
         var options = new DbContextOptionsBuilder<GameNetDbContext>()
-            .UseNpgsql(connection)
+             .UseNpgsql(connection).UseSnakeCaseNamingConvention()
             .Options;
 
         return new GameNetDbContext(options);
