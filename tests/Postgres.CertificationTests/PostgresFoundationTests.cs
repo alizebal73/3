@@ -350,7 +350,8 @@ public sealed class PostgresFoundationTests
         var now = DateTimeOffset.UtcNow;
         var store = new EfAgentConnectionLeaseStore(
             setup,
-            new FixedClock(now));
+            new FixedClock(now),
+            new EfTransactionCoordinator(setup));
 
         var lease = await store.TryAcquireAsync(
             new AgentConnectionLeaseRequest(
@@ -365,6 +366,7 @@ public sealed class PostgresFoundationTests
             "1.0.0",
             "Ready");
 
+        Assert.NotNull(lease);
         Assert.True(await store.RecordHeartbeatAsync(
             heartbeat,
             "connection-a",
@@ -426,12 +428,10 @@ public sealed class PostgresFoundationTests
         await cleanup.Database.ExecuteSqlRawAsync(
             "delete from agent_connection_leases where device_id = 'foundation-device';");
 
-        await firstDb.DisposeAsync();
-        await secondDb.DisposeAsync();
+        await using var firstDb = new GameNetDbContext(Options());
+        await using var secondDb = new GameNetDbContext(Options());
 
         var now = DateTimeOffset.UtcNow;
-        var firstDb = new GameNetDbContext(Options());
-        var secondDb = new GameNetDbContext(Options());
 
         var first = new EfAgentConnectionLeaseStore(
             firstDb,
