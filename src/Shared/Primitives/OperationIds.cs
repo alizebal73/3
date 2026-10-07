@@ -6,6 +6,12 @@ public readonly record struct CorrelationId(string Value)
     public override string ToString() => Value;
 }
 
+public readonly record struct OperationId(string Value)
+{
+    public static OperationId New() => new(Guid.NewGuid().ToString("N"));
+    public override string ToString() => Value;
+}
+
 public readonly record struct CommandId(Guid Value)
 {
     public static CommandId New() => new(Guid.NewGuid());
