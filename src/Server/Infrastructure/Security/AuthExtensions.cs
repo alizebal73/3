@@ -33,7 +33,7 @@ public static class AuthExtensions
                 });
         }
 
-        services.AddAuthorization();
+        services.AddGameNetAuthorization();
         return services;
     }
 
