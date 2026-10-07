@@ -55,6 +55,62 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Idempotency_key_cannot_be_reused_for_a_different_operation()
+    {
+        await using var setup = new GameNetDbContext(Options());
+        await setup.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'operation-key';");
+
+        await InsertIdempotencyAsync("operation-key", "operation-one");
+
+        await using var contender = new GameNetDbContext(Options());
+        var clock = new FixedClock(DateTimeOffset.UtcNow);
+        var store = new GameNet.Server.Infrastructure.Idempotency.EfIdempotencyStore(contender, clock);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            store.TryClaimAsync(
+                "foundation-cert",
+                "operation-key",
+                "operation-two",
+                clock.UtcNow.AddMinutes(5),
+                clock.UtcNow.AddHours(1)));
+
+        await contender.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'operation-key';");
+    }
+
+    [Fact]
+    public async Task Audit_entries_are_append_only()
+    {
+        var audit = new GameNet.Server.Infrastructure.Audit.AuditEntry
+        {
+            OccurredAtUtc = DateTimeOffset.UtcNow,
+            ActorType = "test",
+            ActorId = "foundation-cert",
+            Operation = "append-only-test",
+            CorrelationId = "foundation-cert"
+        };
+
+        await using (var write = new GameNetDbContext(Options()))
+        {
+            write.AuditEntries.Add(audit);
+            await write.SaveChangesAsync();
+        }
+
+        await using (var mutate = new GameNetDbContext(Options()))
+        {
+            var loaded = await mutate.AuditEntries.SingleAsync(x => x.Id == audit.Id);
+            loaded.Operation = "mutated";
+            Assert.Throws<InvalidOperationException>(() => mutate.SaveChanges());
+            mutate.Entry(loaded).State = EntityState.Unchanged;
+        }
+
+        await using var cleanup = new GameNetDbContext(Options());
+        await cleanup.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from audit_entries where id = {audit.Id};");
+    }
+
+    [Fact]
     public async Task Outbox_claims_are_not_duplicated_across_two_dispatchers()
     {
         await using (var cleanup = new GameNetDbContext(Options()))
@@ -96,7 +152,9 @@ public sealed class PostgresFoundationTests
             "delete from outbox_messages where type = 'foundation-cert';");
     }
 
-    private static async Task InsertIdempotencyAsync()
+    private static Task InsertIdempotencyAsync() => InsertIdempotencyAsync("same-key", "test");
+
+    private static async Task InsertIdempotencyAsync(string key, string operation)
     {
         await using var db = new GameNetDbContext(Options());
 
