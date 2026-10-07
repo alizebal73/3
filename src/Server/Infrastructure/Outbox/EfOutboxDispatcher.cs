@@ -19,7 +19,7 @@ public sealed class EfOutboxDispatcher(GameNetDbContext dbContext, IGameClock cl
         var until = now.Add(leaseDuration);
 
         var ids = await dbContext.Database.SqlQueryRaw<long>($@"
-            SELECT id
+            SELECT id AS "Value"
             FROM outbox_messages
             WHERE published_at_utc IS NULL
               AND (lease_expires_at_utc IS NULL OR lease_expires_at_utc <= {{0}})
