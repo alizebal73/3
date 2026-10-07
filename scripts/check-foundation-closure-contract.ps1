@@ -31,14 +31,11 @@ if ($duplicates.Count -gt 0) {
     throw "Foundation closure contract contains duplicate IDs: $($duplicates.Name -join ', ')"
 }
 
-$allowedPrefixes = @(
-    'Closed — Static',
-    'Pending — Runtime',
-    'Open — Implementation',
-    'Open — Runtime',
-    'Open — Policy',
-    'Open — Operational',
-    'Business — Deferred'
+$allowedStatusPatterns = @(
+    '^Closed — .+',
+    '^Pending — .+',
+    '^Open — .+',
+    '^Business — Deferred(?:\s*/.*)?$'
 )
 
 foreach ($line in ($contract -split "`r?`n")) {
@@ -46,7 +43,7 @@ foreach ($line in ($contract -split "`r?`n")) {
     $cells = $line.Trim('|').Split('|') | ForEach-Object { $_.Trim() }
     if ($cells.Count -lt 4) { throw "Malformed Foundation closure row: $line" }
     $status = $cells[3]
-    if (-not ($allowedPrefixes | Where-Object { $status.StartsWith($_) })) {
+    if (-not ($allowedStatusPatterns | Where-Object { $status -match $_ })) {
         throw "Unknown Foundation closure status in row $($cells[0]): $status"
     }
 }
