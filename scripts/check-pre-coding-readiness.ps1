@@ -66,7 +66,10 @@ if ($moduleCs.Count -gt 0 -or $featureImpl.Count -gt 0) {
     }
 
     $latestCertificationTag = @(
-        & git -C $root for-each-ref --sort=-creatordate --format="%(refname:short)" "refs/tags/foundation-certified-*"
+        $certificationTags |
+            Sort-Object {
+                (& git -C $root for-each-ref --format="%(creatordate:iso8601)" $_) | Select-Object -First 1
+            } -Descending
     ) | Select-Object -First 1
 
     if ([string]::IsNullOrWhiteSpace($latestCertificationTag)) {
