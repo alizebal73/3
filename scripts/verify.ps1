@@ -8,6 +8,7 @@ dotnet --version
 & "$PSScriptRoot/check-source-size.ps1"
 & "$PSScriptRoot/check-architecture.ps1"
 & "$PSScriptRoot/check-foundation-completeness.ps1"
+& "$PSScriptRoot/check-supply-chain.ps1"
 
 dotnet tool restore
 dotnet restore GameNet.slnx
