@@ -13,4 +13,9 @@ public static class ApiErrorCodes
     public const string RateLimited = "rate_limited";
     public const string DependencyUnavailable = "dependency_unavailable";
     public const string Internal = "internal_error";
+    public const string AgentLeaseNotAuthoritative = "agent_lease_not_authoritative";
+    public const string AgentCommandExpired = "agent_command_expired";
+    public const string AgentCommandInProgress = "agent_command_in_progress";
+    public const string AgentCommandReplay = "agent_command_replay";
+    public const string AgentCommandReuseConflict = "agent_command_reuse_conflict";
 }
