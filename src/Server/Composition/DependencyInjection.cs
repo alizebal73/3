@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddSingleton<IGameClock, GameClock>();
         services.AddSingleton<ModuleRegistry>();
         services.AddSingleton<Server.Infrastructure.Hosting.ServerReadiness>();
+        services.AddSingleton<StartupState>();
 
         services.AddScoped<ICurrentActor, HttpCurrentActor>();
         services.AddScoped<IAuditWriter, EfAuditWriter>();
