@@ -8,6 +8,8 @@ This is the approved Foundation skeleton. A feature is not allowed to invent a n
 - src/Desktop: Api, Infrastructure, Localization, Navigation, Shell, Theme, Features and Resources/Languages
 - Desktop features: Home, Agents, Stations, Customers, Sessions, Billing, Wallet, Inventory, Buffet, Tariffs, Vip, Reports, Settings, Users, Approvals, Backup, Audit
 - src/Client/Agent
+- src/Server/Infrastructure/Realtime: durable Agent connection lease boundary
+- src/Shared/Contracts/V1/Protocol/AgentConnection
 - src/Shared: Contracts/V1, Primitives, Api, Errors, Results
 - tests: Server.UnitTests, Server.IntegrationTests, Desktop.Tests, Client.UnitTests, Agent.Tests, Shared.Tests, ContractTests, E2E
 - tests/Postgres.CertificationTests: isolated real-PostgreSQL certification suite, intentionally outside the ordinary solution gate
