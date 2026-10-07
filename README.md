@@ -39,6 +39,10 @@ Clean-slate Windows GameNet/CyberCafe management platform.
 - docs/roadmap/00-pre-coding-roadmap.md
 - docs/roadmap/00-platform-foundation.md
 - docs/operations/foundation-local-certification.md
+- docs/architecture/foundation-closure-matrix.md
+- docs/research/repo2-to-repo3-comprehensive-audit.md
+- docs/development/engineering-workflow.md
+- docs/security/design-review.md
 - scripts/verify.ps1
 
 The first vertical slice is intentionally blocked until Foundation certification is complete.
