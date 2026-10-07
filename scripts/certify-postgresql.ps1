@@ -9,6 +9,6 @@ $env:GAMENET_TEST_DATABASE = $env:GAMENET_DATABASE
 
 dotnet tool restore
 dotnet ef database update --project src\Server\GameNet.Server.csproj --connection $env:GAMENET_DATABASE
-dotnet test tests\Server.IntegrationTests\GameNet.Server.IntegrationTests.csproj --configuration Release --filter "Category=Postgres" --no-restore
+dotnet test tests\Postgres.CertificationTests\GameNet.Postgres.CertificationTests.csproj --configuration Release --no-restore
 
 Write-Host "REAL POSTGRESQL FOUNDATION CERTIFICATION PASSED."
