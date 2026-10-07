@@ -44,8 +44,6 @@ public static class DependencyInjection
         services.AddHostedService<BackgroundJobDispatcher>();
         services.AddHealthChecks();
 
-        services.AddGameNetAuthorization();
-
         services.AddDbContext<GameNetDbContext>((provider, db) =>
         {
             var configuration = provider
