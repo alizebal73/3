@@ -14,7 +14,9 @@ public sealed class AgentTransportOptionsValidator(
                 options.ServerBaseUrl,
                 UriKind.Absolute,
                 out var uri) ||
-            uri.Scheme is not (Uri.UriSchemeHttp or Uri.UriSchemeHttps))
+            uri is null ||
+            (uri.Scheme != Uri.UriSchemeHttp &&
+             uri.Scheme != Uri.UriSchemeHttps))
         {
             return ValidateOptionsResult.Fail(
                 "GameNet:AgentTransport:ServerBaseUrl must be an absolute HTTP or HTTPS URL.");

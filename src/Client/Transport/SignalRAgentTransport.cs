@@ -40,10 +40,14 @@ public sealed class SignalRAgentTransport(
                 _connection = new HubConnectionBuilder()
                     .WithUrl(hubUrl, builder =>
                     {
-                        builder.AccessTokenProvider = () =>
-                            accessTokenProvider.GetAccessTokenAsync(
+                        builder.AccessTokenProvider = async () =>
+                        {
+                            var token = await accessTokenProvider.GetAccessTokenAsync(
                                 identity.DeviceId,
                                 CancellationToken.None);
+
+                            return (string?)token;
+                        };
                     })
                     .WithAutomaticReconnect(new[]
                     {
