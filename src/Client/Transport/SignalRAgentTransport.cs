@@ -97,15 +97,15 @@ public sealed class SignalRAgentTransport(
         AgentHeartbeat heartbeat,
         CancellationToken cancellationToken = default)
     {
-        var connection = _connection
-            ?? throw new InvalidOperationException("Agent transport is not initialized.");
-
         if (!IsConnected)
         {
             await ConnectAsync(
                 _identity ?? throw new InvalidOperationException("Agent identity is not initialized."),
                 cancellationToken);
         }
+
+        var connection = _connection
+            ?? throw new InvalidOperationException("Agent transport is not initialized.");
 
         try
         {
