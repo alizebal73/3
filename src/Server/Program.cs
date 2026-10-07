@@ -7,6 +7,11 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile(
+    "appsettings.foundation.json",
+    optional: false,
+    reloadOnChange: false);
+
 builder.Host.UseWindowsService(options =>
 {
     options.ServiceName = "GameNet Server";
