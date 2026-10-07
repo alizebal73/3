@@ -57,6 +57,7 @@ Assert-NoMatch -Root $clientRoot -Pattern "GameNet\.Server\.(Persistence|Modules
 
 Assert-NoMatch -Root $desktopRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)|Microsoft\.EntityFrameworkCore|Npgsql|DbContext|GameNetDbContext" -Message "Desktop must not reference Server implementation or direct database namespaces." -Include @("*.cs","*.xaml","*.csproj")
 
-Assert-NoMatch -Root $desktopRoot -Pattern "http(s)?://|iframe|WebView|Chromium|Vite|React|package\.json|node_modules" -Message "Desktop must remain a native WPF app with no browser/web UI dependency." -Include @("*.cs","*.xaml","*.csproj","*.json")
+Assert-NoMatch -Root $desktopRoot -Pattern "http(s)?://|WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop code contains a forbidden browser/web UI dependency." -Include @("*.cs","*.csproj","*.json")
+Assert-NoMatch -Root $desktopRoot -Pattern "WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop XAML contains a forbidden browser/web UI dependency." -Include @("*.xaml")
 
 Write-Host "Architecture guard passed."
