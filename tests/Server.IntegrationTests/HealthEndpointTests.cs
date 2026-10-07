@@ -49,10 +49,15 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var body = await response.Content.ReadAsStringAsync();
-        Assert.Contains("ApplicationVersion", body, StringComparison.Ordinal);
-        Assert.Contains("ContractVersion", body, StringComparison.Ordinal);
-        Assert.Contains("DatabaseSchemaVersion", body, StringComparison.Ordinal);
+        var body = await response.Content.ReadFromJsonAsync<
+            GameNet.Shared.Contracts.V1.Api.ApiEnvelope<
+                GameNet.Shared.Contracts.V1.System.BuildInfoResponse>>();
+
+        Assert.NotNull(body);
+        Assert.Equal(GameNet.Shared.Contracts.V1.Api.ContractVersions.V1, body!.ContractVersion);
+        Assert.False(string.IsNullOrWhiteSpace(body.Data.ApplicationVersion));
+        Assert.Equal(GameNet.Shared.Contracts.V1.Api.ContractVersions.V1, body.Data.ContractVersion);
+        Assert.Equal("202610070003_AgentCredentialLifecycle", body.Data.DatabaseSchemaVersion);
     }
 
     [Fact]
