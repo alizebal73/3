@@ -48,6 +48,7 @@ public sealed class AgentHub(
             heartbeat,
             Context.ConnectionId,
             token,
+            TimeSpan.FromSeconds(15),
             Context.ConnectionAborted);
     }
 
@@ -61,7 +62,7 @@ public sealed class AgentHub(
             throw new HubException("Agent device identity does not match the authenticated device.");
 
         var material = Encoding.UTF8.GetBytes(
-            $"{deviceId}|{Context.ConnectionId}|{clock.UtcNow:O}");
+            $"{deviceId}|{Context.ConnectionId}|{request.Reason}");
 
         var hash = Convert.ToHexString(SHA256.HashData(material));
 
