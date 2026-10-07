@@ -87,8 +87,8 @@ function Invoke-ServiceHealthCheck {
     for ($attempt = 1; $attempt -le 20; $attempt++) {
         try {
             $response = Invoke-RestMethod -Uri $Url -Method Get -TimeoutSec 5
-            if ($response.Readiness -eq "Ready" -and
-                $response.Status -eq "Healthy") {
+            if ($response.Readiness -in @("Ready", "ready") -and
+                $response.Status -in @("Healthy", "healthy", "ok")) {
                 return
             }
         }
