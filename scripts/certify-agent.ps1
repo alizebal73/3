@@ -30,8 +30,7 @@ foreach ($name in @(
     "GameNet__AgentTransport__ServerBaseUrl",
     "GameNet__AgentTransport__AllowInsecureHttpForDevelopment",
     "GameNet__AgentIdentity__RootPath",
-    "DOTNET_ENVIRONMENT",
-    "GAMENET_AGENT_DEVICE_ID"
+    "DOTNET_ENVIRONMENT"
 )) { $old[$name] = [Environment]::GetEnvironmentVariable($name) }
 
 try {
@@ -39,7 +38,11 @@ try {
     $env:GameNet__AgentTransport__AllowInsecureHttpForDevelopment = "true"
     $env:GameNet__AgentIdentity__RootPath = $identityRoot
     $env:DOTNET_ENVIRONMENT = "Development"
-    $env:GAMENET_AGENT_DEVICE_ID = $env:GAMENET_AGENT_DEVICE_ID
+
+    @{
+        DeviceId = $env:GAMENET_AGENT_DEVICE_ID
+    } | ConvertTo-Json -Compress |
+        Set-Content -LiteralPath (Join-Path $identityRoot "identity.json") -Encoding utf8
 
     $health = Invoke-RestMethod -Uri "$($serverUrl.TrimEnd('/'))/health" -Method Get -TimeoutSec 10
     if ($health.status -ne "ok" -or $health.readiness -ne "ready") {
