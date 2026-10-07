@@ -161,20 +161,20 @@ public sealed class PostgresBackupStore(
 
         if (restore)
         {
-            startInfo.ArgumentList.Add("--dbname");
-            startInfo.ArgumentList.Add(BuildDatabaseTarget(connection));
-            startInfo.ArgumentList.Add("--no-owner");
             if (listOnly)
             {
                 startInfo.ArgumentList.Add("--list");
+                startInfo.ArgumentList.Add(artifactPath);
             }
             else
             {
+                startInfo.ArgumentList.Add("--dbname");
+                startInfo.ArgumentList.Add(BuildDatabaseTarget(connection));
+                startInfo.ArgumentList.Add("--no-owner");
                 startInfo.ArgumentList.Add("--clean");
                 startInfo.ArgumentList.Add("--if-exists");
+                startInfo.ArgumentList.Add(artifactPath);
             }
-
-            startInfo.ArgumentList.Add(artifactPath);
         }
         else
         {
