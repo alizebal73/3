@@ -142,7 +142,12 @@ public sealed class PostgresBackupStore(
             AfterJson = JsonSerializer.Serialize(new
             {
                 artifact.BackupId,
-                Target = targetConnectionString
+                Target = new
+                {
+                    target.Host,
+                    target.Port,
+                    target.Database
+                }
             })
         });
 
