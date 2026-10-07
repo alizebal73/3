@@ -25,6 +25,7 @@ $requiredFiles = @(
     "src\Shared\Contracts\V1\Protocol\AgentConnection.cs",
     "src\Shared\Contracts\V1\System\ReleaseManifest.cs",
     "src\Client\Agent\AgentIdentity.cs",
+    "src\Client\Identity\AgentIdentityOptions.cs",
     "src\Shared\Api\README.md",
     "src\Shared\Errors\README.md",
     "src\Shared\Results\README.md",
