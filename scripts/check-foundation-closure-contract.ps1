@@ -35,7 +35,28 @@ $allowedStatusPatterns = @(
     '^Closed — .+',
     '^Pending — .+',
     '^Open — .+',
-    '^Business — Deferred(?:\s*/.*)?$'
+    '^Business — Deferred.*
+)
+
+foreach ($line in ($contract -split "`r?`n")) {
+    if ($line -notmatch '^\|\s*(FND-[0-9]{3})\s*\|') { continue }
+    $cells = $line.Trim('|').Split('|') | ForEach-Object { $_.Trim() }
+    if ($cells.Count -lt 4) { throw "Malformed Foundation closure row: $line" }
+    $status = $cells[3]
+    if (-not ($allowedStatusPatterns | Where-Object { $status -match $_ })) {
+        throw "Unknown Foundation closure status in row $($cells[0]): $status"
+    }
+}
+
+if ($matrix -notmatch 'foundation-closure-contract\.md') {
+    throw "Foundation closure matrix must reference the atomic closure contract."
+}
+
+if ($verify -notmatch 'check-foundation-closure-contract\.ps1') {
+    throw "scripts\verify.ps1 must execute the Foundation closure contract guard."
+}
+
+Write-Host "Foundation closure contract guard passed. AtomicRowCount=$($ids.Count)"
 )
 
 foreach ($line in ($contract -split "`r?`n")) {
