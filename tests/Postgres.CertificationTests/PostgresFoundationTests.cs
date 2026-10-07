@@ -426,15 +426,7 @@ public sealed class PostgresFoundationTests
     [Fact]
     public async Task Agent_credential_lifecycle_provisions_authenticates_rotates_and_revokes()
     {
-        const string deviceId = "foundation-credential";
-
-        await using (var cleanup = new GameNetDbContext(Options()))
-        {
-            await cleanup.Database.ExecuteSqlInterpolatedAsync(
-                $"delete from agent_credentials where device_id = {deviceId};");
-            await cleanup.Database.ExecuteSqlInterpolatedAsync(
-                $"delete from audit_entries where actor_id = {deviceId};");
-        }
+        var deviceId = "foundation-credential-" + Guid.NewGuid().ToString("N");
 
         var now = DateTimeOffset.UtcNow;
         await using var db = new GameNetDbContext(Options());
@@ -476,8 +468,6 @@ public sealed class PostgresFoundationTests
 
         await db.Database.ExecuteSqlInterpolatedAsync(
             $"delete from agent_credentials where device_id = {deviceId};");
-        await db.Database.ExecuteSqlInterpolatedAsync(
-            $"delete from audit_entries where actor_id = {deviceId};");
     }
 
     [Fact]
