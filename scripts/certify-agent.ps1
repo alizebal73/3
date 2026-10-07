@@ -44,7 +44,7 @@ try {
         throw "Server is reachable but not ready. Status=$($health.status); Readiness=$($health.readiness)"
     }
 
-    $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $logPath -RedirectStandardError $logPath
+    $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $logPath -RedirectStandardError (Join-Path $identityRoot "agent-error.log")
     try {
         $deadline = (Get-Date).AddSeconds(30)
         while ((Get-Date) -lt $deadline) {
