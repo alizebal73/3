@@ -47,12 +47,14 @@ if (proxyOptions.TrustedProxies.Count > 0)
 }
 
 app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<OperationIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (proxyOptions.Authentication.Enabled)
     app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
