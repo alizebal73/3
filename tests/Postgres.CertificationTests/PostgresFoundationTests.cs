@@ -1,4 +1,5 @@
 using GameNet.Server.Infrastructure.Audit;
+using GameNet.Server.Infrastructure.Backup;
 using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Outbox;
 using GameNet.Server.Infrastructure.Realtime;
@@ -7,6 +8,7 @@ using GameNet.Server.Persistence;
 using GameNet.Server.Persistence.Entities;
 using GameNet.Shared.Contracts.V1.Protocol;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace GameNet.Postgres.CertificationTests;
 
@@ -21,6 +23,45 @@ public sealed class PostgresFoundationTests
             .UseNpgsql(Connection)
             .UseSnakeCaseNamingConvention()
             .Options;
+
+    [Fact]
+    public async Task Backup_store_creates_and_verifies_a_real_postgres_backup()
+    {
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            "gamenet-backup-cert",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(root);
+
+        try
+        {
+            var options = Options.Create(new GameNetOptions
+            {
+                DatabaseConnectionString = Connection,
+                BackupRoot = root,
+                Backup = new BackupOptions()
+            });
+
+            var store = new PostgresBackupStore(
+                options,
+                new FixedClock(DateTimeOffset.UtcNow));
+
+            var artifact = await store.CreateAsync();
+
+            Assert.True(File.Exists(artifact.FilePath));
+            Assert.True(artifact.SizeBytes > 0);
+            Assert.Matches("^[0-9A-F]{64}$", artifact.Sha256);
+            Assert.True(await store.VerifyAsync(artifact));
+
+            File.Delete(artifact.FilePath);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
 
     [Fact]
     public async Task Clean_database_is_reachable_and_migrated()
