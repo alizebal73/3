@@ -62,7 +62,7 @@ Invoke-Checked -FilePath "dotnet" -ArgumentList @("test", "GameNet.slnx", "--con
 
 Write-Host "BUILD GATE: Release build passed."
 Write-Host "TEST GATE: Release test suite passed."
-Write-Host "LOCAL FOUNDATION VERIFICATION PASSED."
+Write-Host "LOCAL FOUNDATION BUILD/STRUCTURE GATE PASSED."
 Write-Host "Next required evidence on Windows:"
 Write-Host "1. launch src/Desktop/GameNet.Desktop.csproj and verify native window + fa/en direction;"
 Write-Host "2. start a clean PostgreSQL instance and apply/validate migrations;"
