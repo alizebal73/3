@@ -1,6 +1,8 @@
 using GameNet.Desktop.Api;
 using GameNet.Desktop.Localization;
 using GameNet.Desktop.Shell;
+using GameNet.Desktop.UI.Services;
+using GameNet.Desktop.UI.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,6 +16,8 @@ public static class DesktopHost
     {
         var builder = Host.CreateApplicationBuilder();
 
+        builder.Services.AddSingleton(TimeProvider.System);
+
         builder.Services
             .AddOptions<DesktopOptions>()
             .BindConfiguration(DesktopOptions.SectionName)
@@ -26,6 +30,8 @@ public static class DesktopHost
             .ValidateOnStart();
 
         builder.Services.AddSingleton<LanguageService>();
+        builder.Services.AddSingleton<ServerConnectivityMonitor>();
+        builder.Services.AddSingleton<ShellViewModel>();
 
         builder.Services.AddHttpClient<IGameNetServerClient, GameNetServerClient>((provider, client) =>
         {
