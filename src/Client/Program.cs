@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Services.AddSingleton(TimeProvider.System);
+
 builder.Services.AddWindowsService(options =>
 {
     options.ServiceName = "GameNet Agent";
