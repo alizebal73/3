@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace GameNet.Server.Persistence.Migrations;
 
+[DbContext(typeof(GameNetDbContext))]
 [Migration("202610070001_FoundationInfrastructure")]
 public partial class FoundationInfrastructure : Migration
 {
