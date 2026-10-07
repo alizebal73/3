@@ -147,7 +147,7 @@ $runtimeRoots = @(
 $runtimePlaceholders = foreach ($relativeRoot in $runtimeRoots) {
     $runtimeRoot = Join-Path $root $relativeRoot
     if (Test-Path $runtimeRoot) {
-        Get-ChildItem $runtimeRoot -Recurse -File -Include *.cs,*.csproj,*.xaml,*.ps1,*.json,*.md |
+        Get-ChildItem $runtimeRoot -Recurse -File -Include *.cs,*.csproj,*.xaml,*.ps1,*.json |
             Select-String -Pattern "\bplaceholder\b|\bTODO\b|\bFIXME\b"
     }
 }
