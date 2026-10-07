@@ -83,7 +83,22 @@ The evidence records exact Git revision, machine, OS, tool versions and SHA-256 
 
 Environment-variable presence is only prerequisite metadata; it is never accepted as proof that a certification scenario passed.
 
-## 6. Deployment and release gates
+## 6. Foundation certification tag
+
+After every required Foundation runtime/recovery/release-proof scenario passes, review `artifacts\foundation\foundation-evidence.json` and record the exact certified Git SHA.
+
+Create an immutable ancestry marker on that exact SHA:
+
+```powershell
+$sha = (git rev-parse HEAD).Trim()
+$tag = "foundation-certified-$($sha.Substring(0,12))"
+git tag -a $tag $sha -m "GameNet Foundation certified at $sha"
+git push origin $tag
+```
+
+The pre-coding gate allows business implementation only when the current commit has an ancestor matching `foundation-certified-*`. This prevents Foundation certification from becoming a verbal/manual promise.
+
+## 7. Deployment and release gates
 
 Before sign-off, on the same approved Windows environment:
 - generate idempotent migration SQL;
