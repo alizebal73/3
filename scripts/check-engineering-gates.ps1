@@ -56,16 +56,16 @@ foreach ($project in $testProjects) {
     $projectFullPath = [System.IO.Path]::GetFullPath($project.FullName)
     $relative = [System.IO.Path]::GetRelativePath($root, $projectFullPath).Replace([string][char]92, "/")
     [xml]$projectXml = Get-Content $project.FullName -Raw
+
     $isTestProject = @($projectXml.Project.PropertyGroup.IsTestProject) |
         Where-Object { "$_" -eq "true" } |
         Select-Object -First 1
-
     if (-not $isTestProject) {
         throw "Test project is not explicitly marked IsTestProject=true: $relative"
     }
 
     $packageText = Get-Content $project.FullName -Raw
-    if ($packageText -notmatch 'Microsoft.NET.Test.Sdk') {
+    if ($packageText -notmatch '<PackageReference Include="Microsoft\.NET\.Test\.Sdk"') {
         throw "Test project is missing Microsoft.NET.Test.Sdk: $relative"
     }
 
@@ -73,9 +73,31 @@ foreach ($project in $testProjects) {
         throw "Test project is missing xunit: $relative"
     }
 
-    if ($solutionProjects -notcontains $projectFullPath.Replace([string][char]92, "/")) {
-        throw "Test project is missing from GameNet.slnx: $relative"
+    $isCertificationProject = @($projectXml.Project.PropertyGroup.GameNetCertificationProject) |
+        Where-Object { "$_" -eq "true" } |
+        Select-Object -First 1
+
+    if ($isCertificationProject) {
+        if ($solutionProjects -contains $projectFullPath.Replace([string][char]92, "/")) {
+            throw "Environment certification project must not be part of the normal GameNet.slnx test gate: $relative"
+        }
     }
+    elseif ($solutionProjects -notcontains $projectFullPath.Replace([string][char]92, "/")) {
+        throw "Normal test project is missing from GameNet.slnx: $relative"
+    }
+}
+
+$certificationProjects = @($testProjects | Where-Object {
+    [xml]$xml = Get-Content $_.FullName -Raw
+    @($xml.Project.PropertyGroup.GameNetCertificationProject) -contains "true"
+})
+if ($certificationProjects.Count -eq 0) {
+    throw "At least one explicit Foundation certification test project must exist."
+}
+
+$pgScript = Get-Content (Join-Path $root "scripts\certify-postgresql.ps1") -Raw
+if ($pgScript -notmatch "Postgres\.CertificationTests\\GameNet\.Postgres\.CertificationTests\.csproj") {
+    throw "PostgreSQL certification script is not wired to the certification test project."
 }
 
 Write-Host "Engineering gate contract passed: workflow, canonical verification and all test projects are aligned."
