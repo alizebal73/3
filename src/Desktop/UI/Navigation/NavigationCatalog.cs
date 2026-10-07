@@ -4,21 +4,21 @@ public static class NavigationCatalog
 {
     public static IReadOnlyList<NavigationItem> Items { get; } =
     [
-        new("home", "NavHome", "⌂"),
-        new("stations", "NavStations", "▣"),
-        new("customers", "NavCustomers", "◉"),
-        new("sessions", "NavSessions", "◷"),
-        new("billing", "NavBilling", "₼"),
-        new("wallet", "NavWallet", "◈"),
-        new("inventory", "NavInventory", "▤"),
-        new("buffet", "NavBuffet", "◫"),
-        new("tariffs", "NavTariffs", "◌"),
-        new("vip", "NavVip", "★"),
-        new("reports", "NavReports", "▥"),
-        new("approvals", "NavApprovals", "✓"),
-        new("users", "NavUsers", "◍"),
-        new("backup", "NavBackup", "↥"),
-        new("audit", "NavAudit", "≡"),
-        new("settings", "NavSettings", "⚙")
+        new("home", "NavHome", "⌂", string.Empty),
+        new("stations", "NavStations", "▣", string.Empty),
+        new("customers", "NavCustomers", "◉", string.Empty),
+        new("sessions", "NavSessions", "◷", string.Empty),
+        new("billing", "NavBilling", "₼", string.Empty),
+        new("wallet", "NavWallet", "◈", string.Empty),
+        new("inventory", "NavInventory", "▤", string.Empty),
+        new("buffet", "NavBuffet", "◫", string.Empty),
+        new("tariffs", "NavTariffs", "◌", string.Empty),
+        new("vip", "NavVip", "★", string.Empty),
+        new("reports", "NavReports", "▥", string.Empty),
+        new("approvals", "NavApprovals", "✓", string.Empty),
+        new("users", "NavUsers", "◍", string.Empty),
+        new("backup", "NavBackup", "↥", string.Empty),
+        new("audit", "NavAudit", "≡", string.Empty),
+        new("settings", "NavSettings", "⚙", string.Empty)
     ];
 }
