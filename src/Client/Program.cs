@@ -17,7 +17,7 @@ builder.Services
     .BindConfiguration(AgentTransportOptions.SectionName)
     .Validate(options =>
         Uri.TryCreate(options.ServerBaseUrl, UriKind.Absolute, out var uri) &&
-        uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps,
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps),
         "GameNet:AgentTransport:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
     .Validate(options => options.HeartbeatIntervalSeconds is >= 2 and <= 60,
         "HeartbeatIntervalSeconds must be between 2 and 60.")
