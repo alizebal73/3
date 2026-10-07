@@ -259,6 +259,42 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Expired_idempotency_owner_cannot_complete_after_lease_expiry()
+    {
+        await using var cleanup = new GameNetDbContext(Options());
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'expired-complete';");
+
+        var createdAt = DateTimeOffset.UtcNow.AddMinutes(-10);
+        var oldLease = createdAt.AddMinutes(1);
+
+        await cleanup.Database.ExecuteSqlInterpolatedAsync($"""
+            insert into idempotency_records
+                (scope, key, operation, state, lease_token, status_code, response_json,
+                 created_at_utc, lease_expires_at_utc, expires_at_utc)
+            values
+                ({"foundation-cert"}, {"expired-complete"}, {"operation-one"}, {"processing"},
+                 {"old-token"}, {0}, {("{}")}, {createdAt}, {oldLease}, {createdAt.AddHours(1)});
+            """);
+
+        await using var db = new GameNetDbContext(Options());
+        var store = new EfIdempotencyStore(
+            db,
+            new FixedClock(DateTimeOffset.UtcNow));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            store.CompleteAsync(
+                "foundation-cert",
+                "expired-complete",
+                "old-token",
+                200,
+                "{}"));
+
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from idempotency_records where scope = 'foundation-cert' and key = 'expired-complete';");
+    }
+
+    [Fact]
     public async Task Outbox_claims_are_not_duplicated_across_two_dispatchers()
     {
         await using (var cleanup = new GameNetDbContext(Options()))
