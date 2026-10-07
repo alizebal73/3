@@ -1,8 +1,16 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+function Invoke-CheckedDotnet {
+    param([string[]]$Arguments)
+    & dotnet @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "dotnet failed with exit code \${LASTEXITCODE}: dotnet $($Arguments -join ' ')"
+    }
+}
+
 $project = "src\Desktop\GameNet.Desktop.csproj"
-dotnet build $project --configuration Release
+Invoke-CheckedDotnet -Arguments @("build", $project, "--configuration", "Release")
 
 $exe = Join-Path (Resolve-Path ".").Path "src\Desktop\bin\Release\net10.0-windows\GameNet.Manager.Desktop.exe"
 if (-not (Test-Path $exe)) {
