@@ -40,4 +40,4 @@ A `backup.restored` audit event is written without recording connection password
 
 ## Retention
 
-Retention policy is configuration-driven and auditable. Deletion of retained backups requires explicit authorization.
+Retention is an explicit open policy decision. The implementation must not silently choose a retention period. Once approved, retention/deletion operations must be auditable and require explicit authorization.
