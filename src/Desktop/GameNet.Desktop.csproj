@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>GameNet.Desktop</RootNamespace>
+    <AssemblyName>GameNet.Manager.Desktop</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UICulture>en-US</UICulture>
+    <EnableDefaultApplicationDefinition>true</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\GameNet.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

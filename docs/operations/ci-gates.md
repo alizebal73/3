@@ -1,15 +1,18 @@
-# CI Foundation Gates
+# Local Quality Gates
 
-The single CI workflow must enforce:
-1. toolchain baseline
-2. architecture guard
-3. source-size guard
-4. dotnet tool restore
-5. restore
-6. release build
-7. tests
-8. deterministic Dashboard install with npm ci
-9. Dashboard typecheck
-10. Dashboard production build
+GameNet 3 has no remote CI workflow.
 
-A green CI result is necessary but not sufficient for feature completion. Business features also need integration, concurrency, retry/idempotency, authorization, audit and recovery coverage.
+The local quality gate is:
+
+1. platform skeleton;
+2. architecture guard;
+3. source-size guard;
+4. Foundation completeness;
+5. .NET restore;
+6. Release build;
+7. all tests;
+8. native Desktop build.
+
+GitHub status is never treated as evidence that the program works.
+
+The approved Windows machine is the only certification environment for build, test and release evidence.

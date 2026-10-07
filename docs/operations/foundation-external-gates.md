@@ -1,33 +1,51 @@
-# Foundation External Gates
+# Foundation Certification Gates
 
-These items require the approved Windows build environment or GitHub repository settings.
+There is no GitHub Actions execution dependency for GameNet 3.
 
-## Repo 3 runner
+GitHub is used for source control, review and history only. Build, restore, test, migration generation and certification are performed on the approved Windows machine.
 
-Runner requirements:
-- self-hosted
-- Windows
-- X64
-- .NET 10 SDK matching global.json
-- Node 22.12+ matching .nvmrc/engines
-- PostgreSQL client/server access for integration work
+## Required local environment
 
-The runner must be connected to repository 3, not repository 2.
+- Windows x64.
+- .NET 10 SDK matching global.json.
+- PostgreSQL access for database integration certification.
+- WPF desktop build support.
 
-## Dashboard lockfile
+## Local certification
 
-Run scripts/bootstrap-dashboard-lock.ps1 on the approved build runner, review package-lock.json, commit it, and keep CI on npm ci.
+Run:
 
-## PostgreSQL
+scripts/verify.ps1
 
-Set GAMENET_DATABASE_CONNECTION on the build/test environment before generating migrations or running database-backed integration tests.
+This verifies:
+1. platform/project skeleton;
+2. architecture boundaries;
+3. source-size limits;
+4. Foundation completeness;
+5. .NET restore;
+6. Release build;
+7. all tests;
+8. desktop build.
 
-Use scripts/create-migration.ps1 for reviewed EF migrations.
+## PostgreSQL certification
 
-## GitHub protection
+Before the first business vertical slice:
+- configure GAMENET_DATABASE_CONNECTION on the local build/test machine;
+- generate the first migration with scripts/create-migration.ps1;
+- review the migration;
+- apply it to a clean PostgreSQL database;
+- execute database-backed integration tests and concurrency tests.
 
-Activate branch protection/rules on main and develop using docs/operations/github-settings.md.
+## Desktop certification
 
-## Certification
+The local machine must produce a native Windows executable from src/Desktop/GameNet.Desktop.csproj.
 
-The final foundation commit is certified only after the exact commit passes the complete CI workflow on the repo 3 runner.
+The application must launch as a normal Windows process and must not require a browser.
+
+Both fa-IR and en-US must load from application resources.
+
+## Release gate
+
+The Foundation is not certified until the exact final commit passes scripts/verify.ps1 on the approved local Windows machine and the PostgreSQL certification is complete.
+
+Until then, no business feature may start.

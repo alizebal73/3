@@ -1,24 +1,16 @@
-# GitHub repository settings
+# GitHub Source-Control Policy
 
-The codebase defines the desired repository policy, but the current GitHub connector exposes repository/rules reads and not the write operation for branch protection.
+GitHub is source control for GameNet 3, not the execution environment.
 
-Apply once in GitHub:
+Repository policy:
+- main remains releasable.
+- develop is the integration branch.
+- normal work uses short-lived feature/*, fix/*, refactor/* or chore/* branches.
+- Foundation branches are temporary and must not become permanent stage branches.
+- squash merge is preferred.
+- force-pushes to shared branches should be disabled.
+- pull requests are preferred for integration.
 
-## main
-- Require a pull request before merging.
-- Require the `GameNet 3 CI / quality-gate` check to pass.
-- Require the branch to be up to date before merging.
-- Block force-pushes.
-- Do not allow direct pushes for normal development.
+There is intentionally no GitHub Actions workflow. The authoritative build/test result comes from the approved Windows machine running scripts/verify.ps1.
 
-## develop
-- Require pull request for feature/fix branches.
-- Require `GameNet 3 CI / quality-gate`.
-- Block force-pushes.
-
-## Merge strategy
-Prefer squash merge for feature/fix branches.
-
-## CI
-The repository intentionally has one workflow: `.github/workflows/ci.yml`.
-It targets the self-hosted Windows/X64 runner.
+The repository should never contain secrets, machine-local credentials or generated release artifacts that belong outside source control.

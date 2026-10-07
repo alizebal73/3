@@ -2,8 +2,13 @@
 
 ## Repository-enforced
 
+- complete native Desktop project skeleton
+- complete Server module skeleton
+- complete Agent/Shared/Test skeleton
+- desktop localization resources for fa-IR and en-US
 - source-size guard
 - architecture dependency guard
+- platform-skeleton guard
 - Foundation completeness guard
 - Shared V1 contracts
 - Money and operation IDs
@@ -17,19 +22,22 @@
 - durable transactional outbox writer boundary
 - serializable transaction coordinator with transient retry
 - Agent command, acknowledgement, heartbeat and reconciliation contracts
+- transaction side-effect rules
 - background-job boundary
-- recovery, security, observability and compatibility policy
-- dotnet-ef tool manifest
-- one CI workflow
+- recovery, security, configuration, compatibility, domain and observability policy
 - no placeholder tests
+- no browser Dashboard project
+- no GitHub Actions execution dependency
 
-## External certification
+## Local certification
 
-- connect repo 3 self-hosted Windows/X64 runner
-- generate and commit package-lock.json
-- activate GitHub main/develop protection
+- run scripts/verify.ps1 on the approved Windows machine
+- restore/build/test the entire solution locally
+- produce the native Desktop executable
+- verify fa-IR and en-US resource loading
 - configure a real PostgreSQL test database
 - generate and review the first migration against a clean database
-- run the exact foundation merge commit green in CI
+- run database-backed integration and concurrency tests
+- perform recovery/restore smoke tests
 
-No business code is permitted until every repository-enforced item and every external certification gate is satisfied.
+No business feature is permitted until every repository-enforced item and every local certification item is satisfied.

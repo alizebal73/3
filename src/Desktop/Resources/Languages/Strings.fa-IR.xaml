@@ -1,0 +1,13 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <sys:String x:Key="AppTitle">GameNet Manager 3</sys:String>
+    <sys:String x:Key="FoundationLabel">پایه برنامه دسکتاپ</sys:String>
+    <sys:String x:Key="FoundationReady">پوسته ویندوزی برنامه آماده است</sys:String>
+    <sys:String x:Key="FoundationMessage">این برنامه یک پردازش واقعی ویندوزی است و در مرورگر اجرا نمی‌شود. تا زمانی که پایه معماری، تست محلی، PostgreSQL و ساختار کامل پروژه تأیید نشوند هیچ قابلیت کسب‌وکاری اضافه نخواهد شد.</sys:String>
+    <sys:String x:Key="ArchitectureRule">سرور منبع حقیقت است؛ برنامه دسکتاپ فقط مصرف‌کننده API سرور است و رابط مرورگری نداریم.</sys:String>
+    <sys:String x:Key="LanguageEnglish">English</sys:String>
+    <sys:String x:Key="LanguagePersian">فارسی</sys:String>
+</ResourceDictionary>

@@ -3,40 +3,41 @@
 ## Implemented in repository
 
 - Modular-monolith composition boundary.
-- Explicit module folder boundaries.
-- Architecture rules and CI architecture guard.
+- Explicit Server module folder boundaries.
+- Native Windows WPF Desktop project and shell.
+- Persian/English UI resources with RTL/LTR foundation.
 - Shared V1 system, Agent protocol and permission contracts.
 - Money, CorrelationId, CommandId and IdempotencyKey primitives.
 - PostgreSQL EF Core provider and DbContext boundary.
-- Serializable transaction coordinator with bounded retry for PostgreSQL serialization/deadlock failures.
+- Serializable transaction coordinator with bounded PostgreSQL serialization/deadlock retry.
 - Idempotency persistence boundary.
 - Audit persistence boundary.
-- JWT authentication validation and current-actor foundation.
+- JWT validation and current-actor foundation.
 - Correlation and exception middleware.
 - Business-time clock abstraction.
 - Durable transactional outbox writer boundary.
 - Background-job queue and dispatcher boundary.
-- Transaction-side-effect rules.
+- Transaction side-effect rules.
 - Recovery, security, configuration, compatibility, domain and observability specifications.
-- dotnet-ef local tool manifest.
-- CI architecture/source-size/foundation-completeness gates and deterministic dashboard verification.
-- Exactly one CI workflow.
+- Platform-skeleton, architecture, source-size and Foundation-completeness guards.
+- Local-only verification script; no remote CI execution dependency.
 - Placeholder Foundation tests removed.
-- Main remains free of business features.
+- No business implementation in Server Modules.
 
-## Not yet claimed complete
+## Not yet certified
 
-- No Customer, Station, Session, Billing, Inventory or other business mutation.
-- No business database migration is claimed; migration will be generated and reviewed before the first vertical slice.
-- No real user/token issuance flow; JWT validation is infrastructure only.
-- No durable distributed job scheduler; current background queue is process-local.
-- No SignalR hub or transport-specific Agent command dispatcher; only protocol contracts and durable outbox persistence exist.
-- No durable Agent connection lease implementation; this belongs with the first Agent vertical slice.
-- No real E2E business workflow.
-- package-lock.json still needs generation on the approved Node environment.
-- GitHub branch protection/rulesets remain an external repository setting.
-- CI cannot be certified green until repo 3 has its self-hosted runner connected.
+- Local Windows restore/build/test of the complete solution.
+- Native Desktop executable launch verification.
+- fa-IR and en-US runtime verification on the local Windows machine.
+- Real PostgreSQL integration environment.
+- First migration generated/reviewed/applied to a clean PostgreSQL database.
+- Database-backed concurrency tests.
+- Recovery/restore smoke tests.
+- Durable Agent connection lease and transport implementation.
+- Real E2E business workflow.
 
 ## Policy
 
 No business feature is considered complete without Domain Rule, Use Case, Persistence, Contract, Authorization, Audit, Unit, Integration, Concurrency, Retry/Idempotency and Failure/Recovery coverage.
+
+No business Feature branch may start until the remaining Foundation certification items are proven locally.

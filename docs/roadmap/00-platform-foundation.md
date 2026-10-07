@@ -1,6 +1,6 @@
 # Stage 0 — Platform Foundation
 
-No business feature is started until the foundation gates below are satisfied.
+No business feature is started until every Foundation gate below is satisfied.
 
 Required foundation:
 1. Product/domain specification and module ownership.
@@ -11,25 +11,30 @@ Required foundation:
 6. Transaction, concurrency and idempotency infrastructure.
 7. Authentication and authorization foundation.
 8. Audit infrastructure.
-9. Agent realtime command, acknowledgement and state protocol.
+9. Agent protocol, acknowledgement and reconciliation contracts.
 10. Recovery and reconciliation rules.
 11. Background-job boundary.
 12. Observability and correlation IDs.
 13. Configuration and secret provisioning rules.
 14. Test infrastructure.
-15. Architecture enforcement.
-16. CI and repository protection.
-17. Release compatibility and rollback foundation.
+15. Architecture and platform-skeleton enforcement.
+16. Native Windows Desktop application foundation.
+17. Persian/English localization foundation.
+18. Local-only build/test/certification process.
+19. Release compatibility and rollback foundation.
 
 Exit gates:
-- dedicated self-hosted Windows/X64 runner for repo 3
-- exact-commit CI green
-- active main/develop protection
-- committed package-lock.json and npm ci in CI
-- architecture guard green
-- PostgreSQL-backed integration lane executable
-- migration strategy tested on a clean database
-- no fake green E2E
+- complete source/project/module skeleton;
+- native WPF Desktop builds locally;
+- both fa-IR and en-US resources load;
+- architecture and platform-skeleton guards pass;
+- solution restore/build/test passes locally;
+- real PostgreSQL integration lane is executable;
+- migration strategy is tested on a clean database;
+- transaction/idempotency/outbox rules are tested where applicable;
+- no fake-green placeholder tests;
+- no browser Dashboard or Node/Vite pipeline remains;
+- no GitHub Actions execution dependency.
 
-Only then start:
+Only then start the first business vertical slice:
 Station -> Customer -> Agent -> Customer Login -> Session -> Timing -> Transfer -> Invoice -> Payment -> Audit.

@@ -1,9 +1,19 @@
-# Testing Policy
+# Local Testing Rule
 
-Unit tests cover pure domain rules.
-Integration tests cover HTTP, database, SignalR, and concurrency boundaries.
-Contract tests protect Shared API shapes.
-E2E tests cover real operator workflows.
+All authoritative test runs happen on the approved Windows machine.
 
-Every fix must reproduce the bug before the fix and stay green afterward.
-Test happy path, invalid input, authorization, identity mismatch, concurrency, retry/idempotency, and rollback where applicable.
+The normal command is:
+
+scripts/verify.ps1
+
+Do not use GitHub Actions as build/test evidence.
+
+Before business features:
+- platform skeleton must pass;
+- architecture guard must pass;
+- solution must restore/build/test locally;
+- native Desktop project must build;
+- both UI cultures must be loadable;
+- PostgreSQL certification must pass when database-backed tests exist.
+
+A remote green check never overrides a local failing test.

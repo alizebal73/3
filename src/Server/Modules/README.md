@@ -1,8 +1,15 @@
-# Server modules
+# Server Modules
 
-Each module owns Domain, Application, Infrastructure, Api, and tests.
+Every business module owns:
+- Domain
+- Application
+- Infrastructure
+- Api
+- tests/contract coverage as appropriate
 
 Planned modules:
-Customers, Stations, Agents, Sessions, Billing, Wallet, Inventory, Buffet, VIP, Users/Auth, Reports, Settings, Approvals, Backup.
+Agents, Approvals, Auth, Backup, Billing, Buffet, Customers, Inventory, Reports, Sessions, Settings, Stations, Tariffs, Users, VIP, Wallet.
 
-Do not put business implementations in Program.cs.
+No business implementation is allowed during Foundation.
+
+Modules may not access one another's internal namespaces or database sets. Cross-module collaboration uses explicit contracts.

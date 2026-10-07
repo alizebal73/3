@@ -2,10 +2,12 @@
   <Project Path="src/Shared/GameNet.Shared.csproj" />
   <Project Path="src/Server/GameNet.Server.csproj" />
   <Project Path="src/Client/GameNet.Agent.csproj" />
+  <Project Path="src/Desktop/GameNet.Desktop.csproj" />
   <Project Path="tests/Server.IntegrationTests/GameNet.Server.IntegrationTests.csproj" />
   <Project Path="tests/Shared.Tests/GameNet.Shared.Tests.csproj" />
   <Project Path="tests/Agent.Tests/GameNet.Agent.Tests.csproj" />
   <Project Path="tests/Server.UnitTests/GameNet.Server.UnitTests.csproj" />
   <Project Path="tests/Client.UnitTests/GameNet.Client.UnitTests.csproj" />
   <Project Path="tests/ContractTests/GameNet.ContractTests.csproj" />
+  <Project Path="tests/Desktop.Tests/GameNet.Desktop.Tests.csproj" />
 </Solution>
