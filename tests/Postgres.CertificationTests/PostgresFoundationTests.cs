@@ -45,9 +45,12 @@ public sealed class PostgresFoundationTests
                 Backup = new BackupOptions()
             });
 
+            await using var auditDb = new GameNetDbContext(Options());
             var store = new PostgresBackupStore(
                 options,
-                new FixedClock(DateTimeOffset.UtcNow));
+                new FixedClock(DateTimeOffset.UtcNow),
+                auditDb,
+                new EfAuditWriter(auditDb));
 
             var artifact = await store.CreateAsync();
 
