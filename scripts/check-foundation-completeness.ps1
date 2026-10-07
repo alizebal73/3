@@ -182,9 +182,9 @@ foreach ($relativePath in $forbiddenRuntimeWords) {
 }
 
 $docRoots = @(
-    Join-Path $root "docs\architecture",
-    Join-Path $root "docs\security",
-    Join-Path $root "docs\contracts"
+    (Join-Path $root "docs\architecture"),
+    (Join-Path $root "docs\security"),
+    (Join-Path $root "docs\contracts")
 )
 
 foreach ($docRoot in $docRoots) {
