@@ -42,7 +42,7 @@ public sealed class ServerConnectivityMonitor(
 
         try
         {
-            State.Busy = UiBusyState.Busy;
+            State.Busy = UiBusyState.Loading;
 
             var health = await serverClient.GetHealthAsync(cancellationToken);
 
