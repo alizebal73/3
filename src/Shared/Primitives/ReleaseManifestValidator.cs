@@ -9,8 +9,10 @@ public static partial class ReleaseManifestValidator
     {
         ArgumentNullException.ThrowIfNull(manifest);
 
-        if (!Version.TryParse(manifest.ProductVersion, out _))
-            throw new ArgumentException("ProductVersion must be a valid semantic version.", nameof(manifest));
+        if (!SemanticVersionRegex().IsMatch(manifest.ProductVersion))
+            throw new ArgumentException(
+                "ProductVersion must be a valid semantic version.",
+                nameof(manifest));
 
         if (manifest.SchemaVersion < 0)
             throw new ArgumentOutOfRangeException(nameof(manifest.SchemaVersion));
@@ -70,6 +72,11 @@ public static partial class ReleaseManifestValidator
 
     private static string NormalizePath(string value) =>
         value.Replace('\\', '/').TrimStart('/');
+
+    [GeneratedRegex(
+        "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+        RegexOptions.CultureInvariant)]
+    private static partial Regex SemanticVersionRegex();
 
     [GeneratedRegex("^[0-9a-fA-F]{64}$", RegexOptions.CultureInvariant)]
     private static partial Regex Sha256Regex();
