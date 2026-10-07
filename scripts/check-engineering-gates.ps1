@@ -46,7 +46,7 @@ foreach ($required in $verifyRequirements) {
 
 foreach ($docRule in @(
     @{ Path = $branchPolicyPath; Forbidden = @('- develop is the integration branch.', 'manual-only') },
-    @{ Path = $branchingPath; Forbidden = @('long-lived `develop` branch') }
+    @{ Path = $branchingPath; Forbidden = @('develop is the integration branch.') }
 )) {
     $docText = Get-Content $docRule.Path -Raw
     foreach ($forbidden in $docRule.Forbidden) {
