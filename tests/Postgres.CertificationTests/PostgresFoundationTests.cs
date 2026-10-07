@@ -354,17 +354,15 @@ public sealed class PostgresFoundationTests
         cleanup.OutboxMessages.Add(message);
         await cleanup.SaveChangesAsync();
 
-        var dispatcher = new EfOutboxDispatcher(
-            cleanup,
-            new FixedClock(clockNow));
+        var clock = new MutableClock(clockNow);
+        var dispatcher = new EfOutboxDispatcher(cleanup, clock);
 
         var claimed = await dispatcher.ClaimBatchAsync(
             1,
-            TimeSpan.FromMilliseconds(1));
+            TimeSpan.FromSeconds(1));
 
         var lease = Assert.Single(claimed);
-
-        await Task.Delay(25);
+        clock.UtcNow = clockNow.AddSeconds(2);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             dispatcher.MarkPublishedAsync(
@@ -439,5 +437,12 @@ public sealed class PostgresFoundationTests
         public DateTimeOffset UtcNow => now;
         public DateTimeOffset LocalNow => now;
         public DateOnly BusinessDate => DateOnly.FromDateTime(now.Date);
+    }
+
+    private sealed class MutableClock(DateTimeOffset now) : IGameClock
+    {
+        public DateTimeOffset UtcNow { get; set; } = now;
+        public DateTimeOffset LocalNow => UtcNow;
+        public DateOnly BusinessDate => DateOnly.FromDateTime(UtcNow.Date);
     }
 }
