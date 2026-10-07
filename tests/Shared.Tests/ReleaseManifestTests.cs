@@ -15,6 +15,21 @@ public sealed class ReleaseManifestTests
     }
 
     [Fact]
+    public void Semantic_version_prerelease_is_accepted()
+    {
+        ReleaseManifestValidator.Validate(
+            CreateManifestWithVersion("1.2.3-rc.1"));
+    }
+
+    [Fact]
+    public void Non_semantic_version_is_rejected()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            ReleaseManifestValidator.Validate(
+                CreateManifestWithVersion("1.2")));
+    }
+
+    [Fact]
     public async Task Release_package_files_are_verified()
     {
         var root = Path.Combine(Path.GetTempPath(), "gamenet-release-test", Guid.NewGuid().ToString("N"));
@@ -98,7 +113,22 @@ public sealed class ReleaseManifestTests
             ReleaseManifestValidator.Validate(manifest));
     }
 
+    private static ReleaseManifest CreateManifestWithVersion(
+        string version,
+        params ReleaseFileEntry[] files) =>
+        new(
+            version,
+            1,
+            "v1",
+            1,
+            1,
+            1,
+            files.Length == 0
+                ? [new ReleaseFileEntry("server/GameNet.dll", new string('a', 64), 1)]
+                : files);
+
     private static ReleaseManifest CreateManifest(params ReleaseFileEntry[] files) =>
+
         new(
             "1.0.0",
             1,
