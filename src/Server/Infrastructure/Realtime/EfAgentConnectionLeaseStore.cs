@@ -108,6 +108,36 @@ public sealed class EfAgentConnectionLeaseStore(
             cancellationToken);
     }
 
+    public async Task<bool> IsCurrentOwnerAsync(
+        string deviceId,
+        string connectionId,
+        string leaseToken,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
+
+        var now = clock.UtcNow;
+
+        return await dbContext.Database.SqlQueryRaw<bool>(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM agent_connection_leases
+                WHERE device_id = {0}
+                  AND connection_id = {1}
+                  AND lease_token = {2}
+                  AND lease_expires_at_utc > {3}
+            ) AS "Value"
+            """,
+            deviceId,
+            connectionId,
+            leaseToken,
+            now)
+            .SingleAsync(cancellationToken);
+    }
+
     private async Task<AgentConnectionLeaseState?> TryAcquireWithinTransactionAsync(
         AgentConnectionLeaseRequest request,
         TimeSpan leaseDuration,
