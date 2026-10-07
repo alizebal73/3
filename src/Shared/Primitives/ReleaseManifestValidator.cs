@@ -62,7 +62,7 @@ public static partial class ReleaseManifestValidator
             normalized.StartsWith("../", StringComparison.Ordinal) ||
             normalized == ".." ||
             normalized.Contains("/../", StringComparison.Ordinal) ||
-            normalized.Contains(':', StringComparison.Ordinal))
+            normalized.Contains(':'))
         {
             throw new ArgumentException($"Release file path must stay inside the package: {value}");
         }
