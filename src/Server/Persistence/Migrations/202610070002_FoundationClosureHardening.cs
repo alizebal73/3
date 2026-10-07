@@ -16,7 +16,10 @@ public partial class FoundationClosureHardening : Migration
                 connection_id = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                 lease_token = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                 lease_expires_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                updated_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                updated_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                last_heartbeat_at_utc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                agent_version = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                station_state = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
             },
             constraints: table => table.PrimaryKey("PK_agent_connection_leases", x => x.device_id));
 
