@@ -96,5 +96,7 @@ public sealed class OutboxDeliveryFoundationTests
     private sealed class FixedClock(DateTimeOffset now) : IGameClock
     {
         public DateTimeOffset UtcNow => now;
+        public DateTimeOffset LocalNow => now;
+        public DateOnly BusinessDate => DateOnly.FromDateTime(now.DateTime);
     }
 }
