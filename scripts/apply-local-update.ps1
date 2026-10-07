@@ -139,6 +139,7 @@ New-Item -ItemType Directory -Path $parent -Force | Out-Null
 
 $staging = Join-Path $parent ".gamenet-staging-$Component-$($manifest.ProductVersion)"
 $previous = Join-Path $parent ".gamenet-previous-$Component-$([DateTimeOffset]::UtcNow.ToString('yyyyMMddHHmmssfff'))"
+$rollbackPointer = Join-Path $parent ".gamenet-rollback-$Component.json"
 
 if (Test-Path $staging) { Remove-Item $staging -Recurse -Force }
 New-Item -ItemType Directory -Path $staging -Force | Out-Null
@@ -162,7 +163,13 @@ try {
         }
     }
 
-    if (Test-Path $previous) { Remove-Item $previous -Recurse -Force }
+    if (Test-Path $rollbackPointer) {
+        $oldPointer = Get-Content $rollbackPointer -Raw | ConvertFrom-Json
+        if ($oldPointer.BackupPath -and (Test-Path $oldPointer.BackupPath)) {
+            Remove-Item $oldPointer.BackupPath -Recurse -Force
+        }
+        Remove-Item $rollbackPointer -Force
+    }
 
     if (Test-Path $install) {
         Move-Item -LiteralPath $install -Destination $previous
@@ -176,11 +183,11 @@ try {
 
     Invoke-ServiceHealthCheck -Url $HealthUrl
 
-    if (Test-Path $previous) {
-        Remove-Item $previous -Recurse -Force
-    }
+    @{ BackupPath = $previous; InstalledPath = $install; ProductVersion = $manifest.ProductVersion; CreatedUtc = [DateTimeOffset]::UtcNow.ToString("O") } |
+        ConvertTo-Json | Set-Content -LiteralPath $rollbackPointer -Encoding utf8
 
     Write-Host "Local update applied successfully. Component=$Component Version=$($manifest.ProductVersion)"
+    Write-Host "Rollback point preserved at: $previous"
 }
 catch {
     Write-Warning "Update failed. Starting rollback: $($_.Exception.Message)"
