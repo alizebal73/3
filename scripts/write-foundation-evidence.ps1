@@ -37,7 +37,6 @@ $evidence=[ordered]@{
         GAMENET_AUTH_AUDIENCE=[bool](-not [string]::IsNullOrWhiteSpace($env:GameNet__Authentication__Audience))
         GAMENET_AUTH_SIGNING_KEY=[bool](-not [string]::IsNullOrWhiteSpace($env:GameNet__Authentication__SigningKey))
         GAMENET_AGENT_SERVER_PROVISIONING_KEY=[bool](-not [string]::IsNullOrWhiteSpace($env:GameNet__Agent__ProvisioningKey))
-        GAMENET_AGENT_BOOTSTRAP_SECRET=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET))
     }
 }
 $OutputPath=[System.IO.Path]::GetFullPath($OutputPath)
