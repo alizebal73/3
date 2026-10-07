@@ -238,7 +238,7 @@ public sealed class PostgresBackupStore(
     private static string BuildDatabaseTarget(NpgsqlConnectionStringBuilder connection)
     {
         var host = connection.Host ?? "localhost";
-        if (host.Contains(':', StringComparison.Ordinal) &&
+        if (host.IndexOf(':') >= 0 &&
             !host.StartsWith("[", StringComparison.Ordinal))
         {
             host = $"[{host}]";
