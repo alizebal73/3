@@ -63,7 +63,10 @@ public sealed class EfAgentConnectionLeaseStore(
             SET connection_id = {request.ConnectionId},
                 lease_token = {token},
                 lease_expires_at_utc = {expires},
-                updated_at_utc = {now}
+                updated_at_utc = {now},
+                last_heartbeat_at_utc = NULL,
+                agent_version = NULL,
+                station_state = NULL
             WHERE device_id = {request.DeviceId}
               AND (
                     lease_expires_at_utc <= {now}
@@ -110,6 +113,36 @@ public sealed class EfAgentConnectionLeaseStore(
             SET lease_expires_at_utc = {expires},
                 updated_at_utc = {now}
             WHERE device_id = {deviceId}
+              AND connection_id = {connectionId}
+              AND lease_token = {leaseToken}
+              AND lease_expires_at_utc > {now}
+            """,
+            cancellationToken);
+
+        return updated == 1;
+    }
+
+    public async Task<bool> RecordHeartbeatAsync(
+        AgentHeartbeat heartbeat,
+        string connectionId,
+        string leaseToken,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.DeviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
+        ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.AgentVersion);
+        ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.StationState);
+
+        var now = clock.UtcNow;
+        var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            UPDATE agent_connection_leases
+            SET last_heartbeat_at_utc = {heartbeat.SentAtUtc},
+                agent_version = {heartbeat.AgentVersion},
+                station_state = {heartbeat.StationState},
+                updated_at_utc = {now}
+            WHERE device_id = {heartbeat.DeviceId}
               AND connection_id = {connectionId}
               AND lease_token = {leaseToken}
               AND lease_expires_at_utc > {now}
