@@ -65,7 +65,8 @@ $requiredFiles = @(
     "docs\operations\foundation-local-certification.md",
     "scripts\certify-desktop.ps1",
     "scripts\certify-postgresql.ps1",
-    "scripts\certify-foundation.ps1"
+    "scripts\certify-foundation.ps1",
+    ".github\workflows\foundation-local.yml"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -108,11 +109,17 @@ if ($runtimePlaceholders) {
     throw "Runtime/deployment placeholder markers are not accepted in Foundation."
 }
 
+if (Test-Path (Join-Path $root ".github\workflows")) {
+    $workflows = Get-ChildItem (Join-Path $root ".github\workflows") -File
+    if ($workflows.Count -ne 1 -or $workflows[0].Name -ne "foundation-local.yml") {
+        throw "Foundation permits only the single manual self-hosted workflow: .github/workflows/foundation-local.yml"
+    }
+}
+
 $forbiddenRuntimeWords = @(
     "src\Dashboard",
     "package-lock.json",
-    ".nvmrc",
-    ".github\workflows"
+    ".nvmrc"
 )
 
 foreach ($relativePath in $forbiddenRuntimeWords) {

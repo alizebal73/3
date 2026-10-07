@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using GameNet.Desktop.Api;
+using GameNet.Shared.Contracts.V1.Api;
 using GameNet.Shared.Contracts.V1.System;
 
 namespace GameNet.Desktop.Tests;
@@ -33,7 +34,11 @@ public sealed class GameNetServerClientTests
 
         Assert.Equal("ok", health.Status);
         Assert.Equal("GameNet.Server", health.Service);
-        Assert.True(handler.LastRequest!.Headers.Contains("X-Correlation-Id"));
+        Assert.NotNull(handler.LastRequest);
+        Assert.True(handler.LastRequest!.Headers.Contains(ApiHeaders.CorrelationId));
+        Assert.Equal(
+            ContractVersions.V1,
+            handler.LastRequest.Headers.GetValues(ApiHeaders.ContractVersion).Single());
     }
 
     private sealed class CaptureHandler(

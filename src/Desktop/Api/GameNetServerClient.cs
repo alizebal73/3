@@ -15,6 +15,9 @@ public sealed class GameNetServerClient(HttpClient httpClient) : IGameNetServerC
         request.Headers.TryAddWithoutValidation(
             ApiHeaders.CorrelationId,
             CorrelationId.New().Value);
+        request.Headers.TryAddWithoutValidation(
+            ApiHeaders.ContractVersion,
+            ContractVersions.V1);
 
         using var response = await httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
