@@ -10,7 +10,9 @@ param(
     [string]$Component,
 
     [string]$ServiceName,
-    [string]$HealthUrl
+    [string]$HealthUrl,
+
+    [string]$CurrentManifestPath
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,6 +96,28 @@ function Invoke-ServiceHealthCheck {
 $package = (Resolve-Path $PackageRoot).Path
 $install = [System.IO.Path]::GetFullPath($InstallRoot)
 $manifest = Read-And-VerifyManifest -Root $package
+
+if (-not [string]::IsNullOrWhiteSpace($CurrentManifestPath)) {
+    if (-not (Test-Path $CurrentManifestPath -PathType Leaf)) {
+        throw "Current release manifest was not found: $CurrentManifestPath"
+    }
+
+    $current = Get-Content $CurrentManifestPath -Raw | ConvertFrom-Json
+
+    if ([int]$manifest.SchemaVersion -lt [int]$current.SchemaVersion) {
+        throw "Incoming SchemaVersion $($manifest.SchemaVersion) cannot downgrade current schema $($current.SchemaVersion)."
+    }
+
+    if ($Component -in @("Server", "Desktop") -and
+        $manifest.ApiContractVersion -ne $current.ApiContractVersion) {
+        throw "API contract change requires an explicit coordinated release. Current=$($current.ApiContractVersion); Incoming=$($manifest.ApiContractVersion)"
+    }
+
+    if ($Component -in @("Server", "Agent") -and
+        [int]$manifest.AgentProtocolVersion -ne [int]$current.AgentProtocolVersion) {
+        throw "Agent protocol change requires an explicit coordinated release. Current=$($current.AgentProtocolVersion); Incoming=$($manifest.AgentProtocolVersion)"
+    }
+}
 
 $parent = Split-Path -Parent $install
 $leaf = Split-Path -Leaf $install
