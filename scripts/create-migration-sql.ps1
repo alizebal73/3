@@ -23,4 +23,8 @@ dotnet ef migrations script `
     --configuration Release `
     --output $OutputPath
 
+if ($LASTEXITCODE -ne 0) {
+    throw "dotnet ef migrations script failed with exit code ${LASTEXITCODE}."
+}
+
 Write-Host "Idempotent migration SQL created: $OutputPath"
