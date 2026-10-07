@@ -53,7 +53,7 @@ public static class DependencyInjection
             if (string.IsNullOrWhiteSpace(connectionString))
                 return;
 
-            db.UseNpgsql(connectionString);
+            db.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
         });
 
         return services;
