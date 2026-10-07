@@ -136,6 +136,20 @@ Microsoft's ASP.NET Core SignalR .NET client supports automatic reconnect lifecy
 11. Real-environment certification separate from unit-test confidence.
 12. Product/feature acceptance tied to operator workflow and recovery behavior.
 
+## Primary external sources consulted
+
+- Martin Fowler, Architecture Decision Records and architectural fitness functions.
+- DORA, database change management, deployment automation and version-control guidance.
+- Google SRE, SLOs and reliability/error-budget guidance.
+- OWASP Secure by Design and OWASP Top 10:2025 Software Supply Chain failures.
+- NIST SP 800-218 SSDF v1.1.
+- Microsoft EF Core migrations/deployment guidance.
+- Microsoft .NET Generic Host / WPF Generic Host guidance.
+- Microsoft ASP.NET Core SignalR .NET client/reconnect guidance.
+- Microsoft SBOM Tool documentation and current release information.
+
+The current engineering choices are also recorded in the ADRs and operational policies in this repository; research is evidence for the decisions, not a substitute for an approved repository artifact.
+
 ## Research status
 
 This document is intentionally a durable engineering record. New external evidence should update the relevant design/ADR/guard rather than becoming an untracked chat conclusion.
