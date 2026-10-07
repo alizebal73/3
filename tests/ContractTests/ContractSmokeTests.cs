@@ -40,11 +40,32 @@ public sealed class ContractSmokeTests
         var command = new AgentCommand<string>(
             id,
             "device-1",
+            "lease-1",
             DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch.AddMinutes(1),
             "server.test",
             "payload");
 
         Assert.Equal(id, command.CommandId);
         Assert.Equal("device-1", command.DeviceId);
+        Assert.Equal("lease-1", command.LeaseToken);
+        Assert.Equal(DateTimeOffset.UnixEpoch.AddMinutes(1), command.ExpiresAtUtc);
     }
 }
+
+
+    [Fact]
+    public void Agent_command_acknowledgement_preserves_duplicate_state()
+    {
+        var ack = new CommandAcknowledgement(
+            CommandId.New(),
+            "device-1",
+            "lease-1",
+            DateTimeOffset.UnixEpoch,
+            Success: true,
+            Duplicate: true,
+            ErrorCode: null);
+
+        Assert.True(ack.Success);
+        Assert.True(ack.Duplicate);
+    }
