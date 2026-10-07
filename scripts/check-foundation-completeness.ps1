@@ -113,6 +113,7 @@ $requiredFiles = @(
     "scripts\create-migration-sql.ps1",
     "scripts\create-sbom.ps1",
     "scripts\check-foundation-readiness-final.ps1",
+    "scripts\check-ui-foundation.ps1",
     "tools\sbom-tool.version",
     "scripts\certify-foundation.ps1"
 )
