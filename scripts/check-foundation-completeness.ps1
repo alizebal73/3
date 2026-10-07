@@ -11,7 +11,13 @@ $requiredFiles = @(
     "src\Server\Infrastructure\Outbox\OutboxMessage.cs",
     "src\Server\Infrastructure\Outbox\IOutboxWriter.cs",
     "src\Server\Infrastructure\Outbox\EfOutboxWriter.cs",
-    "src\Server\Persistence\Configurations\OutboxMessageConfiguration.cs",
+    "src\Server\Infrastructure\Outbox\IOutboxDispatcher.cs",
+    "src\Server\Infrastructure\Outbox\EfOutboxDispatcher.cs",
+    "src\Server\Persistence\DesignTimeDbContextFactory.cs",
+    "src\Server\Persistence\Migrations\202610070001_FoundationInfrastructure.cs",
+    "src\Server\Persistence\Migrations\GameNetDbContextModelSnapshot.cs",
+    "src\Server\Infrastructure\Backup\IBackupStore.cs",
+    "src\Server\Infrastructure\Backup\BackupRestoreRules.cs",
     "src\Client\Agent\AgentIdentity.cs",
     "src\Desktop\GameNet.Desktop.csproj",
     "src\Desktop\App.xaml",
@@ -25,11 +31,19 @@ $requiredFiles = @(
     "tests\E2E\GameNet.E2E.Tests.csproj",
     "docs\architecture\module-boundary-manifest.md",
     "docs\domain\game-module-blueprints.md",
+    "docs\domain\lifecycle-state-machines.md",
+    "docs\domain\billing-foundation.md",
+    "docs\domain\station-foundation.md",
     "docs\architecture\actor-and-auth-model.md",
+    "docs\security\permission-matrix.md",
     "docs\contracts\api-envelope.md",
     "docs\contracts\release-compatibility.md",
     "docs\operations\deployment-and-update.md",
-    "docs\operations\foundation-certification.md"
+    "docs\operations\backup.md",
+    "docs\operations\foundation-certification.md",
+    "scripts\certify-desktop.ps1",
+    "scripts\certify-postgresql.ps1",
+    "scripts\certify-foundation.ps1"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -73,7 +87,7 @@ foreach ($docRoot in $docRoots) {
         Select-String -Pattern "\bDashboard\b|React|Vite|WebView"
     if ($stale) {
         $stale | ForEach-Object {
-            Write-Host "STALE ARCHITECTURE DOC: $($_.Path):$($_.LineNumber): $($_.Line.Trim())"
+            Write-Host "STALE FOUNDATION DOC: $($_.Path):$($_.LineNumber): $($_.Line.Trim())"
         }
         throw "Active architecture/security/contract documentation contains retired web-runtime references."
     }
