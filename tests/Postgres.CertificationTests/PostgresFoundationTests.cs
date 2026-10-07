@@ -26,7 +26,10 @@ public sealed class PostgresFoundationTests
         Assert.True(await db.Database.CanConnectAsync());
         Assert.Empty(await db.Database.GetPendingMigrationsAsync());
 
-        var result = await db.Database.SqlQueryRaw<int>("select 1 as "Value"").SingleAsync();
+        var result = await db.Database
+            .SqlQueryRaw<int>("select 1 as "Value"")
+            .SingleAsync();
+
         Assert.Equal(1, result);
     }
 
@@ -60,8 +63,18 @@ public sealed class PostgresFoundationTests
                 "delete from outbox_messages where type = 'foundation-cert';");
 
             cleanup.OutboxMessages.AddRange(
-                new OutboxMessage { Type = "foundation-cert", PayloadJson = "{}", OccurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-2) },
-                new OutboxMessage { Type = "foundation-cert", PayloadJson = "{}", OccurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-1) });
+                new OutboxMessage
+                {
+                    Type = "foundation-cert",
+                    PayloadJson = "{}",
+                    OccurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-2)
+                },
+                new OutboxMessage
+                {
+                    Type = "foundation-cert",
+                    PayloadJson = "{}",
+                    OccurredAtUtc = DateTimeOffset.UtcNow.AddMinutes(-1)
+                });
 
             await cleanup.SaveChangesAsync();
         }
@@ -86,12 +99,13 @@ public sealed class PostgresFoundationTests
     private static async Task InsertIdempotencyAsync()
     {
         await using var db = new GameNetDbContext(Options());
-        await db.Database.ExecuteSqlInterpolatedAsync($@"
+
+        await db.Database.ExecuteSqlInterpolatedAsync($"""
             insert into idempotency_records
                 (scope, key, operation, state, lease_token, status_code, response_json, created_at_utc, lease_expires_at_utc, expires_at_utc)
             values
                 ({"foundation-cert"}, {"same-key"}, {"test"}, {"processing"}, {Guid.NewGuid().ToString("N")}, {0}, {("{}")}, {DateTimeOffset.UtcNow}, {DateTimeOffset.UtcNow.AddMinutes(5)}, {DateTimeOffset.UtcNow.AddHours(1)})
-            on conflict (scope, key) do nothing;");
+            on conflict (scope, key) do nothing;""");
     }
 
     private sealed class FixedClock(DateTimeOffset now) : IGameClock
