@@ -126,6 +126,7 @@ public sealed class EfAgentConnectionLeaseStore(
         AgentHeartbeat heartbeat,
         string connectionId,
         string leaseToken,
+        TimeSpan leaseDuration,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.DeviceId);
@@ -133,12 +134,15 @@ public sealed class EfAgentConnectionLeaseStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
         ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.AgentVersion);
         ArgumentException.ThrowIfNullOrWhiteSpace(heartbeat.StationState);
+        ValidateLeaseDuration(leaseDuration);
 
         var now = clock.UtcNow;
+        var expires = now.Add(leaseDuration);
         var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"""
             UPDATE agent_connection_leases
             SET last_heartbeat_at_utc = {heartbeat.SentAtUtc},
+                lease_expires_at_utc = {expires},
                 agent_version = {heartbeat.AgentVersion},
                 station_state = {heartbeat.StationState},
                 updated_at_utc = {now}
