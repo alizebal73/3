@@ -56,10 +56,12 @@ Development-only local certification:
 - `GameNet__AgentTransport__AllowInsecureHttpForDevelopment=true`
 - `GameNet__AgentIdentity__RootPath=<temporary>`
 - `DOTNET_ENVIRONMENT=Development`
-- `GAMENET_AGENT_PROVISIONING_KEY=<temporary certification provisioning authority>`
+- `GAMENET_AGENT_PROVISIONING_KEY=<temporary certification provisioning authority>` for the certification script.
+- The Server process must also receive the same secret through `GameNet__Agent__ProvisioningKey`.
+- For the real token path the Server process must have `GameNet__Authentication__Enabled=true`, `GameNet__Authentication__Issuer=<issuer>`, `GameNet__Authentication__Audience=<audience>`, and `GameNet__Authentication__SigningKey=<temporary 32+ character key>`.
 - optionally `GAMENET_AGENT_DEVICE_ID=<temporary certification identity>`; otherwise the script generates a unique DeviceId.
 - The certification script provisions the credential through the Server, injects the returned secret only into the temporary Agent process, and revokes the credential during cleanup.
-- Server authentication must be enabled for the real Token -> SignalR -> Lease -> Heartbeat -> Reconciliation path, with issuer/audience/signing/provisioning values supplied by the certification environment.
+- Server authentication must be enabled for the real Token -> SignalR -> Lease -> Heartbeat -> Reconciliation path, with issuer/audience/signing/provisioning values supplied through the Server's normal .NET configuration environment variables above.
 
 Production:
 - HTTPS only.
