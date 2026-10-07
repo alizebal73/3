@@ -16,9 +16,14 @@ public interface IAgentConnectionLeaseStore
         TimeSpan leaseDuration,
         CancellationToken cancellationToken = default);
 
+    Task<bool> RecordHeartbeatAsync(
+        AgentHeartbeat heartbeat,
+        string connectionId,
+        string leaseToken,
+        CancellationToken cancellationToken = default);
+
     Task ReleaseIfOwnerAsync(
         string deviceId,
         string connectionId,
         string leaseToken,
         CancellationToken cancellationToken = default);
-}
