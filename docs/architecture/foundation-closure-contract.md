@@ -57,7 +57,7 @@ No item is called Foundation Certified until all required Static/Runtime/Policy 
 | FND-039 | Agent/server restart recovery | Server restart + Agent restart/reconnect + lease recovery evidence | Pending — Runtime |
 | FND-040 | Exact-SHA evidence pack | Evidence records exact commit, machine, tool versions, binaries and scenario results | Pending — Runtime |
 | FND-041 | Governance protection | Main release line protected against unsafe direct/force changes and legacy branch drift | Open — Operational policy |
-| FND-042 | Foundation closure guard itself | Guard validates every required closure ID remains present and the summary matrix links to this contract | Open — Implementation |
+| FND-042 | Foundation closure guard itself | Guard validates every required closure ID remains present and the summary matrix links to this contract | Closed — Static |
 
 ## Policy-open items intentionally allowed
 
