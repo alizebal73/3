@@ -24,7 +24,7 @@ No item is called Foundation Certified until all required Static/Runtime/Policy 
 | FND-006 | Idempotency ownership/fencing | Concurrent claim, stale-owner completion rejection, replay evidence | Pending — Runtime |
 | FND-007 | Append-only audit | EF mutation guard plus PostgreSQL UPDATE/DELETE rejection evidence | Pending — Runtime |
 | FND-008 | Outbox claim fencing | Concurrent claim and expired-owner publish rejection evidence | Pending — Runtime |
-| FND-009 | Outbox delivery boundary | Explicit publisher/dispatcher ownership before first durable external side effect | Closed — Static |
+| FND-009 | Outbox delivery boundary | Explicit publisher/dispatcher ownership before first durable external side effect | Closed — Static; Runtime pending |
 | FND-010 | Agent connection lease | One authority per DeviceId under concurrent connections | Pending — Runtime |
 | FND-011 | Agent stale-owner fencing | Stale heartbeat/release/reconnect cannot affect a newer lease | Pending — Runtime |
 | FND-012 | Agent reconciliation authority | Reconciliation re-checks live DB lease ownership and expiry | Closed — Static; Runtime pending |
