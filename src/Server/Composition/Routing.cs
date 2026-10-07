@@ -44,5 +44,8 @@ public static class Routing
             service = "GameNet.Server",
             status = "running"
         })).AllowAnonymous();
+
+        app.MapGameNetModules(
+            app.Services.GetServices<IGameNetModule>());
     }
 }

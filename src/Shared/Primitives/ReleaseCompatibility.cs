@@ -13,5 +13,8 @@ public static class ReleaseCompatibility
         server.AgentProtocolVersion == agent.AgentProtocolVersion;
 
     public static bool IsSchemaCompatible(ReleaseVersion current, ReleaseVersion incoming) =>
-        current.SchemaVersion <= incoming.SchemaVersion;
+        current.SchemaVersion == incoming.SchemaVersion;
+
+    public static bool CanUpgradeSchema(ReleaseVersion current, ReleaseVersion incoming) =>
+        incoming.SchemaVersion >= current.SchemaVersion;
 }

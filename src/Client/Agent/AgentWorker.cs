@@ -6,12 +6,16 @@ public sealed class AgentWorker(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("GameNet Agent foundation started at {Time}", timeProvider.GetUtcNow());
+        logger.LogInformation(
+            "GameNet Agent service started at {Time}",
+            timeProvider.GetUtcNow());
 
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
-            logger.LogDebug("Agent heartbeat placeholder at {Time}", timeProvider.GetUtcNow());
+            logger.LogDebug(
+                "Agent foundation maintenance tick at {Time}",
+                timeProvider.GetUtcNow());
         }
     }
 }

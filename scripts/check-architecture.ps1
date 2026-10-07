@@ -55,9 +55,18 @@ if ((Get-Content $program).Count -gt 200) {
 
 Assert-NoMatch -Root $clientRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)" -Message "Client Agent must not reference Server implementation namespaces."
 
+Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Agent runtime code must not own transport details; use Client/Transport."
+Assert-NoMatch -Root (Join-Path $clientRoot "GameLaunch") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Game launch code must not own network transport details."
+
 Assert-NoMatch -Root $desktopRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)|Microsoft\.EntityFrameworkCore|Npgsql|DbContext|GameNetDbContext" -Message "Desktop must not reference Server implementation or direct database namespaces." -Include @("*.cs","*.xaml","*.csproj")
 Assert-NoMatch -Root $desktopRoot -Pattern "http(s)?://|WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop code contains a forbidden browser/web UI dependency." -Include @("*.cs","*.csproj","*.json")
 Assert-NoMatch -Root $desktopRoot -Pattern "WebView|Chromium|iframe|Vite|React|package\.json|node_modules" -Message "Desktop XAML contains a forbidden browser/web UI dependency." -Include @("*.xaml")
+Assert-NoMatch -Root (Join-Path $desktopRoot "Features") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Desktop feature UI must not own network transport; use Desktop/Api."
+Assert-NoMatch -Root (Join-Path $desktopRoot "Shell") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Desktop shell must not own network transport; use Desktop/Api."
+
+Assert-NoMatch -Root (Join-Path $desktopRoot "Features") -Pattern "\b(class|record)\s+\w+(Dto|Request|Response)\b" -Message "Desktop features must not define duplicate transport DTO/Request/Response types."
+Assert-NoMatch -Root (Join-Path $desktopRoot "Api") -Pattern "\b(class|record)\s+\w+(Dto|Request|Response)\b" -Message "Desktop API boundary must consume Shared contracts rather than define duplicate transport DTO/Request/Response types."
+Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "\b(class|record)\s+\w+(Dto|Request|Response)\b" -Message "Agent must not define duplicate transport DTO/Request/Response types."
 
 Assert-NoMatch -Root (Join-Path $moduleRoot "*\Domain") -Pattern "IHubContext|HttpClient|WebClient|Process\.Start|File\.|Directory\.|Socket" -Message "Domain code must not perform external side effects."
 Assert-NoMatch -Root (Join-Path $moduleRoot "*\Application") -Pattern "IHubContext|HttpClient|WebClient|Process\.Start|File\.|Directory\.|Socket" -Message "Application code must use explicit side-effect ports rather than performing external effects directly."

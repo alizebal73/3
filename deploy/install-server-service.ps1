@@ -7,7 +7,12 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-if (-not (Test-Path $ExecutablePath)) {
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    throw "Installing GameNet Server requires an elevated PowerShell session."
+}
+
+if (-not (Test-Path $ExecutablePath -PathType Leaf)) {
     throw "Server executable not found: $ExecutablePath"
 }
 
@@ -21,4 +26,6 @@ if ($existing) {
 }
 
 New-Service -Name $ServiceName -BinaryPathName ('"' + $resolved + '"') -DisplayName $ServiceName -StartupType Automatic
+& sc.exe failure $ServiceName reset= 86400 actions= restart/60000/restart/60000/restart/60000 | Out-Null
+
 Write-Host "Installed Windows Service '$ServiceName' from $resolved"

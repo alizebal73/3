@@ -20,11 +20,13 @@ $requiredFiles = @(
     "src\Server\Infrastructure\Backup\BackupRestoreRules.cs",
     "src\Server\Infrastructure\Realtime\IAgentConnectionLeaseStore.cs",
     "src\Shared\Contracts\V1\Protocol\AgentConnection.cs",
+    "src\Shared\Contracts\V1\System\ReleaseManifest.cs",
     "src\Client\Agent\AgentIdentity.cs",
     "src\Shared\Api\README.md",
     "src\Shared\Errors\README.md",
     "src\Shared\Results\README.md",
     "src\Shared\Primitives\ReleaseCompatibility.cs",
+    "src\Shared\Primitives\ReleaseManifestValidator.cs",
     "src\Shared\Contracts\V1\Api\ApiEnvelope.cs",
     "src\Shared\Contracts\V1\Api\ApiError.cs",
     "src\Shared\Contracts\V1\Api\ApiErrorCodes.cs",
@@ -35,13 +37,18 @@ $requiredFiles = @(
     "src\Desktop\App.xaml.cs",
     "src\Desktop\Shell\MainWindow.xaml",
     "src\Desktop\Shell\MainWindow.xaml.cs",
+    "src\Desktop\Api\IGameNetServerClient.cs",
+    "src\Desktop\Api\GameNetServerClient.cs",
+    "src\Desktop\Api\ServerConnectionOptions.cs",
     "src\Desktop\Localization\LanguageService.cs",
     "src\Desktop\Resources\Languages\Strings.fa-IR.xaml",
     "src\Desktop\Resources\Languages\Strings.en-US.xaml",
     "tests\Desktop.Tests\LocalizationFoundationTests.cs",
+    "tests\Desktop.Tests\GameNetServerClientTests.cs",
     "tests\Server.UnitTests\BackupRestoreRulesTests.cs",
     "tests\Agent.Tests\AgentConnectionContractTests.cs",
     "tests\Shared.Tests\ReleaseCompatibilityTests.cs",
+    "tests\Shared.Tests\ReleaseManifestTests.cs",
     "tests\ContractTests\ApiFoundationContractTests.cs",
     "tests\E2E\GameNet.E2E.Tests.csproj",
     "docs\architecture\module-boundary-manifest.md",
@@ -76,6 +83,29 @@ if ($placeholderTests) {
         Write-Host "FOUNDATION TEST PLACEHOLDER: $($_.Path):$($_.LineNumber)"
     }
     throw "Placeholder tests are not accepted as Foundation evidence."
+}
+
+$runtimeRoots = @(
+    "src\Server",
+    "src\Client",
+    "src\Desktop",
+    "src\Installer",
+    "deploy"
+)
+
+$runtimePlaceholders = foreach ($relativeRoot in $runtimeRoots) {
+    $runtimeRoot = Join-Path $root $relativeRoot
+    if (Test-Path $runtimeRoot) {
+        Get-ChildItem $runtimeRoot -Recurse -File -Include *.cs,*.csproj,*.xaml,*.ps1,*.json,*.md |
+            Select-String -Pattern "\bplaceholder\b|\bTODO\b|\bFIXME\b"
+    }
+}
+
+if ($runtimePlaceholders) {
+    $runtimePlaceholders | ForEach-Object {
+        Write-Host "FOUNDATION PLACEHOLDER: $($_.Path):$($_.LineNumber): $($_.Line.Trim())"
+    }
+    throw "Runtime/deployment placeholder markers are not accepted in Foundation."
 }
 
 $forbiddenRuntimeWords = @(
