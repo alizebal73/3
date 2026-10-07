@@ -121,7 +121,7 @@ public sealed class SignalRAgentTransport(
         }
     }
 
-    public async Task<ReconciliationResponse> ReconcileAsync(
+    public async Task<AgentReconciliationResponse> ReconcileAsync(
         string deviceId,
         string reason,
         CancellationToken cancellationToken = default)
@@ -138,7 +138,7 @@ public sealed class SignalRAgentTransport(
 
         return await connection.InvokeAsync<ReconciliationResponse>(
             "ReconcileAsync",
-            new ReconciliationRequest(deviceId, timeProvider.GetUtcNow(), reason),
+            new AgentReconciliationRequest(deviceId, timeProvider.GetUtcNow(), reason),
             cancellationToken);
     }
 
