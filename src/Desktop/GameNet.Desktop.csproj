@@ -23,4 +23,8 @@
     <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Resources\Styles\*.xaml" Generator="MSBuild:Compile"/>
+  </ItemGroup>
+
 </Project>
