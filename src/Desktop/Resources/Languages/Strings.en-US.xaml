@@ -16,7 +16,7 @@
     <x:String x:Key="StatusOffline">Server unavailable</x:String>
     <x:String x:Key="StatusUnknown">Unknown status</x:String>
     <x:String x:Key="SelectedModule">Selected section</x:String>
-    <x:String x:Key="FoundationPlaceholder">This section currently contains only its Foundation placement and contracts. Business behavior will be implemented after platform certification.</x:String>
+    <x:String x:Key="FoundationContent">This section currently contains only its Foundation placement and contracts. Business behavior will be implemented after platform certification.</x:String>
     <x:String x:Key="OfflineMessage">The Server is unavailable. The shell remains usable, but authoritative operations cannot execute until connectivity returns.</x:String>
     <x:String x:Key="BusyMessage">Refreshing Server status...</x:String>
     <x:String x:Key="NavHome">Home</x:String>
