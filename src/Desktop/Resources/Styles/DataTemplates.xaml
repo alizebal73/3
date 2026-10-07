@@ -13,8 +13,7 @@
                 FontSize="16"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{Binding IconGlyph}"
-                AutomationProperties.IsInAccessibleTree="False"/>
+                Text="{Binding IconGlyph}"/>
 
             <TextBlock
                 Grid.Column="1"
