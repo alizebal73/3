@@ -70,7 +70,7 @@ jobs:
             --project "src\\Server\\GameNet.Server.csproj" `
             --startup-project "src\\Server\\GameNet.Server.csproj" `
             --configuration Release `
-            --output-dir "artifacts\\ef-diagnostic" `
+            --output-dir "..\\..\\artifacts\\ef-diagnostic" `
             --namespace "GameNet.Server.Persistence.Migrations.Diagnostic"
           Get-ChildItem artifacts\\ef-diagnostic -File |
             ForEach-Object {
