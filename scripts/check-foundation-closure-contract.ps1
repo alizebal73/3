@@ -5,6 +5,8 @@ $root = Join-Path $PSScriptRoot ".."
 $contractPath = Join-Path $root "docs\architecture\foundation-closure-contract.md"
 $matrixPath = Join-Path $root "docs\architecture\foundation-closure-matrix.md"
 $verifyPath = Join-Path $PSScriptRoot "verify.ps1"
+$matrix = Get-Content $matrixPath -Raw -ErrorAction Stop
+$verify = Get-Content $verifyPath -Raw -ErrorAction Stop
 
 foreach ($path in @($contractPath, $matrixPath, $verifyPath)) {
     if (-not (Test-Path $path -PathType Leaf)) {
@@ -33,7 +35,9 @@ $allowedPrefixes = @(
     'Closed — Static',
     'Pending — Runtime',
     'Open — Implementation',
+    'Open — Runtime',
     'Open — Policy',
+    'Open — Operational',
     'Business — Deferred'
 )
 
