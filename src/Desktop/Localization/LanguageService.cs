@@ -16,6 +16,14 @@ public sealed class LanguageService
 
     public event EventHandler? LanguageChanged;
 
+    public string GetString(string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        return Application.Current?.TryFindResource(key) as string
+            ?? key;
+    }
+
     public void SetLanguage(CultureInfo culture)
     {
         ArgumentNullException.ThrowIfNull(culture);
