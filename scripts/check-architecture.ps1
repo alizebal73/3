@@ -54,6 +54,13 @@ if ((Get-Content $program).Count -gt 200) {
 }
 
 Assert-NoMatch -Root $clientRoot -Pattern "GameNet\.Server\.(Persistence|Modules|Infrastructure)" -Message "Client Agent must not reference Server implementation namespaces."
+Assert-NoMatch -Root $clientRoot -Pattern "DateTime\.Now|DateTime\.UtcNow|DateTimeOffset\.Now|DateTimeOffset\.UtcNow" -Message "Client Agent code must use TimeProvider/clock abstractions instead of wall-clock statics."
+
+Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HubConnection|HubConnectionBuilder|Microsoft\.AspNetCore\.SignalR\.Client" -Message "Agent core/worker code must not own SignalR transport mechanics; use Client/Transport."
+
+Assert-NoMatch -Root (Join-Path $clientRoot "Transport") -Pattern "GameNet\.Server\.(Persistence|Modules)" -Message "Agent transport must not depend on Server implementation namespaces."
+
+
 
 Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Agent runtime code must not own transport details; use Client/Transport."
 Assert-NoMatch -Root (Join-Path $clientRoot "GameLaunch") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Game launch code must not own network transport details."
