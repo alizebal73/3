@@ -16,6 +16,7 @@ $backupDir = Join-Path $root "artifacts\postgresql"
 New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 $backupFile = Join-Path $backupDir ("foundation-backup-{0}.dump" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
 $env:GAMENET_TEST_DATABASE = $env:GAMENET_DATABASE
+$env:GameNet__DatabaseConnectionString = $env:GAMENET_DATABASE
 
 Invoke-Checked "dotnet" @("tool","restore")
 
