@@ -92,7 +92,11 @@ public sealed class PostgresFoundationTests
                 new FixedClock(DateTimeOffset.UtcNow));
 
             var artifact = await store.CreateAsync();
-            await store.RestoreAsync(artifact, restoreConnection);
+            await store.RestoreAsync(
+                artifact,
+                restoreConnection,
+                explicitOperatorApproval: true,
+                serverStopped: true);
 
             await using var target = new GameNetDbContext(
                 new DbContextOptionsBuilder<GameNetDbContext>()
