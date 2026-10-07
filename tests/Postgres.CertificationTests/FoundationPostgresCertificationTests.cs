@@ -7,7 +7,7 @@ public sealed class FoundationPostgresCertificationTests
 {
     private static string ConnectionString =>
         Environment.GetEnvironmentVariable("GAMENET_TEST_DATABASE")
-        ?? throw new SkipException("GAMENET_TEST_DATABASE is not set.");
+        ?? throw new InvalidOperationException("GAMENET_TEST_DATABASE is not set.");
 
     [Fact]
     public async Task FoundationSchemaExists()
