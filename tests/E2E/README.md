@@ -1,3 +1,5 @@
-# E2E tests
+# Native Windows E2E
 
-This layer will cover complete operator workflows after the first vertical slice exists. No fake green tests are added here before a real browser/agent harness exists.
+This project is intentionally empty of placeholder assertions during Foundation.
+
+The first E2E smoke test is a real Windows process launch against the built Desktop executable. It is executed by scripts/certify-desktop.ps1 so launch evidence cannot be replaced by a unit-test fake.
