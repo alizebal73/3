@@ -85,3 +85,6 @@ The UI foundation is considered implemented when:
 5. global commands use one command implementation;
 6. shared resources are loaded application-wide;
 7. no feature folder contains a second shell or alternate API authority.
+## Automated guard
+
+`scripts/check-ui-foundation.ps1` validates required WPF dictionaries, DynamicResource keys in the shell, bilingual resource coverage, Navigation resource keys, and the prohibition on Desktop feature database/server implementation references.
