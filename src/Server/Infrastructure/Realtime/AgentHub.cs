@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Shared.Contracts.V1.Protocol;
@@ -55,8 +53,8 @@ public sealed class AgentHub(
             Context.ConnectionAborted);
     }
 
-    public Task<ReconciliationResponse> ReconcileAsync(
-        ReconciliationRequest request)
+    public Task<AgentReconciliationResponse> ReconcileAsync(
+        AgentReconciliationRequest request)
     {
         var deviceId = RequireDeviceId();
         _ = RequireLeaseToken();
@@ -64,16 +62,12 @@ public sealed class AgentHub(
         if (!string.Equals(deviceId, request.DeviceId, StringComparison.Ordinal))
             throw new HubException("Agent device identity does not match the authenticated device.");
 
-        var material = Encoding.UTF8.GetBytes(
-            $"{deviceId}|{Context.ConnectionId}|{request.Reason}");
-
-        var hash = Convert.ToHexString(SHA256.HashData(material));
-
         return Task.FromResult(
-            new ReconciliationResponse(
+            new AgentReconciliationResponse(
                 deviceId,
                 clock.UtcNow,
-                hash));
+                AgentProtocolVersions.V1,
+                true));
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
