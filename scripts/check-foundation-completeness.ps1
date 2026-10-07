@@ -101,6 +101,7 @@ $requiredFiles = @(
     "docs\planning\product-validation.md",
     "docs\ux\operator-workflow-foundation.md",
     "docs\roadmap\00-pre-coding-roadmap.md",
+    "docs\roadmap\01-foundation-stabilization.md",
     "docs\templates\feature-spec-template.md",
     "docs\templates\vertical-slice-template.md",
     "docs\templates\adr-template.md",
