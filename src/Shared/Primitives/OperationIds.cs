@@ -11,15 +11,19 @@ public readonly record struct CommandId(Guid Value)
     public static CommandId New() => new(Guid.NewGuid());
 }
 
-public readonly record struct IdempotencyKey(string Value)
+public readonly record struct IdempotencyKey
 {
-    public IdempotencyKey
-    {
-        if (string.IsNullOrWhiteSpace(Value))
-            throw new ArgumentException("Idempotency key is required.", nameof(Value));
+    public string Value { get; }
 
-        if (Value.Length > 200)
-            throw new ArgumentOutOfRangeException(nameof(Value));
+    public IdempotencyKey(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            throw new ArgumentException("Idempotency key is required.", nameof(value));
+
+        if (value.Length > 200)
+            throw new ArgumentOutOfRangeException(nameof(value));
+
+        Value = value;
     }
 
     public override string ToString() => Value;
