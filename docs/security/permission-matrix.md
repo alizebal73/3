@@ -4,7 +4,7 @@ Authorization is server-side. The Desktop only renders the permission state retu
 
 | Area | Owner | Admin | Operator | Agent | Customer |
 |---|---|---|---|---|---|
-| Dashboard/read-only views | yes | yes | yes | no | no |
+| Desktop/read-only views | yes | yes | yes | no | no |
 | Stations/status | yes | yes | yes | machine actions only | own login only |
 | Customer management | yes | yes | limited by policy | no | own profile only |
 | Session control | yes | yes | yes | execute authorized command | own session scope |
