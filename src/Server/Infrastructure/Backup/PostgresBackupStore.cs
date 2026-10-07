@@ -237,16 +237,28 @@ public sealed class PostgresBackupStore(
 
     private static string BuildDatabaseTarget(NpgsqlConnectionStringBuilder connection)
     {
-        var target = new NpgsqlConnectionStringBuilder
+        var host = connection.Host ?? "localhost";
+        if (host.Contains(':', StringComparison.Ordinal) &&
+            !host.StartsWith("[", StringComparison.Ordinal))
         {
-            Host = connection.Host,
-            Port = connection.Port,
-            Username = connection.Username,
-            Database = connection.Database,
-            SslMode = connection.SslMode,
-            TrustServerCertificate = connection.TrustServerCertificate
+            host = $"[{host}]";
+        }
+
+        var database = Uri.EscapeDataString(connection.Database ?? string.Empty);
+        var user = Uri.EscapeDataString(connection.Username ?? string.Empty);
+        var authorityUser = string.IsNullOrEmpty(user) ? string.Empty : $"{user}@";
+
+        var sslMode = connection.SslMode switch
+        {
+            SslMode.Disable => "disable",
+            SslMode.Allow => "allow",
+            SslMode.Prefer => "prefer",
+            SslMode.Require => "require",
+            SslMode.VerifyCA => "verify-ca",
+            SslMode.VerifyFull => "verify-full",
+            _ => "prefer"
         };
 
-        return target.ConnectionString;
+        return $"postgresql://{authorityUser}{host}:{connection.Port}/{database}?sslmode={sslMode}";
     }
 }
