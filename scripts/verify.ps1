@@ -22,6 +22,9 @@ Invoke-Checked -FilePath "dotnet" -ArgumentList @("--version")
 & "$PSScriptRoot/check-powershell-scripts.ps1"
 if ($LASTEXITCODE -ne 0) { throw "PowerShell script safety guard failed with exit code $LASTEXITCODE." }
 
+& "$PSScriptRoot/check-engineering-gates.ps1"
+if ($LASTEXITCODE -ne 0) { throw "Engineering gate consistency check failed with exit code $LASTEXITCODE." }
+
 & "$PSScriptRoot/check-pre-coding-readiness.ps1"
 if ($LASTEXITCODE -ne 0) { throw "Pre-coding readiness guard failed with exit code $LASTEXITCODE." }
 
