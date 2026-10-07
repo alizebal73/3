@@ -30,6 +30,8 @@ $evidence=[ordered]@{
     RequiredEnvironment=[ordered]@{
         GAMENET_DATABASE=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_DATABASE))
         GAMENET_RESTORE_DATABASE=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_RESTORE_DATABASE))
+        GAMENET_UPGRADE_DATABASE=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_UPGRADE_DATABASE))
+        GAMENET_AGENT_PROVISIONING_KEY=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_PROVISIONING_KEY))
         GAMENET_AGENT_BOOTSTRAP_SECRET=[bool](-not [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET))
     }
 }
