@@ -5,6 +5,7 @@ using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Outbox;
 using GameNet.Server.Infrastructure.Realtime;
 using GameNet.Server.Infrastructure.Time;
+using GameNet.Server.Infrastructure.Transactions;
 using GameNet.Server.Persistence;
 using GameNet.Server.Persistence.Entities;
 using GameNet.Shared.Contracts.V1.Protocol;
@@ -425,9 +426,22 @@ public sealed class PostgresFoundationTests
         await cleanup.Database.ExecuteSqlRawAsync(
             "delete from agent_connection_leases where device_id = 'foundation-device';");
 
+        await firstDb.DisposeAsync();
+        await secondDb.DisposeAsync();
+
         var now = DateTimeOffset.UtcNow;
-        var first = new EfAgentConnectionLeaseStore(new GameNetDbContext(Options()), new FixedClock(now));
-        var second = new EfAgentConnectionLeaseStore(new GameNetDbContext(Options()), new FixedClock(now));
+        var firstDb = new GameNetDbContext(Options());
+        var secondDb = new GameNetDbContext(Options());
+
+        var first = new EfAgentConnectionLeaseStore(
+            firstDb,
+            new FixedClock(now),
+            new EfTransactionCoordinator(firstDb));
+
+        var second = new EfAgentConnectionLeaseStore(
+            secondDb,
+            new FixedClock(now),
+            new EfTransactionCoordinator(secondDb));
 
         var results = await Task.WhenAll(
             first.TryAcquireAsync(
