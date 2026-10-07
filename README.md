@@ -2,6 +2,14 @@
 
 Clean-slate Windows GameNet/CyberCafe management platform.
 
+## Current status
+
+Repo 3 is in **Foundation Stabilization / Runtime Certification preparation**.
+
+The architecture and engineering foundation are implemented and structurally verified, but the product is **not yet Runtime Certified**. Real PostgreSQL, Agent, Desktop, deployment/recovery and release evidence must still close the Foundation matrix.
+
+**No business feature implementation starts before Foundation certification.**
+
 ## Runtime surfaces
 
 1. GameNet.Server — local authoritative headless server/API and persistence boundary.
@@ -22,27 +30,45 @@ Clean-slate Windows GameNet/CyberCafe management platform.
 - Wall-clock access is centralized behind TimeProvider/IGameClock.
 - Every feature must have domain rules, use case, persistence, contract, authorization, audit, unit, integration, concurrency, retry/idempotency and recovery coverage.
 - Persian (fa-IR, RTL) and English (en-US, LTR) are foundation-level UI cultures.
-- All build, restore, test and certification runs are local on the approved Windows machine. A manual self-hosted workflow may orchestrate the same local scripts, but never becomes certification authority.
-- No business feature starts until pre-coding governance and Foundation certification gates are complete.
-- Repo 2 architecture is not a source for code reuse; it is forensic reference only.
+- Build, restore, test and certification runs are local on the approved Windows machine. GitHub is source/review/orchestration, not certification authority.
+- Repo 2 is forensic reference only; it is not a code-reuse source.
 
 ## Start here
 
+### Current-state and authority
+- docs/roadmap/00-foundation-current-state.md
+- docs/architecture/foundation-closure-matrix.md
+- docs/roadmap/01-foundation-stabilization.md
+- docs/roadmap/00-pre-coding-roadmap.md
+
+### Product and planning
 - docs/planning/product-charter.md
 - docs/planning/pre-coding-master-plan.md
+- docs/planning/product-capability-map.md
 - docs/planning/requirements-traceability.md
 - docs/planning/definition-of-ready.md
+- docs/planning/definition-of-done.md
+- docs/planning/assumptions-and-open-decisions.md
+- docs/planning/risk-register.md
+
+### Architecture / research
 - docs/architecture/README.md
 - docs/architecture/data-ownership-and-integration-map.md
-- docs/domain/product-requirements.md
-- docs/invariants/
-- docs/roadmap/00-pre-coding-roadmap.md
-- docs/roadmap/00-platform-foundation.md
-- docs/operations/foundation-local-certification.md
-- docs/architecture/foundation-closure-matrix.md
+- docs/architecture/project-map.md
 - docs/research/repo2-to-repo3-comprehensive-audit.md
-- docs/development/engineering-workflow.md
 - docs/security/design-review.md
+
+### Certification / operations
+- docs/operations/foundation-local-certification.md
+- docs/operations/foundation-certification.md
+- docs/operations/scale-capacity-slos.md
+- docs/release/release-gates.md
 - scripts/verify.ps1
 
-The first vertical slice is intentionally blocked until Foundation certification is complete.
+## Foundation exit
+
+The first business vertical slice is intentionally blocked until the closure matrix is fully supported by real evidence:
+
+**Station → Customer → Agent → Session**
+
+Structural green ≠ runtime certified.
