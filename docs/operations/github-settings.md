@@ -1,6 +1,6 @@
 # GitHub Source-Control Policy
 
-GitHub is source control for GameNet 3, not the execution environment.
+GitHub is source control, review and history for GameNet 3, not the certification environment.
 
 Repository policy:
 - main remains releasable.
@@ -9,9 +9,12 @@ Repository policy:
 - Foundation branches are temporary and must not become permanent stage branches.
 - squash merge is preferred.
 - force-pushes to shared branches should be disabled.
-- pull requests are preferred for integration.
+- pull requests are preferred.
 
-There is intentionally no GitHub Actions workflow. The authoritative build/test result comes from the approved Windows machine running scripts/verify.ps1.
+The Foundation stage permits exactly one GitHub Actions workflow:
+.github/workflows/foundation-local.yml
+
+It is manual-only and runs on the approved self-hosted Windows runner. It calls the canonical local scripts and exists only to make the connected runner useful; it does not become a second build/test implementation or certification authority.
 
 The repository should never contain secrets, machine-local credentials or generated release artifacts.
 

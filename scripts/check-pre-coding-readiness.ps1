@@ -11,6 +11,8 @@ $required = @(
     "docs\planning\definition-of-done.md",
     "docs\planning\risk-register.md",
     "docs\planning\assumptions-and-open-decisions.md",
+    "docs\planning\product-validation.md",
+    "docs\architecture\runtime-topology.md",
     "docs\architecture\data-ownership-and-integration-map.md",
     "docs\operations\scale-capacity-slos.md",
     "docs\operations\environment-matrix.md",

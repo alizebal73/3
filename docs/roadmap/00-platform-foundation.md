@@ -1,40 +1,67 @@
 # Stage 0 — Platform Foundation
 
-No business feature is started until every Foundation gate below is satisfied.
+Stage 0 has two gates:
 
-Required foundation:
-1. Product/domain specification and module ownership.
-2. Invariants and explicit state machines.
-3. Shared IDs, Money, Time and Result/Error primitives.
-4. Versioned API contracts.
-5. PostgreSQL provider and DbContext boundary.
-6. Transaction, concurrency and idempotency infrastructure.
-7. Authentication and authorization foundation.
-8. Audit infrastructure.
-9. Agent protocol, acknowledgement and reconciliation contracts.
-10. Recovery and reconciliation rules.
-11. Background-job boundary.
-12. Observability and correlation IDs.
-13. Configuration and secret provisioning rules.
-14. Test infrastructure.
-15. Architecture and platform-skeleton enforcement.
-16. Native Windows Desktop application foundation.
-17. Persian/English localization foundation.
-18. Local-only build/test/certification process.
-19. Release compatibility and rollback foundation.
+1. Pre-Coding Governance.
+2. Foundation Platform Certification.
 
-Exit gates:
-- complete source/project/module skeleton;
-- native WPF Desktop builds locally;
+## Pre-Coding Governance
+
+Required:
+- product charter and non-goals;
+- requirements traceability;
+- module/data ownership;
+- state machines and invariants;
+- architecture decisions;
+- runtime topology;
+- security/data classification;
+- quality/testing strategy;
+- scale/capacity/SLO envelope;
+- environment matrix;
+- database change policy;
+- backup/recovery/update policy;
+- operator workflow/product validation;
+- Definition of Ready/Done;
+- risk and assumptions registers;
+- release gates and templates.
+
+Exit:
+No major business capability is allowed to start with an undocumented ownership, contract, failure, recovery or acceptance question.
+
+## Foundation Platform Certification
+
+Required:
+1. Shared IDs, Money, Time and Result/Error primitives.
+2. Versioned API contracts.
+3. PostgreSQL provider and DbContext boundary.
+4. Transaction, concurrency and idempotency infrastructure.
+5. Authentication and authorization foundation.
+6. Audit infrastructure.
+7. Agent protocol, acknowledgement and reconciliation contracts.
+8. Recovery and reconciliation rules.
+9. Background-job boundary.
+10. Observability and correlation IDs.
+11. Configuration and secret provisioning rules.
+12. Test infrastructure.
+13. Architecture and platform-skeleton enforcement.
+14. Native Windows Desktop application foundation.
+15. Persian/English localization foundation.
+16. Local build/test/certification process.
+17. Release compatibility and rollback foundation.
+
+## Platform-proof exit
+
+Before the first vertical slice:
+- native WPF Desktop builds and launches locally;
 - both fa-IR and en-US resources load;
-- architecture and platform-skeleton guards pass;
+- architecture/platform/governance guards pass;
 - solution restore/build/test passes locally;
-- real PostgreSQL integration lane is executable;
-- migration strategy is tested on a clean database;
-- transaction/idempotency/outbox rules are tested where applicable;
+- real PostgreSQL migration/concurrency lane passes;
+- Agent transport/lease/reconciliation proof passes;
+- Desktop-to-Server smoke passes;
+- update/rollback smoke passes;
+- recovery/restore smoke passes;
 - no fake-green placeholder tests;
-- no retired browser operator UI or Node/Vite pipeline remains;
-- no GitHub Actions execution dependency.
+- no retired browser operator UI remains.
 
-Only then start the first business vertical slice:
-Station -> Customer -> Agent -> Customer Login -> Session -> Timing -> Transfer -> Invoice -> Payment -> Audit.
+Only after these gates may the first business vertical slice start.
