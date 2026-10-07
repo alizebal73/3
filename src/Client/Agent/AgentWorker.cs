@@ -21,49 +21,65 @@ public sealed class AgentWorker(
             identity.DeviceId,
             timeProvider.GetUtcNow());
 
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                await transport.ConnectAsync(identity, stoppingToken);
+                var succeeded = false;
 
-                var heartbeat = new AgentHeartbeat(
-                    identity.DeviceId,
-                    timeProvider.GetUtcNow(),
-                    typeof(AgentWorker).Assembly.GetName().Version?.ToString() ?? "0.0.0",
-                    "Ready");
+                try
+                {
+                    await transport.ConnectAsync(identity, stoppingToken);
 
-                _ = await transport.HeartbeatAsync(heartbeat, stoppingToken);
+                    var heartbeat = new AgentHeartbeat(
+                        identity.DeviceId,
+                        timeProvider.GetUtcNow(),
+                        typeof(AgentWorker).Assembly.GetName().Version?.ToString() ?? "0.0.0",
+                        "Ready");
 
-                var reconciliation = await transport.ReconcileAsync(
-                    identity.DeviceId,
-                    "heartbeat",
+                    if (!await transport.HeartbeatAsync(heartbeat, stoppingToken))
+                    {
+                        throw new InvalidOperationException(
+                            "Server rejected the Agent heartbeat lease.");
+                    }
+
+                    var reconciliation = await transport.ReconcileAsync(
+                        identity.DeviceId,
+                        "heartbeat",
+                        stoppingToken);
+
+                    logger.LogDebug(
+                        "Agent heartbeat accepted. DeviceId={DeviceId} ServerTime={ServerTime} StateHash={StateHash}",
+                        identity.DeviceId,
+                        reconciliation.ServerTimeUtc,
+                        reconciliation.AuthoritativeStateHash);
+
+                    succeeded = true;
+                }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                {
+                    break;
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning(
+                        exception,
+                        "Agent transport cycle failed. DeviceId={DeviceId}; retrying in {RetrySeconds}s",
+                        identity.DeviceId,
+                        options.Value.InitialRetrySeconds);
+                }
+
+                await Task.Delay(
+                    TimeSpan.FromSeconds(
+                        succeeded
+                            ? options.Value.HeartbeatIntervalSeconds
+                            : options.Value.InitialRetrySeconds),
                     stoppingToken);
-
-                logger.LogDebug(
-                    "Agent heartbeat accepted. DeviceId={DeviceId} ServerTime={ServerTime} StateHash={StateHash}",
-                    identity.DeviceId,
-                    reconciliation.ServerTimeUtc,
-                    reconciliation.AuthoritativeStateHash);
             }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-            {
-                break;
-            }
-            catch (Exception exception)
-            {
-                logger.LogWarning(
-                    exception,
-                    "Agent transport cycle failed. DeviceId={DeviceId}; retrying in {RetrySeconds}s",
-                    identity.DeviceId,
-                    options.Value.InitialRetrySeconds);
-            }
-
-            await Task.Delay(
-                TimeSpan.FromSeconds(options.Value.HeartbeatIntervalSeconds),
-                stoppingToken);
         }
-
-        await transport.DisposeAsync();
+        finally
+        {
+            await transport.DisposeAsync();
+        }
     }
 }
