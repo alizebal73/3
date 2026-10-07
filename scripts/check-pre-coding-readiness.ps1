@@ -18,6 +18,7 @@ $required = @(
     "docs\research\foundation-research-and-repo2-failure-analysis.md",
     "docs\research\repo2-to-repo3-foundation-gap-matrix.md",
     "docs\research\repo2-to-repo3-comprehensive-audit.md",
+    "docs\domain\client-capability-contracts.md",
     "docs\architecture\foundation-closure-matrix.md",
     "docs\decisions\0005-foundation-release-baseline-policies.md",
     "docs\planning\product-capability-map.md",
