@@ -27,7 +27,7 @@ public partial class FoundationClosureHardening : Migration
 
         migrationBuilder.Sql(
             """
-            CREATE OR REPLACE FUNCTION reject_audit_mutation()
+            CREATE OR REPLACE FUNCTION gamenet_reject_audit_mutation()
             RETURNS trigger
             LANGUAGE plpgsql
             AS $function$
@@ -40,7 +40,7 @@ public partial class FoundationClosureHardening : Migration
             BEFORE UPDATE OR DELETE
             ON audit_entries
             FOR EACH ROW
-            EXECUTE FUNCTION reject_audit_mutation();
+            EXECUTE FUNCTION gamenet_reject_audit_mutation();
             """);
 
         migrationBuilder.Sql(
@@ -54,7 +54,7 @@ public partial class FoundationClosureHardening : Migration
         migrationBuilder.Sql(
             """
             DROP TRIGGER IF EXISTS audit_entries_append_only ON audit_entries;
-            DROP FUNCTION IF EXISTS reject_audit_mutation();
+            DROP FUNCTION IF EXISTS gamenet_reject_audit_mutation();
             """);
 
         migrationBuilder.Sql(
