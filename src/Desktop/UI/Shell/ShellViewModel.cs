@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using GameNet.Desktop.Api;
 using GameNet.Desktop.Localization;
 using GameNet.Desktop.UI.Commands;
 using GameNet.Desktop.UI.Navigation;
@@ -26,6 +25,12 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
             _ => _ = RefreshAsync(),
             _ => !IsBusy);
 
+        ToggleLanguageCommand = new UiCommand(
+            _ => ToggleLanguage());
+
+        NavigateHomeCommand = new UiCommand(
+            _ => NavigateHome());
+
         SelectNavigationCommand = new UiCommand(
             parameter =>
             {
@@ -37,9 +42,6 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
         _connectivity.StateChanged += OnConnectivityChanged;
 
         RebuildNavigation();
-
-        if (NavigationItems.Count > 0)
-            SelectedNavigation = NavigationItems[0];
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -50,13 +52,10 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
 
     public UiState UiState => _connectivity.State;
 
-    public string WindowTitle =>
-        _language.GetString("AppTitle");
+    public string WindowTitle => _language.GetString("AppTitle");
 
     public string CurrentPageTitle =>
-        SelectedNavigation is null
-            ? WindowTitle
-            : SelectedNavigation.DisplayName;
+        SelectedNavigation?.DisplayName ?? WindowTitle;
 
     public string ConnectionText =>
         UiState.Connection switch
@@ -67,16 +66,22 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
             _ => _language.GetString("StatusUnknown")
         };
 
+    public string CurrentPageId =>
+        SelectedNavigation?.Id ?? "home";
+
     public bool IsBusy => UiState.IsBusy;
 
     public bool HasError => !string.IsNullOrWhiteSpace(UiState.ErrorMessage);
 
-    public string ErrorMessage =>
-        UiState.ErrorMessage ?? string.Empty;
+    public string ErrorMessage => UiState.ErrorMessage ?? string.Empty;
 
     public UiCommand SelectNavigationCommand { get; }
 
     public UiCommand RefreshCommand { get; }
+
+    public UiCommand ToggleLanguageCommand { get; }
+
+    public UiCommand NavigateHomeCommand { get; }
 
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {
@@ -88,10 +93,29 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
         SelectedNavigation = item;
         OnPropertyChanged(nameof(SelectedNavigation));
         OnPropertyChanged(nameof(CurrentPageTitle));
+        OnPropertyChanged(nameof(CurrentPageId));
     }
 
     public void SetLanguage(CultureInfo culture) =>
         _language.SetLanguage(culture);
+
+    private void ToggleLanguage()
+    {
+        var target = _language.CurrentCulture.Name == "fa-IR"
+            ? CultureInfo.GetCultureInfo("en-US")
+            : CultureInfo.GetCultureInfo("fa-IR");
+
+        SetLanguage(target);
+    }
+
+    private void NavigateHome()
+    {
+        var home = NavigationItems.FirstOrDefault(
+            item => item.Id == "home");
+
+        if (home is not null)
+            Select(home);
+    }
 
     private async Task RefreshAsync(
         CancellationToken cancellationToken = default)
@@ -119,6 +143,7 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
         OnPropertyChanged(nameof(NavigationItems));
         OnPropertyChanged(nameof(SelectedNavigation));
         OnPropertyChanged(nameof(CurrentPageTitle));
+        OnPropertyChanged(nameof(CurrentPageId));
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
