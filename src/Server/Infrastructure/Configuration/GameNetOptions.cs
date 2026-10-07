@@ -22,6 +22,7 @@ public sealed class GameNetOptions
     public string? DatabaseConnectionString { get; init; }
     public AuthenticationOptions Authentication { get; init; } = new();
     public BackupOptions Backup { get; init; } = new();
+    public AgentOptions Agent { get; init; } = new();
     public IReadOnlyList<string> TrustedProxies { get; init; } = Array.Empty<string>();
 }
 
@@ -37,4 +38,10 @@ public sealed class BackupOptions
 {
     public string PgDumpPath { get; init; } = "pg_dump";
     public string PgRestorePath { get; init; } = "pg_restore";
+}
+
+public sealed class AgentOptions
+{
+    public int LeaseDurationSeconds { get; init; } = 15;
+    public int HeartbeatIntervalSeconds { get; init; } = 5;
 }
