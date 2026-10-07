@@ -1,4 +1,5 @@
 using GameNet.Server.Infrastructure.Audit;
+using GameNet.Server.Infrastructure.Backup;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Jobs;
@@ -33,6 +34,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICurrentActor, HttpCurrentActor>();
         services.AddScoped<IAuditWriter, EfAuditWriter>();
+        services.AddScoped<IBackupStore, PostgresBackupStore>();
         services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
         services.AddGameNetOutbox();
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
