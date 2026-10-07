@@ -2,66 +2,193 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStartupLocation="CenterScreen"
-        MinWidth="960"
-        MinHeight="600"
-        Background="#0B0F14"
+        MinWidth="1180"
+        MinHeight="720"
         FlowDirection="RightToLeft"
-        Title="{DynamicResource AppTitle}">
+        Title="{Binding WindowTitle}"
+        AutomationProperties.Name="{Binding WindowTitle}">
+    <Window.InputBindings>
+        <KeyBinding Key="R"
+                    Modifiers="Control"
+                    Command="{Binding RefreshCommand}"/>
+        <KeyBinding Key="L"
+                    Modifiers="Control"
+                    Command="{Binding ToggleLanguageCommand}"/>
+        <KeyBinding Key="Home"
+                    Modifiers="Control"
+                    Command="{Binding NavigateHomeCommand}"/>
+    </Window.InputBindings>
 
-    <Grid Margin="28">
+    <Grid Background="{DynamicResource BrushWindow}"
+          KeyboardNavigation.TabNavigation="Local"
+          Margin="18">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="34"/>
         </Grid.RowDefinitions>
 
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Margin="6,0,0,0"
-                        Padding="14,8"
-                        Content="{DynamicResource LanguageEnglish}"
-                        Click="EnglishClick"/>
-                <Button Margin="6,0,0,0"
-                        Padding="14,8"
-                        Content="{DynamicResource LanguagePersian}"
-                        Click="PersianClick"/>
-            </StackPanel>
+        <Border Grid.Row="0"
+                Style="{StaticResource ShellCardStyle}"
+                Padding="18,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <StackPanel>
-                <TextBlock FontSize="14"
-                           Foreground="#91A0B5"
-                           Text="{DynamicResource FoundationLabel}"/>
-                <TextBlock FontSize="30"
-                           FontWeight="SemiBold"
-                           Foreground="#F5F7FA"
-                           Text="{DynamicResource AppTitle}"/>
-            </StackPanel>
-        </DockPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="12"
+                               Foreground="{DynamicResource BrushTextMuted}"
+                               Text="{DynamicResource FoundationLabel}"/>
+                    <TextBlock Margin="0,2,0,0"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               Text="{Binding WindowTitle}"/>
+                </StackPanel>
 
-        <Border Grid.Row="1"
-                Margin="0,28,0,28"
-                Padding="30"
-                BorderBrush="#253040"
-                BorderThickness="1"
-                CornerRadius="18"
-                Background="#121821">
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock FontSize="24"
-                           FontWeight="SemiBold"
-                           Foreground="#F5F7FA"
-                           Text="{DynamicResource FoundationReady}"/>
-                <TextBlock Margin="0,12,0,0"
-                           MaxWidth="760"
-                           FontSize="15"
-                           Foreground="#B9C3D0"
-                           TextWrapping="Wrap"
-                           Text="{DynamicResource FoundationMessage}"/>
-            </StackPanel>
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Border Padding="10,6"
+                            CornerRadius="8"
+                            Background="{DynamicResource BrushSurfaceRaised}"
+                            BorderBrush="{DynamicResource BrushBorder}"
+                            BorderThickness="1"
+                            Margin="0,0,8,0">
+                        <TextBlock Text="{Binding ConnectionText}"/>
+                    </Border>
+
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            Content="{DynamicResource Refresh}"
+                            Command="{Binding RefreshCommand}"
+                            AutomationProperties.Name="{DynamicResource Refresh}"/>
+
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            Content="{DynamicResource ToggleLanguage}"
+                            Command="{Binding ToggleLanguageCommand}"
+                            AutomationProperties.Name="{DynamicResource ToggleLanguage}"/>
+                </StackPanel>
+            </Grid>
         </Border>
 
-        <TextBlock Grid.Row="2"
-                   Foreground="#68778C"
-                   FontSize="13"
-                   Text="{DynamicResource ArchitectureRule}"/>
+        <Grid Grid.Row="1" Margin="0,14,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Style="{StaticResource ShellCardStyle}"
+                    Padding="10">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top" Margin="6,4,6,14">
+                        <TextBlock FontSize="13"
+                                   Foreground="{DynamicResource BrushTextMuted}"
+                                   Text="{DynamicResource SelectedModule}"/>
+                        <TextBlock Margin="0,4,0,0"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Text="{Binding CurrentPageTitle}"/>
+                    </StackPanel>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding NavigationItems}"
+                                      ItemTemplate="{StaticResource NavigationItemTemplate}">
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="{x:Type ContentPresenter}">
+                                    <Setter Property="Margin" Value="0,1"/>
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource NavButtonStyle}"
+                                            Command="{Binding DataContext.SelectNavigationCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            AutomationProperties.Name="{Binding DisplayName}"
+                                            AutomationProperties.HelpText="{Binding Id}">
+                                        <ContentControl Content="{Binding}"
+                                                        ContentTemplate="{StaticResource NavigationItemTemplate}"/>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Style="{StaticResource ShellCardStyle}"
+                    Padding="30">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontSize="13"
+                               Foreground="{DynamicResource BrushTextMuted}"
+                               Text="{DynamicResource SelectedModule}"/>
+
+                    <TextBlock Grid.Row="1"
+                               Margin="0,6,0,0"
+                               FontSize="30"
+                               FontWeight="SemiBold"
+                               Text="{Binding CurrentPageTitle}"/>
+
+                    <Border Grid.Row="2"
+                            Margin="0,20,0,0"
+                            Padding="18"
+                            Background="{DynamicResource BrushSurfaceRaised}"
+                            BorderBrush="{DynamicResource BrushBorder}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusMedium}"
+                            Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{DynamicResource BusyMessage}"
+                                   Foreground="{DynamicResource BrushTextSecondary}"/>
+                    </Border>
+
+                    <StackPanel Grid.Row="3"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                MaxWidth="720">
+                        <TextBlock FontSize="22"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Text="{DynamicResource FoundationReady}"/>
+
+                        <TextBlock Margin="0,12,0,0"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Foreground="{DynamicResource BrushTextSecondary}"
+                                   Text="{DynamicResource FoundationPlaceholder}"/>
+
+                        <Border Margin="0,22,0,0"
+                                Padding="18"
+                                Background="{DynamicResource BrushSurfaceRaised}"
+                                BorderBrush="{DynamicResource BrushDanger}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource RadiusMedium}"
+                                Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="{DynamicResource BrushTextSecondary}"
+                                       TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Padding="10,0"
+                Background="{DynamicResource BrushSurface}">
+            <TextBlock VerticalAlignment="Center"
+                       Foreground="{DynamicResource BrushTextMuted}"
+                       Text="{DynamicResource ArchitectureRule}"/>
+        </Border>
     </Grid>
 </Window>
