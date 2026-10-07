@@ -3,6 +3,14 @@
 این فایل نقشه مرجع پیش از ورود به Business Implementation است.
 این سند باید با معماری، نقشه قابلیت‌ها، ماتریس ردیابی نیازمندی‌ها، Definition of Ready/Done، Foundation Closure Matrix و Foundation Stabilization Action Matrix هم‌راستا بماند.
 
+## 0. قرارداد محصول قبل از کدنویسی
+
+مرجع کامل محصول و UI/UX قبل از Business Coding:
+- `docs/planning/master-product-specification.md`
+- `docs/research/repo2-to-repo3-ui-ux-lessons.md`
+
+هیچ Business UI یا قابلیت تجاری جدیدی نباید خارج از این دو سند، Capability Map و Requirements Traceability وارد پیاده‌سازی شود. هر تغییر دامنه باید ابتدا در همین اسناد و ردیابی نیازمندی ثبت شود.
+
 ## 1. قانون شروع ساخت
 
 تا وقتی Foundation Certification طبق شواهد واقعی Windows/PostgreSQL/Agent/Desktop تکمیل نشده، هیچ قابلیت تجاری جدیدی وارد پیاده‌سازی نمی‌شود.
