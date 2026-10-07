@@ -54,10 +54,12 @@ Invoke-Checked -FilePath "dotnet" -ArgumentList @("restore", "GameNet.slnx")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("build", "GameNet.slnx", "--configuration", "Release", "--no-restore")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("test", "GameNet.slnx", "--configuration", "Release", "--no-build", "--no-restore")
 
+Write-Host "BUILD GATE: Release build passed."
+Write-Host "TEST GATE: Release test suite passed."
 Write-Host "LOCAL FOUNDATION VERIFICATION PASSED."
 Write-Host "Next required evidence on Windows:"
 Write-Host "1. launch src/Desktop/GameNet.Desktop.csproj and verify native window + fa/en direction;"
 Write-Host "2. start a clean PostgreSQL instance and apply/validate migrations;"
 Write-Host "3. run integration/concurrency/recovery certification against real PostgreSQL;"
 Write-Host "4. record release/deployment compatibility evidence."
-Write-Host "GitHub is source control; the manual self-hosted workflow only orchestrates this same local gate."
+Write-Host "GitHub is source control; the self-hosted workflow orchestrates this same canonical local gate on Foundation pushes, pull requests to main, or manual dispatch."
