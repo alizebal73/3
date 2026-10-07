@@ -29,7 +29,7 @@ No item is called Foundation Certified until all required Static/Runtime/Policy 
 | FND-011 | Agent stale-owner fencing | Stale heartbeat/release/reconnect cannot affect a newer lease | Pending — Runtime |
 | FND-012 | Agent reconciliation authority | Reconciliation re-checks live DB lease ownership and expiry | Closed — Static; Runtime pending |
 | FND-013 | Durable DeviceId | Restart/relaunch reuses stored identity and never accepts mutable runtime override | Closed — Static; Runtime pending |
-| FND-014 | Credential lifecycle | Real HTTP provision → token → rotation → revocation → expiry evidence | Open — Implementation/Runtime |
+| FND-014 | Credential lifecycle | Real HTTP provision → token → rotation → revocation → expiry evidence | Pending — Runtime |
 | FND-015 | Agent abuse/rate limiting | Token/provision/rotate/revoke endpoints have bounded abuse controls and tests | Open — Implementation |
 | FND-016 | Production TLS posture | HTTPS endpoint/certificate/trust path verified on approved Windows environment | Open — Runtime/Policy |
 | FND-017 | Health/readiness authority | live/health/ready behavior verified with healthy, starting and dependency-failure states | Pending — Runtime |
