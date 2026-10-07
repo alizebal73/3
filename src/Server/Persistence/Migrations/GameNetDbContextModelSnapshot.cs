@@ -4,6 +4,7 @@ using GameNet.Server.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -42,7 +43,7 @@ partial class GameNetDbContextModelSnapshot : ModelSnapshot
             b.HasIndex(x => new { x.Scope, x.Key }).IsUnique();
             b.HasIndex(x => x.ExpiresAtUtc);
 
-            b.Property(x => x.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            b.Property(x => x.Id).ValueGeneratedOnAdd().HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn).HasColumnName("id");
             b.Property(x => x.Scope).HasMaxLength(160).HasColumnName("scope");
             b.Property(x => x.Key).HasMaxLength(200).HasColumnName("key");
             b.Property(x => x.Operation).HasMaxLength(200).HasColumnName("operation");
@@ -63,7 +64,7 @@ partial class GameNetDbContextModelSnapshot : ModelSnapshot
             b.HasIndex(x => new { x.PublishedAtUtc, x.OccurredAtUtc });
             b.HasIndex(x => new { x.LeaseExpiresAtUtc, x.Id });
 
-            b.Property(x => x.Id).ValueGeneratedOnAdd().HasColumnName("id");
+            b.Property(x => x.Id).ValueGeneratedOnAdd().HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn).HasColumnName("id");
             b.Property(x => x.EventId).HasColumnName("event_id");
             b.Property(x => x.OccurredAtUtc).HasColumnName("occurred_at_utc");
             b.Property(x => x.Type).HasMaxLength(200).HasColumnName("type");
