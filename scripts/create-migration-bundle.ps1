@@ -19,4 +19,8 @@ dotnet ef migrations bundle `
     --runtime win-x64 `
     --output $OutputPath
 
+if ($LASTEXITCODE -ne 0) {
+    throw "dotnet ef migrations bundle failed with exit code ${LASTEXITCODE}."
+}
+
 Write-Host "Migration deployment bundle created: $OutputPath"
