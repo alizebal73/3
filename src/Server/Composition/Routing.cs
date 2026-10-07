@@ -1,6 +1,7 @@
 using GameNet.Server.Infrastructure;
 using GameNet.Server.Infrastructure.Hosting;
 using GameNet.Server.Infrastructure.Observability;
+using GameNet.Server.Infrastructure.Security;
 using GameNet.Shared.Contracts.V1.System;
 using GameNet.Shared.Primitives;
 

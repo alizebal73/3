@@ -1,4 +1,5 @@
 using GameNet.Server.Infrastructure.Audit;
+using GameNet.Server.Infrastructure.Security;
 using GameNet.Server.Infrastructure.Backup;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Idempotency;
@@ -419,6 +420,64 @@ public sealed class PostgresFoundationTests
 
         await cleanup.Database.ExecuteSqlInterpolatedAsync(
             $"delete from outbox_messages where id = {message.Id};");
+    }
+
+    
+    [Fact]
+    public async Task Agent_credential_lifecycle_provisions_authenticates_rotates_and_revokes()
+    {
+        const string deviceId = "foundation-credential";
+
+        await using (var cleanup = new GameNetDbContext(Options()))
+        {
+            await cleanup.Database.ExecuteSqlInterpolatedAsync(
+                $"delete from agent_credentials where device_id = {deviceId};");
+            await cleanup.Database.ExecuteSqlInterpolatedAsync(
+                $"delete from audit_entries where actor_id = {deviceId};");
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        await using var db = new GameNetDbContext(Options());
+        var clock = new FixedClock(now);
+        var service = new AgentCredentialService(
+            db,
+            new EfTransactionCoordinator(db),
+            new EfAuditWriter(db),
+            clock);
+
+        var first = await service.ProvisionAsync(
+            new GameNet.Shared.Contracts.V1.Security.AgentCredentialProvisionRequest(deviceId));
+
+        Assert.False(string.IsNullOrWhiteSpace(first.Secret));
+        Assert.True(await service.AuthenticateAsync(deviceId, first.Secret));
+        Assert.False(await service.AuthenticateAsync(deviceId, first.Secret + "invalid"));
+
+        var rotated = await service.RotateAsync(
+            new GameNet.Shared.Contracts.V1.Security.AgentCredentialRotateRequest(deviceId));
+
+        Assert.NotEqual(first.CredentialId, rotated.CredentialId);
+        Assert.False(await service.AuthenticateAsync(deviceId, first.Secret));
+        Assert.True(await service.AuthenticateAsync(deviceId, rotated.Secret));
+
+        Assert.True(await service.RevokeAsync(
+            new GameNet.Shared.Contracts.V1.Security.AgentCredentialRevokeRequest(
+                deviceId,
+                "foundation-certification")));
+
+        Assert.False(await service.AuthenticateAsync(deviceId, rotated.Secret));
+
+        var auditCount = await db.AuditEntries.CountAsync(
+            x => x.ActorId == deviceId &&
+                 (x.Operation == "AgentCredential.Provisioned" ||
+                  x.Operation == "AgentCredential.Rotated" ||
+                  x.Operation == "AgentCredential.Revoked"));
+
+        Assert.Equal(3, auditCount);
+
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from agent_credentials where device_id = {deviceId};");
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from audit_entries where actor_id = {deviceId};");
     }
 
     [Fact]

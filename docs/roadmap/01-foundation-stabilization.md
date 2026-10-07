@@ -16,7 +16,7 @@ This is the active execution matrix for closing Foundation before the first busi
 | FS-03 | Contract coherence | Eliminate compile-time drift between Shared contracts and Server/Agent/Desktop consumers. | In progress | Clean Release build |
 | FS-04 | Test coherence | Ensure all Foundation test projects are discoverable and executable by the solution test command. | Implemented; runtime proof pending | Green `dotnet test` with all expected test projects |
 | FS-05 | Architecture guards | Keep structural guards, but treat compile/test as mandatory gates rather than substitutes. | Implemented | Verify script ordering + green run |
-| FS-06 | Agent identity | Keep durable DeviceId separate from authentication credentials; define secure provisioning/rotation/revocation path. | Open | Documented credential lifecycle + implementation + smoke evidence |
+| FS-06 | Agent identity | Keep durable DeviceId separate from authentication credentials; define secure provisioning/rotation/revocation path. | Implemented; runtime proof pending | Credential lifecycle + DPAPI storage + PostgreSQL lifecycle test + Windows smoke evidence |
 | FS-07 | Agent lease | Prove one authoritative lease per DeviceId, stale-token rejection and reconnect fencing. | Pending platform proof | Real PostgreSQL concurrency/certification evidence |
 | FS-08 | Reconciliation | Define observed Agent state versus authoritative Server state; current heartbeat response is only connection/lease reconciliation. | Open | Contract + implementation + reconnect/state-divergence test |
 | FS-09 | Native Desktop | Prove WPF process launch, navigation, localization and Server connectivity on Windows. | Pending platform proof | `certify-desktop.ps1` evidence |

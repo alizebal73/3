@@ -39,6 +39,8 @@ public static class DependencyInjection
         services.AddGameNetOutbox();
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
         services.AddScoped<IAgentConnectionLeaseStore, EfAgentConnectionLeaseStore>();
+        services.AddScoped<IAgentCredentialService, AgentCredentialService>();
+        services.AddSingleton<IAgentAccessTokenIssuer, AgentAccessTokenIssuer>();
 
         services.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
         services.AddHostedService<BackgroundJobDispatcher>();

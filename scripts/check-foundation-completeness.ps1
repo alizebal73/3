@@ -34,6 +34,7 @@ $requiredFiles = @(
     "src\Shared\Contracts\V1\Protocol\ClientStateContracts.cs",
     "docs\domain\client-capability-contracts.md",
     "src\Shared\Contracts\V1\Protocol\AgentConnection.cs",
+    "src\Shared\Contracts\V1\Security\AgentCredentialContracts.cs",
     "src\Shared\Contracts\V1\System\ReleaseManifest.cs",
     "src\Client\Agent\AgentIdentity.cs",
     "src\Client\Identity\IAgentCredentialStore.cs",
@@ -66,6 +67,7 @@ $requiredFiles = @(
     "tests\Desktop.Tests\LocalizationFoundationTests.cs",
     "tests\Desktop.Tests\GameNetServerClientTests.cs",
     "tests\Server.UnitTests\BackupRestoreRulesTests.cs",
+    "tests\Server.UnitTests\AgentCredentialFoundationTests.cs",
     "tests\Agent.Tests\AgentConnectionContractTests.cs",
     "tests\Shared.Tests\ReleaseCompatibilityTests.cs",
     "tests\Shared.Tests\ReleaseManifestTests.cs",
@@ -183,7 +185,7 @@ if ($runtimePlaceholders) {
 if (Test-Path (Join-Path $root ".github\workflows")) {
     $workflows = @(Get-ChildItem (Join-Path $root ".github\workflows") -File)
     if ($workflows.Count -ne 1 -or $workflows[0].Name -ne "foundation-local.yml") {
-        throw "Foundation permits only the single manual self-hosted workflow: .github/workflows/foundation-local.yml"
+        throw "Foundation permits only the canonical self-hosted workflow: .github/workflows/foundation-local.yml"
     }
 }
 
