@@ -337,6 +337,46 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Expired_outbox_owner_cannot_mark_message_published()
+    {
+        await using var cleanup = new GameNetDbContext(Options());
+        await cleanup.Database.ExecuteSqlRawAsync(
+            "delete from outbox_messages where type = 'foundation-expired-outbox';");
+
+        var clockNow = DateTimeOffset.UtcNow;
+        var message = new OutboxMessage
+        {
+            Type = "foundation-expired-outbox",
+            PayloadJson = "{}",
+            OccurredAtUtc = clockNow.AddMinutes(-5)
+        };
+
+        cleanup.OutboxMessages.Add(message);
+        await cleanup.SaveChangesAsync();
+
+        var dispatcher = new EfOutboxDispatcher(
+            cleanup,
+            new FixedClock(clockNow));
+
+        var claimed = await dispatcher.ClaimBatchAsync(
+            1,
+            TimeSpan.FromMilliseconds(1));
+
+        var lease = Assert.Single(claimed);
+
+        await Task.Delay(25);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            dispatcher.MarkPublishedAsync(
+                lease.Id,
+                lease.LeaseToken!,
+                clockNow.AddSeconds(1)));
+
+        await cleanup.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from outbox_messages where id = {message.Id};");
+    }
+
+    [Fact]
     public async Task Agent_connection_lease_fences_competing_connections()
     {
         await using var cleanup = new GameNetDbContext(Options());
