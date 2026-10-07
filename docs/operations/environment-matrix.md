@@ -49,15 +49,16 @@ Requires:
 
 ## Agent transport certification profile
 
-The Agent/Server pair is configured through normal .NET configuration keys; certification must not rely on custom environment variables that are invisible to options binding.
+The Agent/Server pair is configured through normal .NET configuration keys. Secret-only certification inputs may be supplied directly as environment variables because the credential store intentionally reads the bootstrap secret without placing it in appsettings.
 
 Development-only local certification:
 - `GameNet__AgentTransport__ServerBaseUrl`
 - `GameNet__AgentTransport__AllowInsecureHttpForDevelopment=true`
 - `GameNet__AgentIdentity__RootPath=<temporary>`
 - `DOTNET_ENVIRONMENT=Development`
-- `GAMENET_AGENT_BOOTSTRAP_SECRET=<provisioned credential>`
-- `GAMENET_AGENT_DEVICE_ID` is consumed by the certification script only; the Agent runtime reads DeviceId from its durable identity file.
+- `GAMENET_AGENT_PROVISIONING_KEY=<temporary certification provisioning authority>`
+- optionally `GAMENET_AGENT_DEVICE_ID=<temporary certification identity>`; otherwise the script generates a unique DeviceId.
+- The certification script provisions the credential through the Server, injects the returned secret only into the temporary Agent process, and revokes the credential during cleanup.
 - Server authentication must be enabled for the real Token -> SignalR -> Lease -> Heartbeat -> Reconciliation path, with issuer/audience/signing/provisioning values supplied by the certification environment.
 
 Production:
