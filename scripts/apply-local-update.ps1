@@ -24,10 +24,16 @@ Set-StrictMode -Version Latest
 function Get-SafeManifestPath {
     param([string]$Root, [string]$RelativePath)
 
-    $full = [System.IO.Path]::GetFullPath(
-        [System.IO.Path]::Combine($Root, $RelativePath.Replace("/", "")))
+    if ([System.IO.Path]::IsPathRooted($RelativePath)) {
+        throw "Manifest path must be relative: $RelativePath"
+    }
 
-    $rootFull = [System.IO.Path]::GetFullPath($Root).TrimEnd("") + ""
+    $rootFull = [System.IO.Path]::GetFullPath($Root)
+    $rootFull = $rootFull.TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) +
+        [System.IO.Path]::DirectorySeparatorChar
+
+    $normalizedRelative = $RelativePath.Replace("/", [System.IO.Path]::DirectorySeparatorChar)
+    $full = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($Root, $normalizedRelative))
 
     if (-not $full.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "Manifest path escapes package root: $RelativePath"
@@ -129,11 +135,10 @@ if (-not [string]::IsNullOrWhiteSpace($CurrentManifestPath)) {
 }
 
 $parent = Split-Path -Parent $install
-$leaf = Split-Path -Leaf $install
 New-Item -ItemType Directory -Path $parent -Force | Out-Null
 
 $staging = Join-Path $parent ".gamenet-staging-$Component-$($manifest.ProductVersion)"
-$previous = Join-Path $parent ".gamenet-previous-$Component-$((Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmss'))"
+$previous = Join-Path $parent ".gamenet-previous-$Component-$([DateTimeOffset]::UtcNow.ToString('yyyyMMddHHmmssfff'))"
 
 if (Test-Path $staging) { Remove-Item $staging -Recurse -Force }
 New-Item -ItemType Directory -Path $staging -Force | Out-Null
