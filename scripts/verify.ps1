@@ -57,6 +57,19 @@ if ($LASTEXITCODE -ne 0) { throw "Desktop UI foundation guard failed with exit c
 
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("tool", "restore")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("restore", "GameNet.slnx")
+Invoke-Checked -FilePath "dotnet" -ArgumentList @(
+    "ef",
+    "migrations",
+    "has-pending-model-changes",
+    "--project",
+    "src\\Server\\GameNet.Server.csproj",
+    "--startup-project",
+    "src\\Server\\GameNet.Server.csproj",
+    "--configuration",
+    "Release"
+)
+
+Write-Host "EF MODEL GATE: no pending model changes detected."
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("build", "GameNet.slnx", "--configuration", "Release", "--no-restore")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("test", "GameNet.slnx", "--configuration", "Release", "--no-build", "--no-restore")
 
