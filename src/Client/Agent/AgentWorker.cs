@@ -49,7 +49,7 @@ public sealed class AgentWorker(
                         stoppingToken);
 
                     logger.LogDebug(
-                        "Agent heartbeat accepted. DeviceId={DeviceId} ServerTime={ServerTime} AuthoritativeConnection={AuthoritativeConnection}",
+                        "Agent heartbeat accepted. DeviceId={DeviceId} ServerTime={ServerTime} AuthoritativeConnection={AuthoritativeConnection} Scope={Scope}",
                         identity.DeviceId,
                         reconciliation.ServerTimeUtc,
                         reconciliation.AuthoritativeConnection,
