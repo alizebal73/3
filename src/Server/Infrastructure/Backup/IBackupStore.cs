@@ -17,5 +17,6 @@ public interface IBackupStore
 
     Task RestoreAsync(
         BackupArtifact artifact,
+        string targetConnectionString,
         CancellationToken cancellationToken = default);
 }
