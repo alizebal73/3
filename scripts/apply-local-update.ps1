@@ -15,7 +15,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$CurrentManifestPath,
 
-    [string]$ExpectedPublisher
+    [string]$ExpectedPublisher,
+
+    [switch]$Production
 )
 
 $ErrorActionPreference = "Stop"
@@ -106,10 +108,13 @@ $package = (Resolve-Path $PackageRoot).Path
 $install = [System.IO.Path]::GetFullPath($InstallRoot)
 $manifest = Read-And-VerifyManifest -Root $package
 
-if (-not [string]::IsNullOrWhiteSpace($ExpectedPublisher)) {
-    & (Join-Path $PSScriptRoot "verify-release-signatures.ps1") `
-        -Root $package `
-        -ExpectedPublisher $ExpectedPublisher
+if ($Production -and [string]::IsNullOrWhiteSpace($ExpectedPublisher)) {
+    throw "Production updates require -ExpectedPublisher so Authenticode publisher verification cannot be skipped."
+}
+
+if ($Production -or -not [string]::IsNullOrWhiteSpace($ExpectedPublisher)) {
+    $signatureVerifier = Join-Path $PSScriptRoot "verify-release-signatures.ps1"
+    & $signatureVerifier -Root $package -ExpectedPublisher $ExpectedPublisher
 }
 
 if (-not [string]::IsNullOrWhiteSpace($CurrentManifestPath)) {
