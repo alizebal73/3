@@ -19,6 +19,15 @@ $requiredPaths = @(
     "src\Desktop\Localization\LanguageService.cs",
     "src\Desktop\Resources\Languages\Strings.fa-IR.xaml",
     "src\Desktop\Resources\Languages\Strings.en-US.xaml",
+    "src\Desktop\Infrastructure\Hosting\DesktopHost.cs",
+    "src\Desktop\Infrastructure\Hosting\DesktopOptions.cs",
+    "src\Desktop\appsettings.json",
+    "src\Client\Transport\IAgentTransport.cs",
+    "src\Client\Transport\SignalRAgentTransport.cs",
+    "src\Client\Transport\AgentTransportOptions.cs",
+    "src\Client\Identity\AgentIdentityStore.cs",
+    "src\Client\appsettings.json",
+    "src\Server\Infrastructure\Realtime\AgentHub.cs",
     "src\Server\Modules\README.md",
     "src\Server\Persistence\Migrations\202610070001_FoundationInfrastructure.cs",
     "src\Server\Persistence\Migrations\GameNetDbContextModelSnapshot.cs"
@@ -61,8 +70,7 @@ foreach ($feature in $desktopFeatures) {
 $forbiddenArtifacts = @(
     "src\Dashboard",
     "package-lock.json",
-    ".nvmrc",
-    ".github\workflows"
+    ".nvmrc"
 )
 
 foreach ($relativePath in $forbiddenArtifacts) {
