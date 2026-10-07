@@ -10,6 +10,7 @@ public sealed class GameNetOptions
     public string BackupRoot { get; init; } = Path.Combine(AppContext.BaseDirectory, "Backups");
     public string? DatabaseConnectionString { get; init; }
     public AuthenticationOptions Authentication { get; init; } = new();
+    public BackupOptions Backup { get; init; } = new();
     public IReadOnlyList<string> TrustedProxies { get; init; } = Array.Empty<string>();
 }
 
@@ -19,4 +20,10 @@ public sealed class AuthenticationOptions
     public string? Issuer { get; init; }
     public string? Audience { get; init; }
     public string? SigningKey { get; init; }
+}
+
+public sealed class BackupOptions
+{
+    public string PgDumpPath { get; init; } = "pg_dump";
+    public string PgRestorePath { get; init; } = "pg_restore";
 }
