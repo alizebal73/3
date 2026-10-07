@@ -6,8 +6,19 @@ public sealed class GameNetOptions
 
     public string BusinessTimeZone { get; init; } = "Asia/Tehran";
     public string Currency { get; init; } = "TOM";
-    public string DataRoot { get; init; } = Path.Combine(AppContext.BaseDirectory, "Data");
-    public string BackupRoot { get; init; } = Path.Combine(AppContext.BaseDirectory, "Backups");
+    public string DataRoot { get; init; } =
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            "GameNet Manager",
+            "Server",
+            "Data");
+
+    public string BackupRoot { get; init; } =
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            "GameNet Manager",
+            "Server",
+            "Backups");
     public string? DatabaseConnectionString { get; init; }
     public AuthenticationOptions Authentication { get; init; } = new();
     public BackupOptions Backup { get; init; } = new();
