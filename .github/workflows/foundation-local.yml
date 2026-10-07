@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - foundation/engineering-complete
+      - foundation/closure-complete-v2
   pull_request:
     branches:
       - main
