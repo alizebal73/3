@@ -1,43 +1,32 @@
 # Stage 0 Foundation Audit
 
 ## Implemented in repository
-
-- Modular-monolith composition boundary.
-- Explicit Server module folder boundaries.
-- Native Windows WPF Desktop project and shell.
-- Persian/English UI resources with RTL/LTR foundation.
-- Shared V1 system, Agent protocol and permission contracts.
+- Modular-monolith composition boundary and module manifest.
+- Native Windows WPF Desktop and bilingual resource foundation.
+- Server/Agent/Shared topology and Windows Service capability.
+- Explicit human/device/customer/session identity model.
+- Shared V1 API envelope, headers and release compatibility rules.
 - Money, CorrelationId, CommandId and IdempotencyKey primitives.
-- PostgreSQL EF Core provider and DbContext boundary.
-- Serializable transaction coordinator with bounded PostgreSQL serialization/deadlock retry.
+- PostgreSQL EF Core provider, snake_case naming and Foundation migration baseline.
+- Serializable transaction coordinator with bounded serialization/deadlock retry.
 - Idempotency persistence boundary.
 - Audit persistence boundary.
-- JWT validation and current-actor foundation.
+- JWT validation, permission policies and current-actor foundation.
 - Correlation and exception middleware.
 - Business-time clock abstraction.
-- Durable transactional outbox writer boundary.
-- Background-job queue and dispatcher boundary.
-- Transaction side-effect rules.
-- Recovery, security, configuration, compatibility, domain and observability specifications.
+- Durable transactional outbox writer plus atomic claim/lease dispatcher boundary.
+- State machines, module blueprints, permission matrix and billing/station rules.
+- Backup/restore boundary and deployment/update architecture.
+- Local certification scripts and isolated PostgreSQL certification suite.
 - Platform-skeleton, architecture, source-size and Foundation-completeness guards.
-- Local-only verification script; no remote CI execution dependency.
-- Placeholder Foundation tests removed.
 - No business implementation in Server Modules.
 
-## Not yet certified
-
-- Local Windows restore/build/test of the complete solution.
-- Native Desktop executable launch verification.
-- fa-IR and en-US runtime verification on the local Windows machine.
-- Real PostgreSQL integration environment.
-- First migration generated/reviewed/applied to a clean PostgreSQL database.
-- Database-backed concurrency tests.
-- Recovery/restore smoke tests.
-- Durable Agent connection lease and transport implementation.
-- Real E2E business workflow.
+## Still requiring local evidence
+- Windows restore/build/test of the complete solution.
+- Native Desktop launch and bilingual runtime verification.
+- Real PostgreSQL migration/concurrency certification.
+- Recovery/restore smoke execution against disposable infrastructure.
+- Final sign-off and merge to main.
 
 ## Policy
-
-No business feature is considered complete without Domain Rule, Use Case, Persistence, Contract, Authorization, Audit, Unit, Integration, Concurrency, Retry/Idempotency and Failure/Recovery coverage.
-
-No business Feature branch may start until the remaining Foundation certification items are proven locally.
+No business Feature branch starts until the remaining Foundation evidence is proven locally.
