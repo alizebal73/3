@@ -21,8 +21,6 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        await _viewModel.InitializeAsync(
-            Application.Current.Dispatcher
-                .AsTaskCancellationToken());
+        await _viewModel.InitializeAsync(CancellationToken.None);
     }
 }
