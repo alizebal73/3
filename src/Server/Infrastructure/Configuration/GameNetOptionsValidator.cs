@@ -35,6 +35,20 @@ public sealed class GameNetOptionsValidator : IValidateOptions<GameNetOptions>
                 "GameNet:Backup must define PgDumpPath and PgRestorePath.");
         }
 
+        if (options.Agent.LeaseDurationSeconds < 5 ||
+            options.Agent.LeaseDurationSeconds > 300)
+        {
+            return ValidateOptionsResult.Fail(
+                "GameNet:Agent:LeaseDurationSeconds must be between 5 and 300.");
+        }
+
+        if (options.Agent.HeartbeatIntervalSeconds < 2 ||
+            options.Agent.HeartbeatIntervalSeconds >= options.Agent.LeaseDurationSeconds)
+        {
+            return ValidateOptionsResult.Fail(
+                "GameNet:Agent:HeartbeatIntervalSeconds must be at least 2 and less than the lease duration.");
+        }
+
         if (options.Authentication.Enabled &&
             (string.IsNullOrWhiteSpace(options.Authentication.Issuer) ||
              string.IsNullOrWhiteSpace(options.Authentication.Audience) ||
