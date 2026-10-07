@@ -88,7 +88,7 @@ public sealed class AgentHub(
     }
 
     private string RequireDeviceId() =>
-        Context.User.FindFirst("device_id")?.Value
+        Context.User?.FindFirst("device_id")?.Value
         ?? throw new HubException("Authenticated Agent token has no device_id claim.");
 
     private string RequireLeaseToken() =>

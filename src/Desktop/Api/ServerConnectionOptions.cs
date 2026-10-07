@@ -1,18 +1,32 @@
 namespace GameNet.Desktop.Api;
 
-public sealed record ServerConnectionOptions(Uri BaseAddress)
+public sealed record ServerConnectionOptions
 {
-    public ServerConnectionOptions
+    public ServerConnectionOptions(Uri baseAddress)
     {
-        ArgumentNullException.ThrowIfNull(BaseAddress);
+        ArgumentNullException.ThrowIfNull(baseAddress);
 
-        if (!BaseAddress.IsAbsoluteUri)
-            throw new ArgumentException("Server BaseAddress must be absolute.", nameof(BaseAddress));
+        if (!baseAddress.IsAbsoluteUri)
+            throw new ArgumentException(
+                "Server BaseAddress must be absolute.",
+                nameof(baseAddress));
 
-        if (!string.Equals(BaseAddress.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(BaseAddress.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(
+                baseAddress.Scheme,
+                Uri.UriSchemeHttp,
+                StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(
+                baseAddress.Scheme,
+                Uri.UriSchemeHttps,
+                StringComparison.OrdinalIgnoreCase))
         {
-            throw new ArgumentException("Server BaseAddress must use HTTP or HTTPS.", nameof(BaseAddress));
+            throw new ArgumentException(
+                "Server BaseAddress must use HTTP or HTTPS.",
+                nameof(baseAddress));
         }
+
+        BaseAddress = baseAddress;
     }
+
+    public Uri BaseAddress { get; }
 }
