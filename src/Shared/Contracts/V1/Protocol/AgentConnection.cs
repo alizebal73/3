@@ -5,8 +5,6 @@ public static class AgentProtocolVersions
     public const int V1 = 1;
 }
 
-namespace GameNet.Shared.Contracts.V1.Protocol;
-
 public sealed record AgentConnectionLeaseRequest(
     string DeviceId,
     string ConnectionId,
