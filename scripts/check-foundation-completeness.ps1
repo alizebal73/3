@@ -105,6 +105,7 @@ $requiredFiles = @(
     "scripts\certify-postgresql.ps1",
     "scripts\create-release-manifest.ps1",
     "scripts\apply-local-update.ps1",
+    "scripts\prepare-release-package.ps1",
     "scripts\verify-release-signatures.ps1",
     "scripts\sign-release-artifacts.ps1",
     "scripts\write-foundation-evidence.ps1",
