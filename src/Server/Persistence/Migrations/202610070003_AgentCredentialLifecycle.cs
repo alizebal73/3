@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GameNet.Server.Persistence.Migrations;
 
+[Migration("202610070003_AgentCredentialLifecycle")]
 public partial class AgentCredentialLifecycle : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
