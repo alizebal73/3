@@ -10,6 +10,7 @@ dotnet --version
 & "$PSScriptRoot/check-foundation-completeness.ps1"
 & "$PSScriptRoot/check-supply-chain.ps1"
 & "$PSScriptRoot/check-foundation-readiness-final.ps1"
+& "$PSScriptRoot/check-ui-foundation.ps1"
 
 dotnet tool restore
 dotnet restore GameNet.slnx
