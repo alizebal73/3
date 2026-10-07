@@ -6,5 +6,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared\GameNet.Shared.csproj" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
   </ItemGroup>
 </Project>
