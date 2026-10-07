@@ -11,7 +11,9 @@ public sealed record AgentCommandAdmission(
     bool Duplicate,
     bool InProgress,
     string? ErrorCode,
-    string? IdempotencyLeaseToken);
+    string? IdempotencyLeaseToken,
+    int? ReplayStatusCode,
+    string? ReplayResponseJson);
 
 public sealed class AgentCommandGuard(
     IAgentConnectionLeaseStore leases,
@@ -83,7 +85,9 @@ public sealed class AgentCommandGuard(
                     Duplicate: true,
                     InProgress: false,
                     ErrorCode: ApiErrorCodes.AgentCommandReplay,
-                    IdempotencyLeaseToken: null);
+                    IdempotencyLeaseToken: null,
+                    ReplayStatusCode: claim.StatusCode,
+                    ReplayResponseJson: claim.ResponseJson);
             }
 
             if (claim.InProgress)
@@ -93,7 +97,9 @@ public sealed class AgentCommandGuard(
                     Duplicate: false,
                     InProgress: true,
                     ErrorCode: ApiErrorCodes.AgentCommandInProgress,
-                    IdempotencyLeaseToken: null);
+                    IdempotencyLeaseToken: null,
+                    ReplayStatusCode: null,
+                    ReplayResponseJson: null);
             }
 
             if (!claim.Acquired ||
@@ -107,7 +113,9 @@ public sealed class AgentCommandGuard(
                 Duplicate: false,
                 InProgress: false,
                 ErrorCode: null,
-                IdempotencyLeaseToken: claim.LeaseToken);
+                IdempotencyLeaseToken: claim.LeaseToken,
+                ReplayStatusCode: null,
+                ReplayResponseJson: null);
         }
         catch (InvalidOperationException)
         {
@@ -136,7 +144,9 @@ public sealed class AgentCommandGuard(
             Duplicate: false,
             InProgress: false,
             ErrorCode: code,
-            IdempotencyLeaseToken: null);
+            IdempotencyLeaseToken: null,
+            ReplayStatusCode: null,
+            ReplayResponseJson: null);
 }
 
 public sealed record AgentCommandIdempotency(
