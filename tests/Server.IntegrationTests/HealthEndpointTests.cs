@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace GameNet.Server.IntegrationTests;
 
-public sealed class HealthEndpointTests(IClassFixture<WebApplicationFactory<Program>> fixture)
+public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
+    : IClassFixture<WebApplicationFactory<Program>>
 {
     [Fact]
     public async Task Live_health_endpoint_is_available()

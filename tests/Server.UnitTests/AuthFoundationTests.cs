@@ -1,6 +1,7 @@
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Shared.Contracts.V1.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameNet.Server.UnitTests;

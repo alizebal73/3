@@ -1,6 +1,7 @@
 using GameNet.Desktop.Api;
 using GameNet.Desktop.Infrastructure.Hosting;
 using GameNet.Desktop.UI.State;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Windows;
 

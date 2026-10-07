@@ -1,6 +1,7 @@
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
