@@ -113,6 +113,8 @@ public sealed class AgentCommandGuardTests
         Assert.False(admission.Accepted);
         Assert.True(admission.Duplicate);
         Assert.Equal(ApiErrorCodes.AgentCommandReplay, admission.ErrorCode);
+        Assert.Equal(202, admission.ReplayStatusCode);
+        Assert.Equal("{\"accepted\":true}", admission.ReplayResponseJson);
     }
 
     [Fact]
