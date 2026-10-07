@@ -77,14 +77,18 @@ foreach ($project in $testProjects) {
     $relative = [System.IO.Path]::GetRelativePath($root, $projectFullPath).Replace([string][char]92, '/')
     [xml]$projectXml = Get-Content $project.FullName -Raw
 
-    $isTestProject = @($projectXml.Project.PropertyGroup.IsTestProject) |
-        Where-Object { "$($_)" -eq 'true' } |
-        Select-Object -First 1
+    $isTestProject = @(
+        $projectXml.SelectNodes('/Project/PropertyGroup/IsTestProject') |
+            ForEach-Object { [string]$_.InnerText }
+    ) | Where-Object { $_ -eq 'true' } | Select-Object -First 1
     if (-not $isTestProject) {
         throw "Test project is not explicitly marked IsTestProject=true: $relative"
     }
 
-    $packageNames = @($projectXml.Project.ItemGroup.PackageReference | ForEach-Object { [string]$_.Include })
+    $packageNames = @(
+        $projectXml.SelectNodes('/Project/ItemGroup/PackageReference') |
+            ForEach-Object { [string]$_.Include }
+    )
     if ($packageNames -notcontains 'Microsoft.NET.Test.Sdk') {
         throw "Test project is missing Microsoft.NET.Test.Sdk: $relative"
     }
@@ -92,9 +96,10 @@ foreach ($project in $testProjects) {
         throw "Test project is missing xunit: $relative"
     }
 
-    $isCertificationProject = @($projectXml.Project.PropertyGroup.GameNetCertificationProject) |
-        Where-Object { "$($_)" -eq 'true' } |
-        Select-Object -First 1
+    $isCertificationProject = @(
+        $projectXml.SelectNodes('/Project/PropertyGroup/GameNetCertificationProject') |
+            ForEach-Object { [string]$_.InnerText }
+    ) | Where-Object { $_ -eq 'true' } | Select-Object -First 1
 
     if ($isCertificationProject) {
         $certificationCount++
