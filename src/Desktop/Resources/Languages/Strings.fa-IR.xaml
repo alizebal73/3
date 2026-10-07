@@ -27,6 +27,8 @@
     <sys:String x:Key="FoundationContent">این بخش در Foundation فقط جایگاه و قرارداد خود را دارد. منطق کسب‌وکار بعد از Certification پایه اضافه می‌شود.</sys:String>
     <sys:String x:Key="OfflineMessage">ارتباط با Server برقرار نیست. برنامه باید بتواند پوسته را بدون خطا نمایش دهد؛ عملیات authoritative تا بازگشت اتصال قابل اجرا نیستند.</sys:String>
     <sys:String x:Key="BusyMessage">در حال دریافت وضعیت Server...</sys:String>
+    <sys:String x:Key="ErrorServerNotReady">Server در دسترس است، اما هنوز آماده نیست.</sys:String>
+    <sys:String x:Key="ErrorServerUnavailable">ارتباط با Server برقرار نیست.</sys:String>
     <sys:String x:Key="NavHome">خانه</sys:String>
     <sys:String x:Key="NavStations">سیستم‌ها</sys:String>
     <sys:String x:Key="NavCustomers">مشتریان</sys:String>

@@ -56,8 +56,7 @@ public sealed class ServerConnectivityMonitor(
             if (State.Connection == UiConnectionState.Offline)
             {
                 State.ErrorCode = "SERVER_NOT_READY";
-                State.ErrorMessage =
-                    "The GameNet Server is reachable but is not ready.";
+                State.ErrorMessage = null;
             }
 
             logger.LogDebug(
@@ -76,8 +75,7 @@ public sealed class ServerConnectivityMonitor(
         {
             State.Connection = UiConnectionState.Offline;
             State.ErrorCode = "SERVER_UNAVAILABLE";
-            State.ErrorMessage =
-                "The GameNet Server is unavailable.";
+            State.ErrorMessage = null;
 
             logger.LogWarning(
                 exception,

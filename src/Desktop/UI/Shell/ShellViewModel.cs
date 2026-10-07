@@ -126,7 +126,14 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
 
     public bool HasError => !string.IsNullOrWhiteSpace(UiState.ErrorMessage);
 
-    public string ErrorMessage => UiState.ErrorMessage ?? string.Empty;
+    public string ErrorMessage => UiState.ErrorCode switch
+    {
+        "SERVER_NOT_READY" => _language.GetString("ErrorServerNotReady"),
+        "SERVER_UNAVAILABLE" => _language.GetString("ErrorServerUnavailable"),
+        _ when !string.IsNullOrWhiteSpace(UiState.ErrorMessage) =>
+            UiState.ErrorMessage!,
+        _ => string.Empty
+    };
 
     public UiCommand SelectNavigationCommand { get; }
 
