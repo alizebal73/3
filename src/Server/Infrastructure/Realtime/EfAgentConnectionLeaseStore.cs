@@ -24,6 +24,14 @@ public sealed class EfAgentConnectionLeaseStore(
             cancellationToken);
     }
 
+    public Task<AgentConnectionLeaseState?> GetCurrentAsync(
+        string deviceId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceId);
+        return ReadCurrentAsync(deviceId, cancellationToken);
+    }
+
     public async Task<bool> RenewAsync(
         string deviceId,
         string connectionId,
@@ -157,7 +165,7 @@ public sealed class EfAgentConnectionLeaseStore(
             """,
             cancellationToken);
 
-        var current = await ReadAsync(request.DeviceId, cancellationToken);
+        var current = await ReadCurrentAsync(request.DeviceId, cancellationToken);
 
         if (current is null)
             throw new InvalidOperationException(
@@ -195,7 +203,7 @@ public sealed class EfAgentConnectionLeaseStore(
 
         if (updated != 1)
         {
-            var winner = await ReadAsync(request.DeviceId, cancellationToken);
+            var winner = await ReadCurrentAsync(request.DeviceId, cancellationToken);
             return winner is null ? null : winner with { IsAuthoritative = false };
         }
 
@@ -207,7 +215,7 @@ public sealed class EfAgentConnectionLeaseStore(
             true);
     }
 
-    private async Task<AgentConnectionLeaseState?> ReadAsync(
+    private async Task<AgentConnectionLeaseState?> ReadCurrentAsync(
         string deviceId,
         CancellationToken cancellationToken)
     {
