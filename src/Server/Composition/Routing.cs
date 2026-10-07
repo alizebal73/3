@@ -43,6 +43,12 @@ public static class Routing
                 : Results.StatusCode(StatusCodes.Status503ServiceUnavailable))
             .AllowAnonymous();
 
+        app.MapGet("/api/v1/system/metrics", (
+            [FromServices] PlatformMetrics metrics) =>
+            Results.Ok(metrics.Snapshot()))
+            .AllowAnonymous()
+            .WithName("PlatformMetrics");
+
         app.MapGet("/api/v1/system/build-info", (
             [FromServices] StartupState state,
             HttpContext context) =>
