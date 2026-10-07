@@ -27,8 +27,6 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("foundation-test-1", response.Headers.GetValues("X-Correlation-Id").Single());
     }
-}
-
 
     [Fact]
     public async Task Operation_id_is_generated_and_returned()
@@ -37,6 +35,7 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
         using var response = await client.GetAsync("/health/live");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
         var operationId = response.Headers.GetValues("X-Operation-Id").Single();
         Assert.False(string.IsNullOrWhiteSpace(operationId));
         Assert.True(operationId.Length <= 128);
@@ -82,3 +81,4 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
 
         Assert.True(sawRateLimit);
     }
+}
