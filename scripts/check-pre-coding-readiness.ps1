@@ -14,6 +14,7 @@ $required = @(
     "docs\planning\product-validation.md",
     "docs\architecture\runtime-topology.md",
     "docs\architecture\data-ownership-and-integration-map.md",
+    "docs\architecture\foundation-closure-matrix.md",
     "docs\operations\scale-capacity-slos.md",
     "docs\operations\environment-matrix.md",
     "docs\operations\database-change-policy.md",
