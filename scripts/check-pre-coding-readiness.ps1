@@ -73,6 +73,45 @@ if ($moduleCs.Count -gt 0 -or $featureImpl.Count -gt 0) {
         throw "A foundation-certified-* tag is required before business implementation."
     }
 
+    $protectedFoundationPaths = @(
+        "src/Server/Program.cs",
+        "src/Server/Composition/",
+        "src/Server/Infrastructure/",
+        "src/Server/Persistence/",
+        "src/Client/Transport/",
+        "src/Client/Identity/",
+        "src/Client/Agent/",
+        "src/Desktop/Shell/",
+        "src/Desktop/UI/",
+        "src/Desktop/Api/",
+        "src/Desktop/Localization/",
+        "src/Desktop/Resources/",
+        "src/Shared/Primitives/",
+        "src/Shared/Contracts/V1/Api/",
+        "src/Shared/Contracts/V1/Protocol/",
+        ".github/workflows/foundation-local.yml"
+    )
+
+    $changedAfterCertification = @(
+        & git -C $root diff --name-only "$latestCertificationTag..HEAD"
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    $protectedChanges = @(
+        foreach ($path in $changedAfterCertification) {
+            foreach ($protected in $protectedFoundationPaths) {
+                if ($path -eq $protected -or $protected.EndsWith("/") -and $path.StartsWith($protected, [StringComparison]::OrdinalIgnoreCase)) {
+                    $path
+                    break
+                }
+            }
+        }
+    ) | Sort-Object -Unique
+
+    if ($protectedChanges.Count -gt 0) {
+        $details = $protectedChanges -join ", "
+        throw "Foundation certification is invalidated by protected Foundation changes after $latestCertificationTag: $details"
+    }
+
     Write-Host "Pre-coding gate: certified Foundation ancestor = $latestCertificationTag"
 }
 
