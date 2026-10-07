@@ -2,6 +2,8 @@ using GameNet.Server.Infrastructure;
 using GameNet.Server.Infrastructure.Hosting;
 using GameNet.Server.Infrastructure.Observability;
 using GameNet.Server.Infrastructure.Security;
+using GameNet.Server.Persistence;
+using GameNet.Shared.Contracts.V1.Api;
 using GameNet.Shared.Contracts.V1.System;
 using GameNet.Shared.Primitives;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +42,27 @@ public static class Routing
                 ? Results.Ok(new { status = "ready" })
                 : Results.StatusCode(StatusCodes.Status503ServiceUnavailable))
             .AllowAnonymous();
+
+        app.MapGet("/api/v1/system/build-info", (
+            [FromServices] StartupState state,
+            HttpContext context) =>
+        {
+            var operationId = context.Items[typeof(OperationId)] is OperationId id
+                ? id.Value
+                : string.Empty;
+
+            return Results.Ok(new ApiEnvelope<BuildInfoResponse>(
+                ContractVersions.V1,
+                context.Items[typeof(CorrelationId)] is CorrelationId correlation
+                    ? correlation.Value
+                    : string.Empty,
+                operationId,
+                DateTimeOffset.UtcNow,
+                new BuildInfoResponse(
+                    state.Version,
+                    ContractVersions.V1,
+                    DatabaseSchemaVersion.Current)));
+        }).AllowAnonymous().WithName("BuildInfo");
 
         app.MapGet("/", () => Results.Ok(new
         {
