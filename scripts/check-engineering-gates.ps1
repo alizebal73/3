@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$root = Join-Path $PSScriptRoot ".."
+$root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $workflowPath = Join-Path $root ".github\workflows\foundation-local.yml"
 $verifyPath = Join-Path $root "scripts\verify.ps1"
 $solutionPath = Join-Path $root "GameNet.slnx"
@@ -38,7 +38,14 @@ foreach ($pattern in @(
 }
 
 [xml]$solution = Get-Content $solutionPath -Raw
-$solutionProjects = @($solution.Solution.Project | ForEach-Object { [string]$_.Path })
+$solutionDirectory = Split-Path -Parent $solutionPath
+$solutionProjects = @(
+    $solution.Solution.Project |
+        ForEach-Object {
+            $candidate = Join-Path $solutionDirectory ([string]$_.Path)
+            [System.IO.Path]::GetFullPath($candidate).Replace([string][char]92, "/")
+        }
+)
 
 $testProjects = @(Get-ChildItem (Join-Path $root "tests") -Recurse -File -Filter *.csproj)
 if ($testProjects.Count -eq 0) {
@@ -46,7 +53,8 @@ if ($testProjects.Count -eq 0) {
 }
 
 foreach ($project in $testProjects) {
-    $relative = $project.FullName.Substring($root.Length + 1).Replace([string][char]92, "/")
+    $projectFullPath = [System.IO.Path]::GetFullPath($project.FullName)
+    $relative = [System.IO.Path]::GetRelativePath($root, $projectFullPath).Replace([string][char]92, "/")
     [xml]$projectXml = Get-Content $project.FullName -Raw
     $isTestProject = @($projectXml.Project.PropertyGroup.IsTestProject) |
         Where-Object { "$_" -eq "true" } |
@@ -65,7 +73,7 @@ foreach ($project in $testProjects) {
         throw "Test project is missing xunit: $relative"
     }
 
-    if ($solutionProjects -notcontains $relative) {
+    if ($solutionProjects -notcontains $projectFullPath.Replace([string][char]92, "/")) {
         throw "Test project is missing from GameNet.slnx: $relative"
     }
 }
