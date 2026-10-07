@@ -42,9 +42,7 @@ public static class ReleasePackageVerifier
     {
         var fullPath = Path.GetFullPath(Path.Combine(root, relativePath));
 
-        var rootWithSeparator = root.EndsWith(
-            Path.DirectorySeparatorChar,
-            StringComparison.Ordinal)
+        var rootWithSeparator = root.EndsWith(Path.DirectorySeparatorChar)
             ? root
             : root + Path.DirectorySeparatorChar;
 
