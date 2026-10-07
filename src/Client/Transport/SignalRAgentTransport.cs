@@ -60,10 +60,13 @@ public sealed class SignalRAgentTransport(
                     return Task.CompletedTask;
                 };
 
-                _connection.Reconnected += async _ =>
+                _connection.Reconnected += _ =>
                 {
                     _leaseToken = null;
-                    await AcquireLeaseAsync(CancellationToken.None);
+                    logger.LogInformation(
+                        "Agent transport reconnected; lease will be reacquired before the next heartbeat. DeviceId={DeviceId}",
+                        identity.DeviceId);
+                    return Task.CompletedTask;
                 };
 
                 _connection.Closed += error =>
