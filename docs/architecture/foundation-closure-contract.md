@@ -19,7 +19,7 @@ No item is called Foundation Certified until all required Static/Runtime/Policy 
 | FND-001 | Canonical verification gate is self-consistent | `scripts\verify.ps1` passes and every guard agrees with the current architecture | Closed — Static / Runtime gate #132 passed |
 | FND-002 | Layer/dependency boundaries | Architecture guard + no direct Desktop/Agent DB or Server-implementation references | Closed — Static |
 | FND-003 | Clean PostgreSQL migration | Disposable clean DB migrates from empty state with no pending migrations | Pending — Runtime |
-| FND-004 | Upgrade migration path | Upgrade-from-previous-version test plus reviewed migration SQL/bundle | Open — Implementation |
+| FND-004 | Upgrade migration path | Upgrade-from-previous-version test plus reviewed migration SQL/bundle | Closed — Static; Runtime pending |
 | FND-005 | Serializable transaction coordinator | Real PostgreSQL concurrency/serialization retry evidence | Pending — Runtime |
 | FND-006 | Idempotency ownership/fencing | Concurrent claim, stale-owner completion rejection, replay evidence | Pending — Runtime |
 | FND-007 | Append-only audit | EF mutation guard plus PostgreSQL UPDATE/DELETE rejection evidence | Pending — Runtime |
@@ -30,16 +30,16 @@ No item is called Foundation Certified until all required Static/Runtime/Policy 
 | FND-012 | Agent reconciliation authority | Reconciliation re-checks live DB lease ownership and expiry | Closed — Static; Runtime pending |
 | FND-013 | Durable DeviceId | Restart/relaunch reuses stored identity and never accepts mutable runtime override | Closed — Static; Runtime pending |
 | FND-014 | Credential lifecycle | Real HTTP provision → token → rotation → revocation → expiry evidence | Pending — Runtime |
-| FND-015 | Agent abuse/rate limiting | Token/provision/rotate/revoke endpoints have bounded abuse controls and tests | Open — Implementation |
+| FND-015 | Agent abuse/rate limiting | Token/provision/rotate/revoke endpoints have bounded abuse controls and tests | Closed — Static; Runtime pending |
 | FND-016 | Production TLS posture | HTTPS endpoint/certificate/trust path verified on approved Windows environment | Open — Runtime/Policy |
 | FND-017 | Health/readiness authority | live/health/ready behavior verified with healthy, starting and dependency-failure states | Pending — Runtime |
-| FND-018 | Correlation/error contract | Correlation + stable API failure envelope + operation identity are end-to-end testable | Open — Implementation |
-| FND-019 | Build/version diagnostics | BuildInfo/compatible version information is exposed by the Server and consumed by diagnostics | Open — Implementation |
-| FND-020 | Operational diagnostics | Support bundle/status surface can collect non-sensitive diagnostic evidence | Open — Implementation |
+| FND-018 | Correlation/error contract | Correlation + stable API failure envelope + operation identity are end-to-end testable | Closed — Static; Runtime pending |
+| FND-019 | Build/version diagnostics | BuildInfo/compatible version information is exposed by the Server and consumed by diagnostics | Closed — Static; Runtime pending |
+| FND-020 | Operational diagnostics | Support bundle/status surface can collect non-sensitive diagnostic evidence | Closed — Static; Runtime pending |
 | FND-021 | Native WPF shell | Native process launch and real Desktop↔Server smoke on approved Windows | Pending — Runtime |
 | FND-022 | UI shell completeness | Global navigation, command model, keyboard/F1, notification/status and core state model are closed before business screens | Open — Implementation |
 | FND-023 | UI resilience/accessibility | Loading/empty/error/offline/stale/permission-denied + RTL/LTR + keyboard/accessibility evidence | Open — Implementation/Runtime |
-| FND-024 | Agent command safety contract | CommandId, expiry, acknowledgement, duplicate handling and authoritative Device/lease checks are implemented before real ClientControl | Open — Implementation |
+| FND-024 | Agent command safety contract | CommandId, expiry, acknowledgement, duplicate handling and authoritative Device/lease checks are implemented before real ClientControl | Closed — Static; Runtime pending |
 | FND-025 | Agent command runtime proof | Real launch/stop/lock/restart/maintenance/diagnostic command acknowledgement and reconnect safety | Business — Deferred to ClientControl slice |
 | FND-026 | Desktop↔Server runtime smoke | Real Server health + reconnect/offline recovery through native Desktop | Pending — Runtime |
 | FND-027 | Agent service installation | Clean install under intended Windows service identity with DPAPI credential persistence | Pending — Runtime |
