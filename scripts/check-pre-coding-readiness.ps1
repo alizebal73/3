@@ -55,8 +55,25 @@ if ($moduleCs.Count -gt 0) {
 
 $featureImpl = @(Get-ChildItem (Join-Path $root "src\Desktop\Features") -Recurse -File |
     Where-Object { $_.Extension -in ".cs", ".xaml" })
-if ($featureImpl.Count -gt 0) {
-    throw "Desktop business feature implementation exists before Foundation certification."
+
+if ($moduleCs.Count -gt 0 -or $featureImpl.Count -gt 0) {
+    $certificationTags = @(
+        & git -C $root tag --merged HEAD --list "foundation-certified-*"
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    if ($certificationTags.Count -eq 0) {
+        throw "Business feature implementation requires an ancestor foundation-certified-* tag."
+    }
+
+    $latestCertificationTag = @(
+        & git -C $root for-each-ref --sort=-creatordate --format="%(refname:short)" "refs/tags/foundation-certified-*"
+    ) | Select-Object -First 1
+
+    if ([string]::IsNullOrWhiteSpace($latestCertificationTag)) {
+        throw "A foundation-certified-* tag is required before business implementation."
+    }
+
+    Write-Host "Pre-coding gate: certified Foundation ancestor = $latestCertificationTag"
 }
 
 $workflowRoot = Join-Path $root ".github\workflows"
