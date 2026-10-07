@@ -10,5 +10,12 @@ public sealed record BackupArtifact(
 public interface IBackupStore
 {
     Task<BackupArtifact> CreateAsync(CancellationToken cancellationToken = default);
-    Task<bool> VerifyAsync(BackupArtifact artifact, CancellationToken cancellationToken = default);
+
+    Task<bool> VerifyAsync(
+        BackupArtifact artifact,
+        CancellationToken cancellationToken = default);
+
+    Task RestoreAsync(
+        BackupArtifact artifact,
+        CancellationToken cancellationToken = default);
 }
