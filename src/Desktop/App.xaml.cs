@@ -13,10 +13,8 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        Language.SetLanguage(
-            CultureInfo.GetCultureInfo("fa-IR"));
-
         MainWindow = new MainWindow();
+        Language.SetLanguage(CultureInfo.GetCultureInfo("fa-IR"));
         MainWindow.Show();
     }
 }
