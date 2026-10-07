@@ -13,15 +13,19 @@ public static class AgentMessageTypes
 public sealed record AgentCommand<TPayload>(
     CommandId CommandId,
     string DeviceId,
+    string LeaseToken,
     DateTimeOffset SentAtUtc,
+    DateTimeOffset ExpiresAtUtc,
     string Type,
     TPayload Payload);
 
 public sealed record CommandAcknowledgement(
     CommandId CommandId,
     string DeviceId,
+    string LeaseToken,
     DateTimeOffset ReceivedAtUtc,
     bool Success,
+    bool Duplicate,
     string? ErrorCode);
 
 public sealed record AgentHeartbeat(
