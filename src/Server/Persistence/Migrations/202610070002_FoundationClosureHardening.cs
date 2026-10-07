@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GameNet.Server.Persistence.Migrations;
 
+[Migration("202610070002_FoundationClosureHardening")]
 public partial class FoundationClosureHardening : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
