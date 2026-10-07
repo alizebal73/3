@@ -98,8 +98,6 @@ public sealed class ServerConnectivityMonitor(
     {
         try
         {
-            await RefreshAsync(cancellationToken);
-
             var seconds = Math.Clamp(
                 options.Value.HealthRefreshSeconds,
                 5,
