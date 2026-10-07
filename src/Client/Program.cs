@@ -18,6 +18,8 @@ builder.Services
         "GameNet:AgentTransport:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
     .Validate(options => options.HeartbeatIntervalSeconds is >= 2 and <= 60,
         "HeartbeatIntervalSeconds must be between 2 and 60.")
+    .Validate(options => options.InitialRetrySeconds is >= 1 and <= 120,
+        "InitialRetrySeconds must be between 1 and 120.")
     .ValidateOnStart();
 
 builder.Services
