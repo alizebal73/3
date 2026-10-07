@@ -20,6 +20,7 @@ public interface IAgentConnectionLeaseStore
         AgentHeartbeat heartbeat,
         string connectionId,
         string leaseToken,
+        TimeSpan leaseDuration,
         CancellationToken cancellationToken = default);
 
     Task ReleaseIfOwnerAsync(
