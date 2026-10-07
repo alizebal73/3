@@ -29,34 +29,36 @@ A README, interface, test project or green static guard is not runtime certifica
 
 Run from the exact final commit:
 
-1. `scripts/verify.ps1`
-2. `scripts/certify-desktop.ps1`
-3. set `GAMENET_DATABASE` to a disposable PostgreSQL database
-4. set `GAMENET_RESTORE_DATABASE` to a separate disposable PostgreSQL database
-5. `scripts/certify-postgresql.ps1`
+1. scripts/verify.ps1
+2. scripts/certify-desktop.ps1
+3. set GAMENET_DATABASE to a disposable PostgreSQL database
+4. set GAMENET_RESTORE_DATABASE to a separate disposable PostgreSQL database
+5. scripts/certify-postgresql.ps1
 6. run the documented authenticated Agent connection/reconnect/heartbeat/fencing scenarios;
 7. generate and validate the release migration artifact;
 8. generate the release SBOM and record dependency/license/vulnerability review;
 9. execute local install/update/rollback smoke;
 10. record the final evidence artifact.
 
-`certify-postgresql.ps1` exercises migration state, idempotency concurrency, database-level audit immutability, Outbox fencing, Agent lease fencing, real PostgreSQL backup creation/verification and restore into an isolated target.
+certify-postgresql.ps1 exercises migration state, idempotency concurrency, database-level audit immutability, Outbox fencing, Agent lease fencing, real PostgreSQL backup creation/verification and restore into an isolated target.
 
-## Intentionally policy-open items
+## Current policy baseline
 
-These are not silently assumed by Foundation code:
-- owner-approved RPO/RTO;
-- retention periods;
-- production update signing ownership;
-- supported LAN/WAN failure envelope;
-- payment-provider integration scope;
-- heavy-reporting strategy;
-- scale-envelope approval.
+The policy baseline is no longer hidden/open inside Foundation:
 
-A feature touching an open policy must first close it with an ADR or approved requirement.
+- RPO/RTO: accepted baseline <=15 min / <=60 min; release claim still requires runtime evidence.
+- Verified-backup retention: accepted baseline 30 days; module-specific personal-data retention may be set by later requirements.
+- Update signing: accepted baseline requires organization-controlled code signing plus SHA-256 verification; private key stays outside the repo/runtime.
+- Network failure envelope: accepted baseline is Server authority, Desktop offline behavior, and Agent authority loss after lease expiry followed by reconciliation before commands resume.
+- Reporting: accepted as read-only, with measured need + ADR required before heavier projection/read-replica architecture.
+- Scale: accepted Foundation baseline is up to 50 Agents on one shop/server; 100 is a measured future expansion target.
+- Multi-shop/multi-tenant: explicitly outside the first release unless a new approved requirement changes scope.
+- External payment-provider integration: explicitly deferred from Foundation; it must be resolved before the affected payment Business slice reaches Definition of Ready.
+
+These decisions remove policy ambiguity; they do not replace runtime evidence.
 
 ## Certification authority
 
 The approved Windows machine is the certification authority.
 
-GitHub is source control and review. The manual self-hosted workflow may orchestrate the same scripts, but a GitHub checkmark cannot replace local runtime evidence.
+GitHub is source control and review. The self-hosted workflow may orchestrate the same canonical scripts, but a GitHub checkmark cannot replace local runtime evidence.
