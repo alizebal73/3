@@ -11,9 +11,7 @@ public partial class App : Application
 {
     private IHost? _host;
 
-    public static LanguageService Language =>
-        Current.Properties["GameNet.LanguageService"] as LanguageService
-        ?? throw new InvalidOperationException("Desktop language service is not initialized.");
+    public static LanguageService Language { get; private set; } = null!;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -22,9 +20,8 @@ public partial class App : Application
         _host = DesktopHost.Build();
         await _host.StartAsync();
 
-        var language = _host.Services.GetRequiredService<LanguageService>();
-        Current.Properties["GameNet.LanguageService"] = language;
-        language.SetLanguage(CultureInfo.GetCultureInfo("fa-IR"));
+        Language = _host.Services.GetRequiredService<LanguageService>();
+        Language.SetLanguage(CultureInfo.GetCultureInfo("fa-IR"));
 
         MainWindow = _host.Services.GetRequiredService<Shell.MainWindow>();
         MainWindow.Show();
