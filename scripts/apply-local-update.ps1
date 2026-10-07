@@ -12,7 +12,10 @@ param(
     [string]$ServiceName,
     [string]$HealthUrl,
 
-    [string]$CurrentManifestPath
+    [Parameter(Mandatory = $true)]
+    [string]$CurrentManifestPath,
+
+    [string]$ExpectedPublisher
 )
 
 $ErrorActionPreference = "Stop"
@@ -96,6 +99,12 @@ function Invoke-ServiceHealthCheck {
 $package = (Resolve-Path $PackageRoot).Path
 $install = [System.IO.Path]::GetFullPath($InstallRoot)
 $manifest = Read-And-VerifyManifest -Root $package
+
+if (-not [string]::IsNullOrWhiteSpace($ExpectedPublisher)) {
+    & (Join-Path $PSScriptRoot "verify-release-signatures.ps1") `
+        -Root $package `
+        -ExpectedPublisher $ExpectedPublisher
+}
 
 if (-not [string]::IsNullOrWhiteSpace($CurrentManifestPath)) {
     if (-not (Test-Path $CurrentManifestPath -PathType Leaf)) {
