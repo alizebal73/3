@@ -31,7 +31,8 @@ $requiredPaths = @(
     "src\Server\Infrastructure\Realtime\AgentHub.cs",
     "src\Server\Modules\README.md",
     "src\Server\Persistence\Migrations\202610070001_FoundationInfrastructure.cs",
-    "src\Server\Persistence\Migrations\GameNetDbContextModelSnapshot.cs"
+    "src\Server\Persistence\Migrations\GameNetDbContextModelSnapshot.cs",
+    "src\Server\appsettings.json"
 )
 
 foreach ($relativePath in $requiredPaths) {
