@@ -17,7 +17,7 @@ public sealed class BackupRestoreRulesTests
     public void Unverified_backup_is_rejected()
     {
         Assert.Throws<InvalidOperationException>(() =>
-            BackupRestoreRules.EnsureRestoreAllowed(true: false, explicitOperatorApproval: true, serverStopped: true));
+            BackupRestoreRules.EnsureRestoreAllowed(verificationPassed: false, explicitOperatorApproval: true, serverStopped: true));
     }
 
     [Fact]
