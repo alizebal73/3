@@ -21,6 +21,14 @@ $serverProject = Join-Path $root "src\Server\GameNet.Server.csproj"
 
 Invoke-Checked "dotnet" @("tool","restore")
 
+if (-not (Test-Path $serverProject -PathType Leaf)) {
+    throw "Server project was not found: $serverProject"
+}
+
+# EF design-time commands require the server project assets to exist. Restore it
+# explicitly so certification does not depend on a previous unrelated build.
+Invoke-Checked "dotnet" @("restore",$serverProject)
+
 # Fail closed if the built application does not expose the expected migration chain.
 $efMigrationListArgs = @("ef","migrations","list","--project",$serverProject,"--startup-project",$serverProject,"--configuration","Release")
 $migrations = & dotnet @efMigrationListArgs 2>&1 | Out-String
