@@ -1,9 +1,10 @@
 using GameNet.Server.Infrastructure.Time;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace GameNet.Server.Infrastructure.Configuration;
 
-public sealed class GameNetOptionsValidator : IValidateOptions<GameNetOptions>
+public sealed class GameNetOptionsValidator(IHostEnvironment environment) : IValidateOptions<GameNetOptions>
 {
     public ValidateOptionsResult Validate(string? name, GameNetOptions options)
     {
@@ -47,6 +48,12 @@ public sealed class GameNetOptionsValidator : IValidateOptions<GameNetOptions>
         {
             return ValidateOptionsResult.Fail(
                 "GameNet:Agent:HeartbeatIntervalSeconds must be at least 2 and less than the lease duration.");
+        }
+
+        if (environment.IsProduction() && !options.Authentication.Enabled)
+        {
+            return ValidateOptionsResult.Fail(
+                "Production Server authentication must be enabled.");
         }
 
         if (options.Authentication.Enabled &&
