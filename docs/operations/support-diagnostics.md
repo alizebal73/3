@@ -52,3 +52,25 @@ Support diagnostics must be tested against:
 - concurrency conflict;
 - duplicate operation;
 - update failure.
+
+
+## Local bundle collector
+
+The repository provides `scripts/create-diagnostic-bundle.ps1` for the first-line operator/support bundle.
+
+It collects only non-secret operational evidence:
+- machine/tool metadata;
+- Server health/readiness;
+- correlation/operation identifiers returned by the health endpoint;
+- build/contract/schema information;
+- selected Windows service state.
+
+The collector explicitly records that passwords, access tokens, pairing secrets, signing keys and payment credentials are excluded.
+
+Example:
+
+```powershell
+.\scripts\create-diagnostic-bundle.ps1 -ServerUrl "http://127.0.0.1:5080"
+```
+
+Scenario-specific evidence for PostgreSQL outage, Agent offline, permission denial, concurrency conflicts, duplicate operations and update failures remains part of the corresponding runtime certification/vertical-slice tests.
