@@ -9,6 +9,10 @@ public interface IAgentConnectionLeaseStore
         TimeSpan leaseDuration,
         CancellationToken cancellationToken = default);
 
+    Task<AgentConnectionLeaseState?> GetCurrentAsync(
+        string deviceId,
+        CancellationToken cancellationToken = default);
+
     Task<bool> RenewAsync(
         string deviceId,
         string connectionId,
@@ -34,5 +38,4 @@ public interface IAgentConnectionLeaseStore
         string connectionId,
         string leaseToken,
         CancellationToken cancellationToken = default);
-
 }
