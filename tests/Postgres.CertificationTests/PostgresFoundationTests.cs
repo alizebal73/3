@@ -340,6 +340,47 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Agent_heartbeat_renews_owner_lease_and_stale_owner_is_rejected()
+    {
+        await using var setup = new GameNetDbContext(Options());
+        await setup.Database.ExecuteSqlRawAsync(
+            "delete from agent_connection_leases where device_id = 'foundation-heartbeat';");
+
+        var now = DateTimeOffset.UtcNow;
+        var store = new EfAgentConnectionLeaseStore(
+            setup,
+            new FixedClock(now));
+
+        var lease = await store.TryAcquireAsync(
+            new AgentConnectionLeaseRequest(
+                "foundation-heartbeat",
+                "connection-a",
+                now),
+            TimeSpan.FromSeconds(5));
+
+        var heartbeat = new AgentHeartbeat(
+            "foundation-heartbeat",
+            now.AddSeconds(1),
+            "1.0.0",
+            "Ready");
+
+        Assert.True(await store.RecordHeartbeatAsync(
+            heartbeat,
+            "connection-a",
+            lease!.LeaseToken,
+            TimeSpan.FromSeconds(15)));
+
+        Assert.False(await store.RecordHeartbeatAsync(
+            heartbeat,
+            "connection-a",
+            "stale-token",
+            TimeSpan.FromSeconds(15)));
+
+        await setup.Database.ExecuteSqlRawAsync(
+            "delete from agent_connection_leases where device_id = 'foundation-heartbeat';");
+    }
+
+    [Fact]
     public async Task Expired_outbox_owner_cannot_mark_message_published()
     {
         await using var cleanup = new GameNetDbContext(Options());
