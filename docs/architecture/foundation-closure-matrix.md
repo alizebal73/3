@@ -31,13 +31,13 @@ This matrix is the authoritative pre-feature closure list. A row is not closed m
 | Backup restore | yes | yes, isolated target only | disposable restore target | Platform-proof pending |
 | Migration deployment artifact | yes | bundle + reviewable SQL | migration build/review evidence | Implemented |
 | Update manifest/checksum | yes | yes | package verification tests | Implemented |
-| Update application/swap | yes | staging architecture | clean install/update/rollback smoke | Platform-proof pending |
+| Update application/swap | yes | local side-by-side staging + rollback script | clean install/update/rollback smoke | Platform-proof pending |
 | Installer packaging | yes | service/install scripts | clean-machine install | Platform-proof pending |
 | Supply-chain guard | yes | yes | canonical local verification | Implemented |
 | SBOM/dependency evidence | yes | policy defined | release artifact generation/review | Release-proof pending |
 | Scale/load harness | yes | scenarios + Tier S/M baseline | measured load evidence | Release/Foundation proof pending |
 | RPO/RTO policy | yes | baseline <=15m / <=60m | runtime recovery evidence | Accepted baseline; evidence pending |
-| Update signing | yes | production signing baseline documented | signed-package release evidence | Accepted baseline; implementation/evidence pending |
+| Update signing | yes | Authenticode signing + verification scripts | signed-package release evidence | Platform-proof pending |
 | Retention | yes | 30-day verified-backup baseline | release/ops evidence | Accepted baseline |
 | Network failure envelope | yes | explicit Server/Offline/lease-expiry baseline | reconnect/fencing evidence | Accepted baseline; evidence pending |
 | Payment integration | yes | business-deferred | feature-specific | Business-deferred |
