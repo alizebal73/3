@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace GameNet.Server.Infrastructure.Realtime;
 
-[Authorize]
+[Authorize(Policy = "AgentTransport")]
 public sealed class AgentHub(
     IAgentConnectionLeaseStore leases,
     IGameClock clock) : Hub
