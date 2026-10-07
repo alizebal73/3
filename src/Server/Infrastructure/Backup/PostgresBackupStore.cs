@@ -81,14 +81,17 @@ public sealed class PostgresBackupStore(
 
     public async Task RestoreAsync(
         BackupArtifact artifact,
+        string targetConnectionString,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(targetConnectionString);
+
         if (!await VerifyAsync(artifact, cancellationToken))
             throw new InvalidOperationException("Only a verified backup may be restored.");
 
         await RunPgToolAsync(
             options.Value.Backup.PgRestorePath,
-            CreateConnectionBuilder(),
+            CreateConnectionBuilder(targetConnectionString),
             artifact.FilePath,
             restore: true,
             cancellationToken,
@@ -112,9 +115,13 @@ public sealed class PostgresBackupStore(
     }
 
     private NpgsqlConnectionStringBuilder CreateConnectionBuilder() =>
-        new(options.Value.DatabaseConnectionString
+        CreateConnectionBuilder(
+            options.Value.DatabaseConnectionString
             ?? throw new InvalidOperationException(
                 "GameNet:DatabaseConnectionString is required for PostgreSQL backup operations."));
+
+    private static NpgsqlConnectionStringBuilder CreateConnectionBuilder(string connectionString) =>
+        new(connectionString);
 
     private static async Task RunPgToolAsync(
         string executable,
