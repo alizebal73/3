@@ -4,6 +4,10 @@ Set-StrictMode -Version Latest
 $root = Split-Path -Parent $PSScriptRoot
 
 $requiredPaths = @(
+    "global.json",
+    ".config\dotnet-tools.json",
+    "Directory.Packages.props",
+    "GameNet.slnx",
     "src\Server\GameNet.Server.csproj",
     "src\Client\GameNet.Agent.csproj",
     "src\Shared\GameNet.Shared.csproj",
