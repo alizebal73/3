@@ -27,6 +27,9 @@ public static class DesktopHost
                 out var uri) &&
                 uri.Scheme is Uri.UriSchemeHttp or Uri.UriSchemeHttps,
                 "GameNet:Desktop:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
+            .Validate(options =>
+                options.HealthRefreshSeconds is >= 5 and <= 300,
+                "GameNet:Desktop:HealthRefreshSeconds must be between 5 and 300.")
             .ValidateOnStart();
 
         builder.Services.AddSingleton<LanguageService>();
