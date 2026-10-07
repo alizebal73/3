@@ -15,7 +15,11 @@ partial class GameNetDbContextModelSnapshot : ModelSnapshot
 {
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+        modelBuilder
+            .HasAnnotation("ProductVersion", "10.0.12")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
         modelBuilder.Entity<AgentCredential>(b =>
         {
