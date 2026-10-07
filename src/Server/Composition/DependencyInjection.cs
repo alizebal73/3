@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentActor, HttpCurrentActor>();
         services.AddScoped<IAuditWriter, EfAuditWriter>();
         services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
-        services.AddScoped<IOutboxWriter, EfOutboxWriter>();
+        services.AddGameNetOutbox();
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
 
         services.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
