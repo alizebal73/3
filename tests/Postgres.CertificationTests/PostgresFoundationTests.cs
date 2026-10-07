@@ -65,6 +65,56 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Backup_can_be_restored_into_a_disposable_target()
+    {
+        var restoreConnection = Environment.GetEnvironmentVariable("GAMENET_RESTORE_DATABASE")
+            ?? throw new InvalidOperationException(
+                "GAMENET_RESTORE_DATABASE is required for restore certification.");
+
+        var root = Path.Combine(
+            Path.GetTempPath(),
+            "gamenet-backup-restore-cert",
+            Guid.NewGuid().ToString("N"));
+
+        Directory.CreateDirectory(root);
+
+        try
+        {
+            var options = Options.Create(new GameNetOptions
+            {
+                DatabaseConnectionString = Connection,
+                BackupRoot = root,
+                Backup = new BackupOptions()
+            });
+
+            var store = new PostgresBackupStore(
+                options,
+                new FixedClock(DateTimeOffset.UtcNow));
+
+            var artifact = await store.CreateAsync();
+            await store.RestoreAsync(artifact, restoreConnection);
+
+            await using var target = new GameNetDbContext(
+                new DbContextOptionsBuilder<GameNetDbContext>()
+                    .UseNpgsql(restoreConnection)
+                    .UseSnakeCaseNamingConvention()
+                    .Options);
+
+            Assert.True(await target.Database.CanConnectAsync());
+            var tableExists = await target.Database.SqlQueryRaw<bool>(
+                "select exists (select 1 from information_schema.tables where table_name = 'audit_entries') as \"Value\"")
+                .SingleAsync();
+
+            Assert.True(tableExists);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task Clean_database_is_reachable_and_migrated()
     {
         await using var db = new GameNetDbContext(Options());
