@@ -17,9 +17,13 @@ $serverUrl = if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_SERVER_URL)) {
     "http://127.0.0.1:5080"
 } else { $env:GAMENET_AGENT_SERVER_URL }
 
-if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET) -or [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_DEVICE_ID)) {
-    throw "Set GAMENET_AGENT_BOOTSTRAP_SECRET and GAMENET_AGENT_DEVICE_ID for real Agent certification. The credential must belong to that DeviceId."
+if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_PROVISIONING_KEY)) {
+    throw "Set GAMENET_AGENT_PROVISIONING_KEY for real Agent certification."
 }
+
+$deviceId = if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_DEVICE_ID)) {
+    "foundation-cert-" + [guid]::NewGuid().ToString("N")
+} else { $env:GAMENET_AGENT_DEVICE_ID }
 
 $identityRoot = Join-Path $env:TEMP ("GameNet-Agent-Cert-" + [guid]::NewGuid().ToString("N"))
 $logPath = Join-Path $identityRoot "agent.log"
@@ -30,7 +34,8 @@ foreach ($name in @(
     "GameNet__AgentTransport__ServerBaseUrl",
     "GameNet__AgentTransport__AllowInsecureHttpForDevelopment",
     "GameNet__AgentIdentity__RootPath",
-    "DOTNET_ENVIRONMENT"
+    "DOTNET_ENVIRONMENT",
+    "GAMENET_AGENT_BOOTSTRAP_SECRET"
 )) { $old[$name] = [Environment]::GetEnvironmentVariable($name) }
 
 try {
@@ -40,18 +45,35 @@ try {
     $env:DOTNET_ENVIRONMENT = "Development"
 
     @{
-        DeviceId = $env:GAMENET_AGENT_DEVICE_ID
+        DeviceId = $deviceId
     } | ConvertTo-Json -Compress |
         Set-Content -LiteralPath (Join-Path $identityRoot "identity.json") -Encoding utf8
 
-    $health = Invoke-RestMethod -Uri "$($serverUrl.TrimEnd('/'))/health" -Method Get -TimeoutSec 10
+NaN
     if ($health.status -ne "ok" -or $health.readiness -ne "ready") {
         throw "Server is reachable but not ready. Status=$($health.status); Readiness=$($health.readiness)"
     }
 
-    $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $logPath -RedirectStandardError (Join-Path $identityRoot "agent-error.log")
+    $provisionParams = @{
+NaN
+        Method = "Post"
+        Headers = @{ "X-GameNet-Agent-Provisioning-Key" = $env:GAMENET_AGENT_PROVISIONING_KEY }
+        ContentType = "application/json"
+        Body = (@{ DeviceId = $deviceId } | ConvertTo-Json -Compress)
+        TimeoutSec = 10
+    }
+    $credential = Invoke-RestMethod @provisionParams
+    if ([string]::IsNullOrWhiteSpace($credential.secret)) {
+        throw "Server provisioning returned an empty Agent credential."
+    }
+
+    $env:GAMENET_AGENT_BOOTSTRAP_SECRET = $credential.secret
+
+    $errorPath = Join-Path $identityRoot "agent-error.log"
+    $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $logPath -RedirectStandardError $errorPath
     try {
         $deadline = (Get-Date).AddSeconds(30)
+        $output = ""
         while ((Get-Date) -lt $deadline) {
             Start-Sleep -Seconds 2
             if ($process.HasExited) {
@@ -61,26 +83,42 @@ try {
 
             $output = if (Test-Path $logPath) { Get-Content $logPath -Raw } else { "" }
             if ($output -match "Agent heartbeat accepted") {
-                Write-Host "REAL AGENT TRANSPORT CERTIFICATION PASSED: Token -> SignalR -> Lease -> Heartbeat -> Reconciliation."
+                Write-Host "REAL AGENT TRANSPORT CERTIFICATION PASSED: provision -> token -> SignalR -> lease -> heartbeat -> reconciliation."
                 break
             }
         }
 
         if ($output -notmatch "Agent heartbeat accepted") {
-            throw "Agent process stayed alive but never proved Token -> SignalR -> Lease -> Heartbeat -> Reconciliation. Output: $output"
+            throw "Agent process stayed alive but never proved provision -> token -> SignalR -> lease -> heartbeat -> reconciliation. Output: $output"
         }
     }
     finally {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }
-        $output = (Get-Content $logPath -Raw -ErrorAction SilentlyContinue) + (Get-Content (Join-Path $identityRoot "agent-error.log") -Raw -ErrorAction SilentlyContinue)
-        if ($output -notmatch "Agent heartbeat accepted") { throw "Agent process stayed alive but did not prove Token -> SignalR -> Lease -> Heartbeat -> Reconciliation. Output: $output" }
-        Write-Host "REAL AGENT TRANSPORT CERTIFICATION PASSED: Token -> SignalR -> Lease -> Heartbeat -> Reconciliation."
+        $finalOutput = (Get-Content $logPath -Raw -ErrorAction SilentlyContinue) + (Get-Content $errorPath -Raw -ErrorAction SilentlyContinue)
+        if ($finalOutput -notmatch "Agent heartbeat accepted") {
+            throw "Agent process stayed alive but did not prove the authenticated transport lifecycle. Output: $finalOutput"
+        }
     }
 }
 finally {
+    $revokeParams = @{
+NaN
+        Method = "Post"
+        Headers = @{ "X-GameNet-Agent-Provisioning-Key" = $env:GAMENET_AGENT_PROVISIONING_KEY }
+        ContentType = "application/json"
+        Body = (@{ DeviceId = $deviceId; Reason = "foundation-certification" } | ConvertTo-Json -Compress)
+        TimeoutSec = 10
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($deviceId) -and -not [string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_PROVISIONING_KEY)) {
+        try { Invoke-RestMethod @revokeParams | Out-Null }
+        catch { Write-Warning "Agent certification credential revoke failed for DeviceId=$deviceId. Manual cleanup is required." }
+    }
+
     foreach ($name in $old.Keys) {
         if ($null -eq $old[$name]) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
         else { Set-Item "Env:$name" $old[$name] }
     }
+
     if (Test-Path $identityRoot) { Remove-Item $identityRoot -Recurse -Force -ErrorAction SilentlyContinue }
 }
