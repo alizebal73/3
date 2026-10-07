@@ -93,6 +93,7 @@ $requiredFiles = @(
     "tests\Desktop.Tests\LocalizationFoundationTests.cs",
     "scripts\certify-desktop.ps1",
     "scripts\certify-postgresql.ps1",
+    "scripts\create-release-manifest.ps1",
     "scripts\certify-foundation.ps1"
 )
 
