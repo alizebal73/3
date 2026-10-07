@@ -14,7 +14,7 @@ public interface IAgentTransport : IAsyncDisposable
         AgentHeartbeat heartbeat,
         CancellationToken cancellationToken = default);
 
-    Task<ReconciliationResponse> ReconcileAsync(
+    Task<AgentReconciliationResponse> ReconcileAsync(
         string deviceId,
         string reason,
         CancellationToken cancellationToken = default);
