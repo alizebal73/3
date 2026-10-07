@@ -52,9 +52,9 @@ public sealed class AgentTransportOptionsTests
 
     private sealed class TestHostEnvironment(string environmentName) : IHostEnvironment
     {
-        public string EnvironmentName { get; } = environmentName;
+        public string EnvironmentName { get; set; } = environmentName;
         public string ApplicationName { get; set; } = "GameNet.Agent.Tests";
-        public string? ContentRootPath { get; set; } = AppContext.BaseDirectory;
+        public string ContentRootPath { get; set; } = AppContext.BaseDirectory;
         public Microsoft.Extensions.FileProviders.IFileProvider ContentRootFileProvider { get; set; } =
             new Microsoft.Extensions.FileProviders.NullFileProvider();
     }
