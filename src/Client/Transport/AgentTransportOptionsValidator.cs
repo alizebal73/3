@@ -23,7 +23,7 @@ public sealed class AgentTransportOptionsValidator(
         }
 
         if (uri.Scheme == Uri.UriSchemeHttp &&
-            (environment.IsProduction() ||
+            (!environment.IsDevelopment() ||
              !options.AllowInsecureHttpForDevelopment))
         {
             return ValidateOptionsResult.Fail(
