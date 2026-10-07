@@ -90,7 +90,7 @@ public sealed class ServerConnectivityMonitor(
         }
     }
 
-    internal static bool IsReadyHealthResponse(string? status, string? readiness) =>
+    public static bool IsReadyHealthResponse(string? status, string? readiness) =>
         string.Equals(status, "ok", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(readiness, "ready", StringComparison.OrdinalIgnoreCase);
 
