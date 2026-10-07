@@ -56,7 +56,7 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
     public string CurrentPageTitle =>
         SelectedNavigation is null
             ? WindowTitle
-            : _language.GetString(SelectedNavigation.ResourceKey);
+            : SelectedNavigation.DisplayName;
 
     public string ConnectionText =>
         UiState.Connection switch
@@ -102,11 +102,22 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
 
     private void RebuildNavigation()
     {
+        var selectedId = SelectedNavigation?.Id;
+
         NavigationItems = NavigationCatalog.Items
             .Where(item => item.IsEnabled)
+            .Select(item => item with
+            {
+                DisplayName = _language.GetString(item.ResourceKey)
+            })
             .ToArray();
 
+        SelectedNavigation =
+            NavigationItems.FirstOrDefault(item => item.Id == selectedId)
+            ?? NavigationItems.FirstOrDefault();
+
         OnPropertyChanged(nameof(NavigationItems));
+        OnPropertyChanged(nameof(SelectedNavigation));
         OnPropertyChanged(nameof(CurrentPageTitle));
     }
 
