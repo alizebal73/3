@@ -112,7 +112,7 @@ if ($moduleCs.Count -gt 0 -or $featureImpl.Count -gt 0) {
 
     if ($protectedChanges.Count -gt 0) {
         $details = $protectedChanges -join ", "
-        throw "Foundation certification is invalidated by protected Foundation changes after $latestCertificationTag: $details"
+        throw "Foundation certification is invalidated by protected Foundation changes after ${latestCertificationTag}: $details"
     }
 
     Write-Host "Pre-coding gate: certified Foundation ancestor = $latestCertificationTag"
