@@ -25,7 +25,7 @@ public static class DesktopHost
                 options.ServerBaseUrl,
                 UriKind.Absolute,
                 out var uri) &&
-                uri.Scheme is Uri.UriSchemeHttp or Uri.UriSchemeHttps,
+                uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps,
                 "GameNet:Desktop:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
             .Validate(options =>
                 options.HealthRefreshSeconds is >= 5 and <= 300,
