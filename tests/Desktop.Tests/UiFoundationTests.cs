@@ -19,7 +19,11 @@ public sealed class UiFoundationTests
             items.Select(x => x.ResourceKey).Distinct(StringComparer.Ordinal).Count());
         Assert.All(
             items,
-            item => Assert.False(string.IsNullOrWhiteSpace(item.DisplayName)));
+            item =>
+            {
+                Assert.False(string.IsNullOrWhiteSpace(item.ResourceKey));
+                Assert.False(string.IsNullOrWhiteSpace(item.IconGlyph));
+            });
     }
 
     [Fact]
