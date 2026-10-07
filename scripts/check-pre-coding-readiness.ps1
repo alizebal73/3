@@ -17,6 +17,7 @@ $required = @(
     "docs\operations\agent-transport.md",
     "docs\research\foundation-research-and-repo2-failure-analysis.md",
     "docs\research\repo2-to-repo3-foundation-gap-matrix.md",
+    "docs\research\repo2-to-repo3-comprehensive-audit.md",
     "docs\architecture\foundation-closure-matrix.md",
     "docs\operations\scale-capacity-slos.md",
     "docs\operations\environment-matrix.md",
