@@ -165,7 +165,7 @@
                                    TextWrapping="Wrap"
                                    TextAlignment="Center"
                                    Foreground="{DynamicResource BrushTextSecondary}"
-                                   Text="{DynamicResource FoundationPlaceholder}"/>
+                                   Text="{DynamicResource FoundationContent}"/>
 
                         <Border Margin="0,22,0,0"
                                 Padding="18"
