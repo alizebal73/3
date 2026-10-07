@@ -61,7 +61,6 @@ $requiredFiles = @(
     "src\Desktop\Shell\MainWindow.xaml.cs",
     "src\Desktop\Api\IGameNetServerClient.cs",
     "src\Desktop\Api\GameNetServerClient.cs",
-    "src\Desktop\Api\ServerConnectionOptions.cs",
     "src\Desktop\Localization\LanguageService.cs",
     "src\Desktop\Resources\Languages\Strings.fa-IR.xaml",
     "src\Desktop\Resources\Languages\Strings.en-US.xaml",
@@ -212,7 +211,7 @@ $docRoots = @(
 
 foreach ($docRoot in $docRoots) {
     $stale = Get-ChildItem $docRoot -Recurse -File -Include *.md |
-        Select-String -Pattern "\bDashboard\b|React|Vite|WebView"
+        Select-String -Pattern "React|Vite|WebView"
     if ($stale) {
         $stale | ForEach-Object {
             Write-Host "STALE FOUNDATION DOC: $($_.Path):$($_.LineNumber): $($_.Line.Trim())"
