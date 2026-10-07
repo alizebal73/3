@@ -17,12 +17,13 @@ New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
 $backupFile = Join-Path $backupDir ("foundation-backup-{0}.dump" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
 $env:GAMENET_TEST_DATABASE = $env:GAMENET_DATABASE
 $env:GameNet__DatabaseConnectionString = $env:GAMENET_DATABASE
-$serverProject = Join-Path $root "src\\Server\\GameNet.Server.csproj"
+$serverProject = Join-Path $root "src\Server\GameNet.Server.csproj"
 
 Invoke-Checked "dotnet" @("tool","restore")
 
 # Fail closed if the built application does not expose the expected migration chain.
-$migrations = & dotnet ef migrations list "--project","src\Server\GameNet.Server.csproj" "--startup-project","src\Server\GameNet.Server.csproj" "--configuration","Release" 2>&1 | Out-String
+$efMigrationListArgs = @("ef","migrations","list","--project",$serverProject,"--startup-project",$serverProject,"--configuration","Release")
+$migrations = & dotnet @efMigrationListArgs 2>&1 | Out-String
 if ($LASTEXITCODE -ne 0) { throw "Unable to enumerate EF migrations.`n$migrations" }
 if ($migrations -notmatch "202610070001_FoundationInfrastructure" -or
     $migrations -notmatch "202610070002_FoundationClosureHardening" -or
@@ -33,8 +34,8 @@ if ($migrations -notmatch "202610070001_FoundationInfrastructure" -or
 # Clean-install evidence: the latest migration must apply from an empty database.
 Invoke-Checked "dotnet" @(
     "ef","database","update",
-    "--project","src\Server\GameNet.Server.csproj",
-    "--startup-project","src\Server\GameNet.Server.csproj",
+    "--project",$serverProject,
+    "--startup-project",$serverProject,
     "--connection",$env:GAMENET_DATABASE,
     "--configuration","Release"
 )
