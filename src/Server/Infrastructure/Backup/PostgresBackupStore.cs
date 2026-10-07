@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text.Json;
+using GameNet.Server.Infrastructure.Audit;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Time;
+using GameNet.Server.Persistence;
 using Microsoft.Extensions.Options;
 using Npgsql;
 
@@ -9,7 +12,9 @@ namespace GameNet.Server.Infrastructure.Backup;
 
 public sealed class PostgresBackupStore(
     IOptions<GameNetOptions> options,
-    IGameClock clock) : IBackupStore
+    IGameClock clock,
+    GameNetDbContext dbContext,
+    IAuditWriter auditWriter) : IBackupStore
 {
     public async Task<BackupArtifact> CreateAsync(
         CancellationToken cancellationToken = default)
@@ -44,6 +49,19 @@ public sealed class PostgresBackupStore(
             throw new InvalidOperationException(
                 $"PostgreSQL backup verification failed: {artifact.FilePath}");
         }
+
+        auditWriter.Append(new AuditEntry
+        {
+            OccurredAtUtc = clock.UtcNow,
+            ActorType = "system",
+            Operation = "backup.created",
+            ReferenceType = "backup",
+            ReferenceId = artifact.BackupId,
+            CorrelationId = Guid.NewGuid().ToString("N"),
+            AfterJson = JsonSerializer.Serialize(artifact)
+        });
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return artifact;
     }
@@ -112,6 +130,23 @@ public sealed class PostgresBackupStore(
             restore: true,
             cancellationToken,
             listOnly: false);
+
+        auditWriter.Append(new AuditEntry
+        {
+            OccurredAtUtc = clock.UtcNow,
+            ActorType = "system",
+            Operation = "backup.restored",
+            ReferenceType = "backup",
+            ReferenceId = artifact.BackupId,
+            CorrelationId = Guid.NewGuid().ToString("N"),
+            AfterJson = JsonSerializer.Serialize(new
+            {
+                artifact.BackupId,
+                Target = targetConnectionString
+            })
+        });
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<BackupArtifact> CreateArtifactAsync(
