@@ -1,18 +1,25 @@
 # Local Quality Gates
 
-GameNet 3 has no remote CI workflow.
+The canonical engineering gate runs on the approved Windows machine.
 
-The local quality gate is:
+The canonical command is:
 
-1. platform skeleton;
-2. architecture guard;
-3. source-size guard;
-4. Foundation completeness;
-5. .NET restore;
-6. Release build;
-7. all tests;
-8. native Desktop build.
+scripts/verify.ps1
 
-GitHub status is never treated as evidence that the program works.
+A single manual GitHub Actions workflow may invoke the same script on the approved self-hosted Windows runner. That workflow is orchestration only; it is not a separate build/test implementation and its result never replaces local certification evidence.
 
-The approved Windows machine is the only certification environment for build, test and release evidence.
+Quality order:
+
+1. pre-coding governance;
+2. platform skeleton;
+3. architecture guard;
+4. source-size guard;
+5. Foundation completeness;
+6. .NET restore;
+7. Release build;
+8. all solution tests;
+9. native Desktop certification;
+10. real PostgreSQL certification;
+11. recovery/update evidence.
+
+A remote checkmark never overrides a local failing test or missing certification evidence.

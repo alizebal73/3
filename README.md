@@ -22,19 +22,22 @@ Clean-slate Windows GameNet/CyberCafe management platform.
 - Wall-clock access is centralized behind TimeProvider/IGameClock.
 - Every feature must have domain rules, use case, persistence, contract, authorization, audit, unit, integration, concurrency, retry/idempotency and recovery coverage.
 - Persian (fa-IR, RTL) and English (en-US, LTR) are foundation-level UI cultures.
-- All build, restore, test and certification runs are local on the approved Windows machine. GitHub is source control only.
-- No business feature starts until the Foundation skeleton and local certification gates are complete.
+- All build, restore, test and certification runs are local on the approved Windows machine. A manual self-hosted workflow may orchestrate the same local scripts, but never becomes certification authority.
+- No business feature starts until pre-coding governance and Foundation certification gates are complete.
 - Repo 2 architecture is not a source for code reuse; it is forensic reference only.
 
 ## Start here
 
+- docs/planning/product-charter.md
+- docs/planning/pre-coding-master-plan.md
+- docs/planning/requirements-traceability.md
+- docs/planning/definition-of-ready.md
 - docs/architecture/README.md
-- docs/architecture/module-rules.md
-- docs/architecture/project-map.md
+- docs/architecture/data-ownership-and-integration-map.md
 - docs/domain/product-requirements.md
 - docs/invariants/
+- docs/roadmap/00-pre-coding-roadmap.md
 - docs/roadmap/00-platform-foundation.md
-- docs/roadmap/00-foundation-completion.md
 - docs/operations/foundation-local-certification.md
 - scripts/verify.ps1
 

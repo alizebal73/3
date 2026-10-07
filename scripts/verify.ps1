@@ -3,6 +3,7 @@ Set-StrictMode -Version Latest
 
 dotnet --version
 
+& "$PSScriptRoot/check-pre-coding-readiness.ps1"
 & "$PSScriptRoot/check-platform-skeleton.ps1"
 & "$PSScriptRoot/check-source-size.ps1"
 & "$PSScriptRoot/check-architecture.ps1"
@@ -19,4 +20,4 @@ Write-Host "1. launch src/Desktop/GameNet.Desktop.csproj and verify native windo
 Write-Host "2. start a clean PostgreSQL instance and apply/validate migrations;"
 Write-Host "3. run integration/concurrency/recovery certification against real PostgreSQL;"
 Write-Host "4. record release/deployment compatibility evidence."
-Write-Host "GitHub is source control only; this result is produced on the local Windows machine."
+Write-Host "GitHub is source control; the manual self-hosted workflow only orchestrates this same local gate."
