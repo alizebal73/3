@@ -49,13 +49,13 @@ try {
     } | ConvertTo-Json -Compress |
         Set-Content -LiteralPath (Join-Path $identityRoot "identity.json") -Encoding utf8
 
-NaN
+    $health = Invoke-RestMethod -Uri "$($serverUrl.TrimEnd('/'))/health" -Method Get -TimeoutSec 10
     if ($health.status -ne "ok" -or $health.readiness -ne "ready") {
         throw "Server is reachable but not ready. Status=$($health.status); Readiness=$($health.readiness)"
     }
 
     $provisionParams = @{
-NaN
+        Uri = "$($serverUrl.TrimEnd('/'))/api/v1/agent/credentials/provision"
         Method = "Post"
         Headers = @{ "X-GameNet-Agent-Provisioning-Key" = $env:GAMENET_AGENT_PROVISIONING_KEY }
         ContentType = "application/json"
@@ -102,7 +102,7 @@ NaN
 }
 finally {
     $revokeParams = @{
-NaN
+        Uri = "$($serverUrl.TrimEnd('/'))/api/v1/agent/credentials/revoke"
         Method = "Post"
         Headers = @{ "X-GameNet-Agent-Provisioning-Key" = $env:GAMENET_AGENT_PROVISIONING_KEY }
         ContentType = "application/json"
