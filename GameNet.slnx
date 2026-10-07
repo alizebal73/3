@@ -10,4 +10,5 @@
   <Project Path="tests/Client.UnitTests/GameNet.Client.UnitTests.csproj" />
   <Project Path="tests/ContractTests/GameNet.ContractTests.csproj" />
   <Project Path="tests/Desktop.Tests/GameNet.Desktop.Tests.csproj" />
+  <Project Path="tests/E2E/GameNet.E2E.Tests.csproj" />
 </Solution>
