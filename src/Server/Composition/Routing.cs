@@ -67,7 +67,7 @@ public static class Routing
                 operationId,
                 clock.UtcNow,
                 new BuildInfoResponse(
-                    state.Version,
+                    state.ApplicationVersion,
                     ContractVersions.V1,
                     DatabaseSchemaVersion.Current)));
         }).AllowAnonymous().WithName("BuildInfo");
