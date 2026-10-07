@@ -91,8 +91,8 @@ public sealed class EfIdempotencyStore(
             SET state = {"completed"},
                 status_code = {statusCode},
                 response_json = CAST({responseJson} AS jsonb),
-                lease_token = {null},
-                lease_expires_at_utc = {null}
+                lease_token = {""},
+                lease_expires_at_utc = {clock.UtcNow}
             WHERE scope = {scope}
               AND key = {key}
               AND lease_token = {leaseToken}
