@@ -60,15 +60,15 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
     public async Task Agent_token_endpoint_is_rate_limited()
     {
         using var client = fixture.CreateClient();
-        var requestBody = new StringContent(
-            "{\"DeviceId\":\"rate-test\",\"Secret\":\"invalid\"}",
-            System.Text.Encoding.UTF8,
-            "application/json");
-
         var sawRateLimit = false;
 
         for (var i = 0; i < 31; i++)
         {
+            using var requestBody = new StringContent(
+                "{\"DeviceId\":\"rate-test\",\"Secret\":\"invalid\"}",
+                System.Text.Encoding.UTF8,
+                "application/json");
+
             using var response = await client.PostAsync(
                 "/api/v1/agent/auth/token",
                 requestBody);
