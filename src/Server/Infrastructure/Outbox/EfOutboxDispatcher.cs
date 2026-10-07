@@ -18,14 +18,18 @@ public sealed class EfOutboxDispatcher(GameNetDbContext dbContext, IGameClock cl
         var now = clock.UtcNow;
         var until = now.Add(leaseDuration);
 
-        var ids = await dbContext.Database.SqlQueryRaw<long>($@"
-            SELECT id AS "Value"
+        var ids = await dbContext.Database.SqlQueryRaw<long>(
+            @"
+            SELECT id AS ""Value""
             FROM outbox_messages
             WHERE published_at_utc IS NULL
-              AND (lease_expires_at_utc IS NULL OR lease_expires_at_utc <= {{0}})
+              AND (lease_expires_at_utc IS NULL OR lease_expires_at_utc <= {0})
             ORDER BY id
             FOR UPDATE SKIP LOCKED
-            LIMIT {{1}}", now, batchSize).ToListAsync(cancellationToken);
+            LIMIT {1}",
+            now,
+            batchSize)
+            .ToListAsync(cancellationToken);
 
         if (ids.Count == 0)
         {
