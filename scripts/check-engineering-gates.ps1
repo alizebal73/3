@@ -28,9 +28,9 @@ foreach ($pattern in @(
 $verify = Get-Content $verifyPath -Raw
 foreach ($pattern in @(
     'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("--version"\)',
-    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("restore", "GameNet\\.slnx"\)',
-    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("build", "GameNet\\.slnx".*Release',
-    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("test", "GameNet\\.slnx".*Release'
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("restore", "GameNet\.slnx"\)',
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("build", "GameNet\.slnx".*Release',
+    'Invoke-Checked -FilePath "dotnet" -ArgumentList @\("test", "GameNet\.slnx".*Release'
 )) {
     if ($verify -notmatch $pattern) {
         throw "Canonical verify.ps1 is missing required command: $pattern"
