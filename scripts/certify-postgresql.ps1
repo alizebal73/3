@@ -19,6 +19,15 @@ $env:GAMENET_TEST_DATABASE = $env:GAMENET_DATABASE
 
 Invoke-Checked "dotnet" @("tool","restore")
 
+# Fail closed if the built application does not expose the expected migration chain.
+$migrations = & dotnet ef migrations list "--project","src\Server\GameNet.Server.csproj" "--startup-project","src\Server\GameNet.Server.csproj" "--configuration","Release" 2>&1 | Out-String
+if ($LASTEXITCODE -ne 0) { throw "Unable to enumerate EF migrations.`n$migrations" }
+if ($migrations -notmatch "202610070001_FoundationInfrastructure" -or
+    $migrations -notmatch "202610070002_FoundationClosureHardening" -or
+    $migrations -notmatch "202610070003_AgentCredentialLifecycle") {
+    throw "Expected Foundation EF migration chain was not discovered.`n$migrations"
+}
+
 # Clean-install evidence: the latest migration must apply from an empty database.
 Invoke-Checked "dotnet" @(
     "ef","database","update",
@@ -26,6 +35,13 @@ Invoke-Checked "dotnet" @(
     "--startup-project","src\Server\GameNet.Server.csproj",
     "--connection",$env:GAMENET_DATABASE,
     "--configuration","Release"
+)
+
+# Restore the certification test project explicitly so local certification does not
+# depend on a previous unrelated build populating obj/project.assets.json.
+Invoke-Checked "dotnet" @(
+    "restore",
+    "tests\Postgres.CertificationTests\GameNet.Postgres.CertificationTests.csproj"
 )
 
 Invoke-Checked "dotnet" @(
