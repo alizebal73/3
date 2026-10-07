@@ -1,5 +1,5 @@
-using System.Data;
 using GameNet.Server.Infrastructure.Time;
+using GameNet.Server.Infrastructure.Transactions;
 using GameNet.Server.Persistence;
 using GameNet.Shared.Contracts.V1.Protocol;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +8,10 @@ namespace GameNet.Server.Infrastructure.Realtime;
 
 public sealed class EfAgentConnectionLeaseStore(
     GameNetDbContext dbContext,
-    IGameClock clock) : IAgentConnectionLeaseStore
+    IGameClock clock,
+    ITransactionCoordinator transactions) : IAgentConnectionLeaseStore
 {
-    public async Task<AgentConnectionLeaseState?> TryAcquireAsync(
+    public Task<AgentConnectionLeaseState?> TryAcquireAsync(
         AgentConnectionLeaseRequest request,
         TimeSpan leaseDuration,
         CancellationToken cancellationToken = default)
@@ -18,78 +19,9 @@ public sealed class EfAgentConnectionLeaseStore(
         ValidateRequest(request);
         ValidateLeaseDuration(leaseDuration);
 
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(
-            IsolationLevel.Serializable,
+        return transactions.ExecuteSerializableAsync(
+            ct => TryAcquireWithinTransactionAsync(request, leaseDuration, ct),
             cancellationToken);
-
-        var now = clock.UtcNow;
-        var token = Guid.NewGuid().ToString("N");
-        var expires = now.Add(leaseDuration);
-
-        await dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            INSERT INTO agent_connection_leases
-                (device_id, connection_id, lease_token, lease_expires_at_utc, updated_at_utc)
-            VALUES
-                ({request.DeviceId}, {request.ConnectionId}, {token}, {expires}, {now})
-            ON CONFLICT (device_id) DO NOTHING
-            """,
-            cancellationToken);
-
-        var current = await ReadAsync(request.DeviceId, cancellationToken);
-
-        if (current is null)
-            throw new InvalidOperationException("Agent connection lease disappeared during acquisition.");
-
-        if (current.LeaseExpiresAtUtc > now &&
-            !string.Equals(current.ConnectionId, request.ConnectionId, StringComparison.Ordinal))
-        {
-            await transaction.CommitAsync(cancellationToken);
-
-            return current with { IsAuthoritative = false };
-        }
-
-        if (string.Equals(current.ConnectionId, request.ConnectionId, StringComparison.Ordinal) &&
-            string.Equals(current.LeaseToken, token, StringComparison.Ordinal))
-        {
-            await transaction.CommitAsync(cancellationToken);
-
-            return current with { IsAuthoritative = true };
-        }
-
-        var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            UPDATE agent_connection_leases
-            SET connection_id = {request.ConnectionId},
-                lease_token = {token},
-                lease_expires_at_utc = {expires},
-                updated_at_utc = {now},
-                last_heartbeat_at_utc = NULL,
-                agent_version = NULL,
-                station_state = NULL
-            WHERE device_id = {request.DeviceId}
-              AND (
-                    lease_expires_at_utc <= {now}
-                 OR connection_id = {request.ConnectionId}
-              )
-            """,
-            cancellationToken);
-
-        if (updated != 1)
-        {
-            var winner = await ReadAsync(request.DeviceId, cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-            return winner is null ? null : winner with { IsAuthoritative = false };
-        }
-
-        await transaction.CommitAsync(cancellationToken);
-
-        return new AgentConnectionLeaseState(
-            request.DeviceId,
-            request.ConnectionId,
-            token,
-            expires,
-            true);
     }
 
     public async Task<bool> RenewAsync(
@@ -174,6 +106,75 @@ public sealed class EfAgentConnectionLeaseStore(
               AND lease_token = {leaseToken}
             """,
             cancellationToken);
+    }
+
+    private async Task<AgentConnectionLeaseState?> TryAcquireWithinTransactionAsync(
+        AgentConnectionLeaseRequest request,
+        TimeSpan leaseDuration,
+        CancellationToken cancellationToken)
+    {
+        var now = clock.UtcNow;
+        var token = Guid.NewGuid().ToString("N");
+        var expires = now.Add(leaseDuration);
+
+        await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            INSERT INTO agent_connection_leases
+                (device_id, connection_id, lease_token, lease_expires_at_utc, updated_at_utc)
+            VALUES
+                ({request.DeviceId}, {request.ConnectionId}, {token}, {expires}, {now})
+            ON CONFLICT (device_id) DO NOTHING
+            """,
+            cancellationToken);
+
+        var current = await ReadAsync(request.DeviceId, cancellationToken);
+
+        if (current is null)
+            throw new InvalidOperationException(
+                "Agent connection lease disappeared during acquisition.");
+
+        if (current.LeaseExpiresAtUtc > now &&
+            !string.Equals(current.ConnectionId, request.ConnectionId, StringComparison.Ordinal))
+        {
+            return current with { IsAuthoritative = false };
+        }
+
+        if (string.Equals(current.ConnectionId, request.ConnectionId, StringComparison.Ordinal) &&
+            string.Equals(current.LeaseToken, token, StringComparison.Ordinal))
+        {
+            return current with { IsAuthoritative = true };
+        }
+
+        var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            UPDATE agent_connection_leases
+            SET connection_id = {request.ConnectionId},
+                lease_token = {token},
+                lease_expires_at_utc = {expires},
+                updated_at_utc = {now},
+                last_heartbeat_at_utc = NULL,
+                agent_version = NULL,
+                station_state = NULL
+            WHERE device_id = {request.DeviceId}
+              AND (
+                    lease_expires_at_utc <= {now}
+                 OR connection_id = {request.ConnectionId}
+              )
+            """,
+            cancellationToken);
+
+        if (updated != 1)
+        {
+            var winner = await ReadAsync(request.DeviceId, cancellationToken);
+            return winner is null ? null : winner with { IsAuthoritative = false };
+        }
+
+        return new AgentConnectionLeaseState(
+            request.DeviceId,
+            request.ConnectionId,
+            token,
+            expires,
+            true);
     }
 
     private async Task<AgentConnectionLeaseState?> ReadAsync(
