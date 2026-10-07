@@ -27,6 +27,10 @@ This matrix is the authoritative pre-feature closure list. A row is not closed m
 | Native WPF shell | yes | yes | native process launch | Platform-proof pending |
 | Desktop ↔ Server | yes | API boundary + central connectivity state | real Server/Desktop smoke | Platform-proof pending |
 | UI Foundation | yes | reusable shell/navigation/state/command/theme/accessibility baseline | native shell workflow | Platform-proof pending |
+| Game catalog foundation | yes | Server Games module + V1 launch-policy contracts | contract/architecture guard | Implemented; business workflow deferred |
+| GameAccounts foundation | yes | Server GameAccounts module + allocation contract boundary | contract/architecture guard | Implemented; business workflow deferred |
+| ClientControl foundation | yes | Server ClientControl module + Agent capability boundaries | contract/architecture guard | Implemented; execution workflow deferred |
+| Client execution contract | yes | game launch/stop, lock, restart/shutdown, maintenance, diagnostics, policy contracts | real Agent command/reconnect smoke | Platform-proof pending |
 | Backup creation/verification | yes | yes | pg_dump + archive verification | Platform-proof pending |
 | Backup restore | yes | yes, isolated target only | disposable restore target | Platform-proof pending |
 | Migration deployment artifact | yes | bundle + reviewable SQL | migration build/review evidence | Implemented |
