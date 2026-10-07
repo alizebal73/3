@@ -67,3 +67,4 @@ public sealed class ContractSmokeTests
         Assert.True(ack.Success);
         Assert.True(ack.Duplicate);
     }
+}
