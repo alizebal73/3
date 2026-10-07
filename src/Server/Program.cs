@@ -24,6 +24,7 @@ var configuredOptions = builder.Configuration
     .Get<GameNetOptions>() ?? new GameNetOptions();
 
 builder.Services.AddGameNetAuthentication(configuredOptions);
+builder.Services.AddSingleton<PlatformMetrics>();
 
 var app = builder.Build();
 
@@ -48,6 +49,7 @@ if (proxyOptions.TrustedProxies.Count > 0)
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<OperationIdMiddleware>();
+app.UseMiddleware<RequestMetricsMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (proxyOptions.Authentication.Enabled)
