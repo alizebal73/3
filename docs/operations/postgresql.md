@@ -6,11 +6,11 @@ The Server owns the DbContext and persistence boundary. Modules do not access Po
 
 ## Foundation schema
 
-The first committed migration is 202610070001_FoundationInfrastructure. It contains only:
-- audit_entries
-- idempotency_records
-- outbox_messages
-- Entity Framework migrations history
+The committed Foundation migrations are:
+- `202610070001_FoundationInfrastructure`: audit_entries, idempotency_records, outbox_messages and EF migration history;
+- `202610070002_FoundationClosureHardening`: database-level audit immutability trigger and persistent Agent connection leases.
+
+Business tables start only with the first approved vertical slice.
 
 Business tables start only with the first approved vertical slice.
 
