@@ -156,6 +156,7 @@ public sealed class EfIdempotencyStore(
               AND key = {key}
               AND lease_token = {leaseToken}
               AND state = {"processing"}
+              AND lease_expires_at_utc > {clock.UtcNow}
             """,
             cancellationToken);
 
