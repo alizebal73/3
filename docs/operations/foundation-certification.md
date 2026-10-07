@@ -16,11 +16,13 @@ A README, interface, test project or green static guard is not runtime certifica
 - stable V1 contracts and compatibility model;
 - actor/auth separation;
 - transaction/idempotency/audit/outbox foundations;
-- persistence-backed Agent lease fencing;
+- persistent Agent lease/fencing and selected SignalR transport;
 - backup creation/verification/restore implementation;
 - release manifest and file-integrity verification;
+- migration bundle and reviewable migration SQL tooling;
 - Windows Service topology;
 - deployment/update boundaries;
+- supply-chain guard and SBOM generation tooling;
 - no browser runtime and no remote certification dependency.
 
 ## Required local Windows evidence
@@ -32,24 +34,26 @@ Run from the exact final commit:
 3. set `GAMENET_DATABASE` to a disposable PostgreSQL database
 4. set `GAMENET_RESTORE_DATABASE` to a separate disposable PostgreSQL database
 5. `scripts/certify-postgresql.ps1`
-6. execute the documented Agent reconnect/fencing scenarios;
-7. execute local install/update/rollback smoke;
-8. record the final evidence artifact.
+6. run the documented authenticated Agent connection/reconnect/heartbeat/fencing scenarios;
+7. generate and validate the release migration artifact;
+8. generate the release SBOM and record dependency/license/vulnerability review;
+9. execute local install/update/rollback smoke;
+10. record the final evidence artifact.
 
-`certify-postgresql.ps1` now exercises migration state, idempotency concurrency, database-level audit immutability, Outbox fencing, Agent lease fencing, real PostgreSQL backup creation/verification and restore into an isolated target.
+`certify-postgresql.ps1` exercises migration state, idempotency concurrency, database-level audit immutability, Outbox fencing, Agent lease fencing, real PostgreSQL backup creation/verification and restore into an isolated target.
 
-## Intentionally open platform decisions
+## Intentionally policy-open items
 
-The following are visible and may not be silently assumed by feature code:
-- production Agent transport;
-- RPO/RTO owner targets;
-- backup/log retention;
+These are not silently assumed by Foundation code:
+- owner-approved RPO/RTO;
+- retention periods;
 - production update signing ownership;
+- supported LAN/WAN failure envelope;
 - payment-provider integration scope;
-- supported network failure envelope;
-- heavy-reporting strategy.
+- heavy-reporting strategy;
+- scale-envelope approval.
 
-A feature touching an open decision must first close it with an ADR or an explicit approved requirement.
+A feature touching an open policy must first close it with an ADR or approved requirement.
 
 ## Certification authority
 
