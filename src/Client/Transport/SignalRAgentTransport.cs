@@ -1,4 +1,5 @@
 using GameNet.Shared.Contracts.V1.Protocol;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 
@@ -136,7 +137,7 @@ public sealed class SignalRAgentTransport(
         var connection = _connection
             ?? throw new InvalidOperationException("Agent transport is not initialized.");
 
-        return await connection.InvokeAsync<ReconciliationResponse>(
+        return await connection.InvokeAsync<AgentReconciliationResponse>(
             "ReconcileAsync",
             new AgentReconciliationRequest(deviceId, timeProvider.GetUtcNow(), reason),
             cancellationToken);
