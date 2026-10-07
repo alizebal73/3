@@ -10,4 +10,6 @@ if ([string]::IsNullOrWhiteSpace($env:GAMENET_DATABASE)) {
 
 & "$PSScriptRoot/certify-postgresql.ps1"
 
-Write-Host "FOUNDATION CERTIFICATION COMMANDS COMPLETED. Review runtime evidence before allowing feature work."
+& "$PSScriptRoot/write-foundation-evidence.ps1" -OutputPath (Join-Path (Resolve-Path ".").Path "artifacts\foundation-evidence.json")
+
+Write-Host "FOUNDATION CERTIFICATION COMMANDS COMPLETED. Review the evidence artifact and close the Foundation matrix before allowing feature work."
