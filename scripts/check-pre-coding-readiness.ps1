@@ -48,13 +48,13 @@ foreach ($relative in $required) {
     }
 }
 
-$moduleCs = Get-ChildItem (Join-Path $root "src\Server\Modules") -Recurse -File -Filter *.cs
+$moduleCs = @(Get-ChildItem (Join-Path $root "src\Server\Modules") -Recurse -File -Filter *.cs)
 if ($moduleCs.Count -gt 0) {
     throw "Business implementation exists under src/Server/Modules before Foundation certification."
 }
 
-$featureImpl = Get-ChildItem (Join-Path $root "src\Desktop\Features") -Recurse -File |
-    Where-Object { $_.Extension -in ".cs", ".xaml" }
+$featureImpl = @(Get-ChildItem (Join-Path $root "src\Desktop\Features") -Recurse -File |
+    Where-Object { $_.Extension -in ".cs", ".xaml" })
 if ($featureImpl.Count -gt 0) {
     throw "Desktop business feature implementation exists before Foundation certification."
 }
