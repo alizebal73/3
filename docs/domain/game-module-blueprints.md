@@ -46,3 +46,23 @@ Approvals owns controlled high-risk approvals. Backup owns backup creation, veri
 
 ## Required lifecycle work before implementation
 Every stateful module defines states/transitions, commands/queries, permissions, transaction boundary, idempotency scope, concurrency rule, audit events, recovery/reconciliation, operator-visible status and integration contracts.
+
+
+## Games
+Owns the authoritative game catalog, install/runtime metadata, allowed launch policy and version/compatibility metadata.
+Invariant: the Agent never decides independently whether a game may launch; Server policy and Session ownership authorize execution.
+
+## GameAccounts
+Owns GameNet-managed game-account pools, allocation, release, cooldown/locking policy and audit references.
+Invariant: an account assignment belongs to one authoritative allocation at a time and must be recoverable after client/network failure.
+
+## ClientControl
+Owns Server-side commands that control a client machine: lock/unlock, process launch/stop, restart/shutdown, maintenance mode and client-policy refresh.
+Invariant: every command is bound to DeviceId + current authoritative Agent lease + authorized actor/operation. Agent cannot originate authoritative commands.
+
+## Client configuration
+Client configuration is split into Server-owned policy and Agent-local execution settings.
+Server-owned policy is authoritative and versioned. Agent-local files are only cached/execution state and can be replaced during reconciliation/update.
+
+## Client diagnostics
+Owns health, software version, execution capability and diagnostic evidence. Diagnostic data never becomes the authority for billing/session state.
