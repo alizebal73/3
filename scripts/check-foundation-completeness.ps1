@@ -40,7 +40,7 @@ $requiredFiles = @(
     "docs\contracts\release-compatibility.md",
     "docs\operations\deployment-and-update.md",
     "docs\operations\backup.md",
-    "docs\operations\foundation-certification.md",
+    "docs\operations\foundation-local-certification.md",
     "scripts\certify-desktop.ps1",
     "scripts\certify-postgresql.ps1",
     "scripts\certify-foundation.ps1"
