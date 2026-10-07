@@ -27,8 +27,8 @@ if (-not $certificate.HasPrivateKey) {
     throw "Signing certificate does not have an accessible private key."
 }
 
-$files = Get-ChildItem $rootPath -Recurse -File |
-    Where-Object { $_.Extension -in ".exe", ".dll" }
+$files = @(Get-ChildItem $rootPath -Recurse -File |
+    Where-Object { $_.Extension -in ".exe", ".dll" })
 
 foreach ($file in $files) {
     $params = @{
