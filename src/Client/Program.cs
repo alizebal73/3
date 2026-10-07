@@ -15,19 +15,9 @@ builder.Services.AddWindowsService(options =>
 builder.Services
     .AddOptions<AgentTransportOptions>()
     .BindConfiguration(AgentTransportOptions.SectionName)
-    .Validate(options =>
-        Uri.TryCreate(options.ServerBaseUrl, UriKind.Absolute, out var uri) &&
-        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps),
-        "GameNet:AgentTransport:ServerBaseUrl must be an absolute HTTP or HTTPS URL.")
-    .Validate(options => options.HeartbeatIntervalSeconds is >= 2 and <= 60,
-        "HeartbeatIntervalSeconds must be between 2 and 60.")
-    .Validate(options => options.InitialRetrySeconds is >= 1 and <= 120,
-        "InitialRetrySeconds must be between 1 and 120.")
-    .Validate(
-        options => !string.IsNullOrWhiteSpace(
-            options.BootstrapCredentialEnvironmentVariableName),
-        "BootstrapCredentialEnvironmentVariableName is required.")
     .ValidateOnStart();
+
+builder.Services.AddSingleton<IValidateOptions<AgentTransportOptions>, AgentTransportOptionsValidator>();
 
 builder.Services
     .AddOptions<AgentIdentityOptions>()

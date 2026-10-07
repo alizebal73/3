@@ -37,7 +37,7 @@ public sealed class AgentAccessTokenIssuer(
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, deviceId),
-            new Claim(JwtRegisteredClaimNames.ClientId, deviceId),
+            new Claim("client_id", deviceId),
             new Claim("actor_type", "Agent"),
             new Claim("device_id", deviceId),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N"))

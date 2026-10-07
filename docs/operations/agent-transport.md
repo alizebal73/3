@@ -55,3 +55,8 @@ Required local evidence:
 V1 reconciliation proves transport authority, DeviceId binding, protocol compatibility and lease ownership. It does not claim to reconcile future business state such as Session, game runtime, billing, inventory or policy versions.
 
 Business-state reconciliation must be added with the first vertical slice that owns that state, using the same evidence rules as every other authoritative workflow. This prevents the Foundation from pretending that a connection heartbeat is a full application-state reconciliation.
+
+## Transport security
+
+The Agent may use HTTP only in Development when `AllowInsecureHttpForDevelopment=true` is explicitly configured. Production must use HTTPS so the bootstrap credential and short-lived token exchange are never sent over plaintext transport.
+

@@ -41,3 +41,7 @@ This is an explicit Foundation Stabilization item, not a business-feature depend
 - Server restart and Agent reconnect remain deterministic;
 - all security lifecycle events are auditable.
 
+
+## Transport requirement
+
+Credential provisioning and token exchange must use HTTPS outside Development. The Agent configuration contains an explicit development-only HTTP escape hatch; Production validation rejects HTTP.
