@@ -30,11 +30,11 @@ This verifies:
 ## PostgreSQL certification
 
 Before the first business vertical slice:
-- configure GAMENET_DATABASE_CONNECTION on the local build/test machine;
-- generate the first migration with scripts/create-migration.ps1;
+- configure GAMENET_DATABASE on the local build/test machine;
+- verify the committed foundation migration with scripts/certify-postgresql.ps1;
 - review the migration;
 - apply it to a clean PostgreSQL database;
-- execute database-backed integration tests and concurrency tests.
+- execute the isolated real PostgreSQL integration and concurrency tests.
 
 ## Desktop certification
 
