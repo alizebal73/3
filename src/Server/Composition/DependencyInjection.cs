@@ -3,6 +3,7 @@ using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Server.Infrastructure.Idempotency;
 using GameNet.Server.Infrastructure.Jobs;
 using GameNet.Server.Infrastructure.Outbox;
+using GameNet.Server.Infrastructure.Realtime;
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Server.Infrastructure.Transactions;
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IIdempotencyStore, EfIdempotencyStore>();
         services.AddGameNetOutbox();
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
+        services.AddScoped<IAgentConnectionLeaseStore, EfAgentConnectionLeaseStore>();
 
         services.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
         services.AddHostedService<BackgroundJobDispatcher>();
