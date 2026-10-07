@@ -85,6 +85,7 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
 
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {
+        await _connectivity.StartAsync(cancellationToken);
         await RefreshAsync(cancellationToken);
     }
 
