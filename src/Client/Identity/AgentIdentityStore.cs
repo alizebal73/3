@@ -1,30 +1,28 @@
 using System.Text.Json;
-using GameNet.Agent;
+using Microsoft.Extensions.Options;
 
 namespace GameNet.Agent.Identity;
 
 public interface IAgentIdentityStore
 {
-    Task<AgentIdentity> GetOrCreateAsync(CancellationToken cancellationToken = default);
+    Task<AgentIdentity> GetOrCreateAsync(
+        CancellationToken cancellationToken = default);
 }
 
-public sealed class AgentIdentityStore : IAgentIdentityStore
+public sealed class AgentIdentityStore(
+    IOptions<AgentIdentityOptions> options) : IAgentIdentityStore
 {
-    private readonly string _path =
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-            "GameNet Manager",
-            "Agent",
-            "identity.json");
-
     public async Task<AgentIdentity> GetOrCreateAsync(
         CancellationToken cancellationToken = default)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
+        var rootPath = Path.GetFullPath(options.Value.RootPath);
+        Directory.CreateDirectory(rootPath);
 
-        if (File.Exists(_path))
+        var path = Path.Combine(rootPath, "identity.json");
+
+        if (File.Exists(path))
         {
-            await using var read = File.OpenRead(_path);
+            await using var read = File.OpenRead(path);
             var stored = await JsonSerializer.DeserializeAsync<IdentityFile>(
                 read,
                 cancellationToken: cancellationToken);
@@ -34,14 +32,14 @@ public sealed class AgentIdentityStore : IAgentIdentityStore
         }
 
         var identity = AgentIdentity.FromDeviceId(Guid.NewGuid().ToString("N"));
+        var temp = path + ".tmp";
 
-        var temp = _path + ".tmp";
         await File.WriteAllTextAsync(
             temp,
             JsonSerializer.Serialize(new IdentityFile(identity.DeviceId)),
             cancellationToken);
 
-        File.Move(temp, _path, overwrite: true);
+        File.Move(temp, path, overwrite: true);
 
         return identity;
     }
