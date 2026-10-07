@@ -24,7 +24,7 @@ This is the active execution matrix for closing Foundation before the first busi
 | FS-11 | Backup/restore | Prove backup creation, verification and isolated restore. | Pending platform proof | Disposable PostgreSQL restore evidence |
 | FS-12 | Update/rollback | Prove side-by-side update, health check and rollback on Windows. | Pending platform proof | Clean install/update/rollback evidence |
 | FS-13 | Installer | Prove clean-machine Server/Agent/Desktop installation and service registration. | Pending platform proof | Clean-machine evidence |
-| FS-14 | Governance | Keep `main` as the only release line; no long-lived `develop` policy. | Implemented | Branching/GitHub policy consistency |
+| FS-14 | Governance | Keep `main` as the only release line and retire/archived legacy `develop` and Foundation branches after stabilization. | In progress | Live branch inventory reconciled; no new work on legacy branches |
 | FS-15 | Foundation certification | Mark Foundation certified only after required platform rows and open policy decisions are closed. | Blocked | Full foundation certification evidence pack |
 
 ## Current order
