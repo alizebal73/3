@@ -14,19 +14,21 @@
 - JWT validation, permission policies and current-actor foundation.
 - Correlation and exception middleware.
 - Business-time clock abstraction.
-- Durable transactional outbox writer plus atomic claim/lease dispatcher boundary.
+- Durable transactional outbox writer plus atomic PostgreSQL claim/lease dispatcher boundary.
+- Agent connection lease/realtime contract boundary separating DeviceId from ConnectionId.
 - State machines, module blueprints, permission matrix and billing/station rules.
 - Backup/restore boundary and deployment/update architecture.
 - Local certification scripts and isolated PostgreSQL certification suite.
 - Platform-skeleton, architecture, source-size and Foundation-completeness guards.
 - No business implementation in Server Modules.
 
-## Still requiring local evidence
+## Still requiring local or first-slice evidence
 - Windows restore/build/test of the complete solution.
 - Native Desktop launch and bilingual runtime verification.
 - Real PostgreSQL migration/concurrency certification.
 - Recovery/restore smoke execution against disposable infrastructure.
 - Final sign-off and merge to main.
+- First realtime vertical slice must provide the persistence-backed Agent connection lease store and transport publisher; Foundation only defines the durable contract boundary.
 
 ## Policy
 No business Feature branch starts until the remaining Foundation evidence is proven locally.
