@@ -25,6 +25,9 @@ if ($LASTEXITCODE -ne 0) { throw "PowerShell script safety guard failed with exi
 & "$PSScriptRoot/check-engineering-gates.ps1"
 if ($LASTEXITCODE -ne 0) { throw "Engineering gate consistency check failed with exit code $LASTEXITCODE." }
 
+& "$PSScriptRoot/check-agent-security-foundation.ps1"
+if ($LASTEXITCODE -ne 0) { throw "Agent security foundation guard failed with exit code $LASTEXITCODE." }
+
 & "$PSScriptRoot/check-pre-coding-readiness.ps1"
 if ($LASTEXITCODE -ne 0) { throw "Pre-coding readiness guard failed with exit code $LASTEXITCODE." }
 
