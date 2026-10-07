@@ -342,6 +342,45 @@ public sealed class PostgresFoundationTests
     }
 
     [Fact]
+    public async Task Agent_expired_lease_is_not_current_owner()
+    {
+        await using var db = new GameNetDbContext(Options());
+
+        var now = DateTimeOffset.UtcNow;
+        var clock = new MutableClock(now);
+        var store = new EfAgentConnectionLeaseStore(
+            db,
+            clock,
+            new EfTransactionCoordinator(db));
+
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from agent_connection_leases where device_id = {"foundation-reconcile-expiry"};");
+
+        var lease = await store.TryAcquireAsync(
+            new AgentConnectionLeaseRequest(
+                "foundation-reconcile-expiry",
+                "connection-a",
+                now),
+            TimeSpan.FromSeconds(1));
+
+        Assert.NotNull(lease);
+        Assert.True(await store.IsCurrentOwnerAsync(
+            "foundation-reconcile-expiry",
+            "connection-a",
+            lease!.LeaseToken));
+
+        clock.UtcNow = now.AddSeconds(2);
+
+        Assert.False(await store.IsCurrentOwnerAsync(
+            "foundation-reconcile-expiry",
+            "connection-a",
+            lease.LeaseToken));
+
+        await db.Database.ExecuteSqlInterpolatedAsync(
+            $"delete from agent_connection_leases where device_id = {"foundation-reconcile-expiry"};");
+    }
+
+    [Fact]
     public async Task Agent_heartbeat_renews_owner_lease_and_stale_owner_is_rejected()
     {
         await using var setup = new GameNetDbContext(Options());
