@@ -4,6 +4,7 @@ using GameNet.Server.Infrastructure.Observability;
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Shared.Contracts.V1.System;
 using GameNet.Shared.Primitives;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameNet.Server.Composition;
 
@@ -17,7 +18,7 @@ public static class Routing
 
         app.MapGet("/health", (
             StartupState state,
-            ServerReadiness readiness,
+            [FromServices] ServerReadiness readiness,
             HttpContext context) =>
         {
             var correlationId = context.Items[typeof(CorrelationId)] is CorrelationId id
@@ -34,7 +35,7 @@ public static class Routing
                 correlationId));
         }).AllowAnonymous().WithName("Health");
 
-        app.MapGet("/ready", (ServerReadiness readiness) =>
+        app.MapGet("/ready", ([FromServices] ServerReadiness readiness) =>
             readiness.IsReady
                 ? Results.Ok(new { status = "ready" })
                 : Results.StatusCode(StatusCodes.Status503ServiceUnavailable))
