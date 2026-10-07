@@ -9,8 +9,8 @@
 - Money, CorrelationId, CommandId and IdempotencyKey primitives.
 - PostgreSQL EF Core provider, snake_case naming and Foundation migration baseline.
 - Serializable transaction coordinator with bounded serialization/deadlock retry.
-- Idempotency persistence boundary.
-- Audit persistence boundary.
+- Idempotency persistence boundary with operation fencing and lease ownership.
+- Append-only audit persistence boundary enforced by the DbContext.
 - JWT validation, permission policies and current-actor foundation.
 - Correlation and exception middleware.
 - Business-time clock abstraction.
