@@ -76,6 +76,7 @@ $requiredFiles = @(
     "docs\security\design-review.md",
     "docs\security\agent-credential-lifecycle.md",
     "docs\development\engineering-workflow.md",
+    "docs\development\engineering-constitution.md",
     "docs\contracts\api-envelope.md",
     "docs\contracts\release-compatibility.md",
     "docs\operations\deployment-and-update.md",
