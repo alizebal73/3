@@ -144,6 +144,7 @@ public sealed class EfIdempotencyStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
         ArgumentNullException.ThrowIfNull(responseJson);
 
+        var now = clock.UtcNow;
         var updated = await dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"""
             UPDATE idempotency_records
@@ -156,7 +157,7 @@ public sealed class EfIdempotencyStore(
               AND key = {key}
               AND lease_token = {leaseToken}
               AND state = {"processing"}
-              AND lease_expires_at_utc > {clock.UtcNow}
+              AND lease_expires_at_utc > {now}
             """,
             cancellationToken);
 
