@@ -33,7 +33,7 @@ Exit gates:
 - migration strategy is tested on a clean database;
 - transaction/idempotency/outbox rules are tested where applicable;
 - no fake-green placeholder tests;
-- no browser Dashboard or Node/Vite pipeline remains;
+- no retired browser operator UI or Node/Vite pipeline remains;
 - no GitHub Actions execution dependency.
 
 Only then start the first business vertical slice:
