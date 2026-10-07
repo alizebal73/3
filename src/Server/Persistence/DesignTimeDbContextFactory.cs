@@ -7,8 +7,10 @@ public sealed class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Gam
 {
     public GameNetDbContext CreateDbContext(string[] args)
     {
-        var connection = Environment.GetEnvironmentVariable("GAMENET_DATABASE")
-            ?? "Host=localhost;Port=5432;Database=gamenet;Username=postgres;Password=postgres";
+        var connection = Environment.GetEnvironmentVariable("GAMENET_DATABASE");
+
+        if (string.IsNullOrWhiteSpace(connection))
+            throw new InvalidOperationException("Set GAMENET_DATABASE before running Entity Framework migration commands.");
 
         var options = new DbContextOptionsBuilder<GameNetDbContext>()
             .UseNpgsql(connection)
