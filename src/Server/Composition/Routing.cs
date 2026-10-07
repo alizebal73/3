@@ -3,6 +3,7 @@ using GameNet.Server.Infrastructure.Hosting;
 using GameNet.Server.Infrastructure.Observability;
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Server.Persistence;
+using GameNet.Server.Infrastructure.Time;
 using GameNet.Shared.Contracts.V1.Api;
 using GameNet.Shared.Contracts.V1.System;
 using GameNet.Shared.Primitives;
@@ -51,6 +52,7 @@ public static class Routing
 
         app.MapGet("/api/v1/system/build-info", (
             [FromServices] StartupState state,
+            [FromServices] IGameClock clock,
             HttpContext context) =>
         {
             var operationId = context.Items[typeof(OperationId)] is OperationId id
@@ -63,7 +65,7 @@ public static class Routing
                     ? correlation.Value
                     : string.Empty,
                 operationId,
-                DateTimeOffset.UtcNow,
+                clock.UtcNow,
                 new BuildInfoResponse(
                     state.Version,
                     ContractVersions.V1,
