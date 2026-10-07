@@ -16,7 +16,11 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
         builder.Property(x => x.PayloadJson).HasColumnType("jsonb").IsRequired();
         builder.Property(x => x.OccurredAtUtc).IsRequired();
         builder.Property(x => x.PublishedAtUtc);
+        builder.Property(x => x.LeaseToken).HasMaxLength(128);
+        builder.Property(x => x.LeaseExpiresAtUtc);
 
         builder.HasIndex(x => x.EventId).IsUnique();
         builder.HasIndex(x => new { x.PublishedAtUtc, x.OccurredAtUtc });
+        builder.HasIndex(x => new { x.LeaseExpiresAtUtc, x.Id });
     }
+}
