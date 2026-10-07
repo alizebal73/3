@@ -47,12 +47,7 @@ public sealed class ServerConnectivityMonitor(
             var health = await serverClient.GetHealthAsync(cancellationToken);
 
             State.Connection =
-                health.Status.Equals(
-                    "Healthy",
-                    StringComparison.OrdinalIgnoreCase) &&
-                health.Readiness.Equals(
-                    "Ready",
-                    StringComparison.OrdinalIgnoreCase)
+                IsReadyHealthResponse(health.Status, health.Readiness)
                     ? UiConnectionState.Online
                     : UiConnectionState.Offline;
 
@@ -94,6 +89,10 @@ public sealed class ServerConnectivityMonitor(
             Publish();
         }
     }
+
+    internal static bool IsReadyHealthResponse(string? status, string? readiness) =>
+        string.Equals(status, "ok", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(readiness, "ready", StringComparison.OrdinalIgnoreCase);
 
     private async Task RunAsync(CancellationToken cancellationToken)
     {
