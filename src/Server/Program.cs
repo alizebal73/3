@@ -18,6 +18,10 @@ builder.Host.UseWindowsService(options =>
 });
 
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+});
 builder.Services.AddGameNet();
 
 var configuredOptions = builder.Configuration
@@ -60,6 +64,7 @@ if (app.Environment.IsDevelopment())
 
 await StartupChecks.ValidateAsync(app);
 app.MapGameNetRoutes();
+app.MapHub<GameNet.Server.Infrastructure.Realtime.AgentHub>("/hubs/agent");
 
 app.Run();
 
