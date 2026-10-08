@@ -151,33 +151,86 @@
                                    Foreground="{DynamicResource BrushTextSecondary}"/>
                     </Border>
 
-                    <StackPanel Grid.Row="3"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                MaxWidth="720">
-                        <TextBlock FontSize="22"
-                                   FontWeight="SemiBold"
-                                   HorizontalAlignment="Center"
-                                   Text="{DynamicResource FoundationReady}"/>
+                    <Grid Grid.Row="3">
+                        <Border Padding="18">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentPageId}" Value="stations">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
-                        <TextBlock Margin="0,12,0,0"
-                                   TextWrapping="Wrap"
-                                   TextAlignment="Center"
-                                   Foreground="{DynamicResource BrushTextSecondary}"
-                                   Text="{DynamicResource FoundationContent}"/>
-
-                        <Border Margin="0,22,0,0"
-                                Padding="18"
-                                Background="{DynamicResource BrushSurfaceRaised}"
-                                BorderBrush="{DynamicResource BrushDanger}"
-                                BorderThickness="1"
-                                CornerRadius="{DynamicResource RadiusMedium}"
-                                Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="{Binding ErrorMessage}"
-                                       Foreground="{DynamicResource BrushTextSecondary}"
-                                       TextWrapping="Wrap"/>
+                            <StackPanel VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        MaxWidth="720">
+                                <TextBlock FontSize="22"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           Text="{DynamicResource FoundationReady}"/>
+                                <TextBlock Margin="0,12,0,0"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource BrushTextSecondary}"
+                                           Text="{DynamicResource FoundationContent}"/>
+                                <Border Margin="0,22,0,0"
+                                        Padding="18"
+                                        Background="{DynamicResource BrushSurfaceRaised}"
+                                        BorderBrush="{DynamicResource BrushDanger}"
+                                        BorderThickness="1"
+                                        CornerRadius="{DynamicResource RadiusMedium}"
+                                        Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <TextBlock Text="{Binding ErrorMessage}"
+                                               Foreground="{DynamicResource BrushTextSecondary}"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
                         </Border>
-                    </StackPanel>
+
+                        <Border Padding="14">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentPageId}" Value="stations">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top"
+                                            Orientation="Horizontal"
+                                            Margin="0,0,0,12">
+                                    <TextBlock FontSize="22"
+                                               FontWeight="SemiBold"
+                                               Text="{DynamicResource NavStations}"/>
+                                    <Button Margin="14,0,0,0"
+                                            Style="{StaticResource ToolbarButtonStyle}"
+                                            Content="{DynamicResource Refresh}"
+                                            Command="{Binding RefreshCommand}"/>
+                                </StackPanel>
+
+                                <ListView ItemsSource="{Binding StationsPage.Items}"
+                                          BorderThickness="0"
+                                          Background="Transparent">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="110"/>
+                                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="180"/>
+                                            <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Type}" Width="100"/>
+                                            <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="120"/>
+                                            <GridViewColumn Header="Agent" DisplayMemberBinding="{Binding AgentDeviceId}" Width="180"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

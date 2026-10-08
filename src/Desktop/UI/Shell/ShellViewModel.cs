@@ -6,6 +6,7 @@ using GameNet.Desktop.UI.Commands;
 using GameNet.Desktop.UI.Navigation;
 using GameNet.Desktop.UI.Services;
 using GameNet.Desktop.UI.State;
+using GameNet.Desktop.UI.Stations;
 
 namespace GameNet.Desktop.UI.Shell;
 
@@ -13,13 +14,16 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
 {
     private readonly LanguageService _language;
     private readonly ServerConnectivityMonitor _connectivity;
+    private readonly StationsViewModel _stations;
 
     public ShellViewModel(
         LanguageService language,
-        ServerConnectivityMonitor connectivity)
+        ServerConnectivityMonitor connectivity,
+        StationsViewModel stations)
     {
         _language = language;
         _connectivity = connectivity;
+        _stations = stations;
 
         RefreshCommand = new UiCommand(
             _ => _ = RefreshAsync(),
@@ -51,6 +55,8 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
     public NavigationItem? SelectedNavigation { get; private set; }
 
     public UiState UiState => _connectivity.State;
+
+    public StationsViewModel StationsPage => _stations;
 
     public string WindowTitle => _language.GetString("AppTitle");
 
@@ -87,11 +93,15 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
     {
         await _connectivity.StartAsync(cancellationToken);
         await RefreshAsync(cancellationToken);
+        if (UiState.IsOnline)
+            await _stations.LoadAsync(cancellationToken);
     }
 
     public void Select(NavigationItem item)
     {
         SelectedNavigation = item;
+        if (item.Id == "stations")
+            _ = LoadStationsSafeAsync();
         OnPropertyChanged(nameof(SelectedNavigation));
         OnPropertyChanged(nameof(CurrentPageTitle));
         OnPropertyChanged(nameof(CurrentPageId));
@@ -107,6 +117,18 @@ public sealed class ShellViewModel : INotifyPropertyChanged, IAsyncDisposable
             : CultureInfo.GetCultureInfo("fa-IR");
 
         SetLanguage(target);
+    }
+
+    private async Task LoadStationsSafeAsync()
+    {
+        try
+        {
+            await _stations.LoadAsync();
+        }
+        catch (Exception exception)
+        {
+            System.Diagnostics.Debug.WriteLine(exception);
+        }
     }
 
     private void NavigateHome()

@@ -1,5 +1,6 @@
 using GameNet.Server.Infrastructure.Audit;
 using GameNet.Server.Infrastructure.Outbox;
+using GameNet.Server.Modules.Stations.Domain;
 using GameNet.Server.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -93,5 +94,22 @@ partial class GameNetDbContextModelSnapshot : ModelSnapshot
             b.Property(x => x.LeaseExpiresAtUtc).HasColumnName("lease_expires_at_utc");
             b.ToTable("outbox_messages");
         });
+        modelBuilder.Entity<Station>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.HasIndex(x => x.Code)
+                .IsUnique()
+                .HasDatabaseName("ux_stations_code");
+
+            b.Property(x => x.Id).HasColumnName("id");
+            b.Property(x => x.Code).HasMaxLength(64).IsRequired().HasColumnName("code");
+            b.Property(x => x.Name).HasMaxLength(120).IsRequired().HasColumnName("name");
+            b.Property(x => x.Type).HasColumnName("type");
+            b.Property(x => x.State).HasColumnName("state");
+            b.Property(x => x.AgentDeviceId).HasMaxLength(128).HasColumnName("agent_device_id");
+            b.Property(x => x.LastSeenAtUtc).HasColumnName("last_seen_at_utc");
+            b.ToTable("stations");
+        });
+
     }
 }
