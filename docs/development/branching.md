@@ -8,8 +8,23 @@
 - Every bug fix adds a regression test, invariant/guard, or an ADR-approved exception.
 - Schema/contract/security/release changes must update their governing artifact in the same change.
 
-There is no long-lived `develop` branch. The release line stays authoritative and integration happens through small reviewable branches.
+There is no long-lived `develop` branch. If a compatibility branch exists, it must mirror the canonical release baseline and must not become a second development line.
 
 ## Foundation stabilization rule
 
-While Foundation Stabilization is active, no business-feature work may be merged. The `foundation/engineering-complete` branch is temporary and is accepted only while its self-hosted Windows verification workflow remains green. Every correction must be traceable to the Foundation stabilization matrix or an explicit architecture/security decision.
+Foundation work is consolidated into the canonical baseline. The active release line must contain the same Foundation state as the final Foundation implementation branch before business development begins.
+
+Historical Foundation branches may be retained temporarily for traceability, but they are not independent sources of truth.
+
+Every Foundation correction must be traceable to the Foundation stabilization matrix or an explicit architecture/security decision.
+
+## Source-of-truth rule
+
+For the current Foundation state, use:
+
+- `docs/roadmap/00-foundation-current-state.md`
+- `docs/roadmap/00-pre-coding-roadmap.md`
+- `docs/roadmap/01-foundation-stabilization.md`
+- `docs/architecture/foundation-closure-matrix.md`
+
+A stale roadmap, branch snapshot, README summary, or historical audit never overrides these sources.

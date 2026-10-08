@@ -12,6 +12,13 @@
     <sys:String x:Key="LanguagePersian">فارسی</sys:String>
     <sys:String x:Key="Refresh">Refresh</sys:String>
     <sys:String x:Key="ToggleLanguage">Language</sys:String>
+    <sys:String x:Key="CommandPalette">Command Palette</sys:String>
+    <sys:String x:Key="CommandPaletteHint">Search sections or commands... (Ctrl+K)</sys:String>
+    <sys:String x:Key="Help">Help</sys:String>
+    <sys:String x:Key="HelpTitle">Shell Help</sys:String>
+    <sys:String x:Key="HelpContent">Ctrl+K: open command palette and search sections. F1: show help. Esc: close overlays. Ctrl+R: refresh Server status. Ctrl+L: switch language. Ctrl+Home: return Home.</sys:String>
+    <sys:String x:Key="NotificationCenter">Notifications</sys:String>
+    <sys:String x:Key="NoNotifications">No active notifications.</sys:String>
     <sys:String x:Key="StatusOnline">Server online</sys:String>
     <sys:String x:Key="StatusConnecting">Connecting...</sys:String>
     <sys:String x:Key="StatusOffline">Server unavailable</sys:String>
@@ -20,6 +27,8 @@
     <sys:String x:Key="FoundationContent">This section currently contains only its Foundation placement and contracts. Business behavior will be implemented after platform certification.</sys:String>
     <sys:String x:Key="OfflineMessage">The Server is unavailable. The shell remains usable, but authoritative operations cannot execute until connectivity returns.</sys:String>
     <sys:String x:Key="BusyMessage">Refreshing Server status...</sys:String>
+    <sys:String x:Key="ErrorServerNotReady">The Server is reachable but is not ready.</sys:String>
+    <sys:String x:Key="ErrorServerUnavailable">The Server is unavailable.</sys:String>
     <sys:String x:Key="NavHome">Home</sys:String>
     <sys:String x:Key="NavStations">Stations</sys:String>
     <sys:String x:Key="NavCustomers">Customers</sys:String>

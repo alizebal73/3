@@ -5,6 +5,7 @@ $moduleRoot = Join-Path $PSScriptRoot "..\src\Server\Modules"
 $serverRoot = Join-Path $PSScriptRoot "..\src\Server"
 $clientRoot = Join-Path $PSScriptRoot "..\src\Client"
 $desktopRoot = Join-Path $PSScriptRoot "..\src\Desktop"
+$sharedRoot = Join-Path $PSScriptRoot "..\src\Shared"
 
 function Assert-NoMatch {
     param(
@@ -60,8 +61,6 @@ Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HubConnection|Hub
 
 Assert-NoMatch -Root (Join-Path $clientRoot "Transport") -Pattern "GameNet\.Server\.(Persistence|Modules)" -Message "Agent transport must not depend on Server implementation namespaces."
 
-
-
 Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Agent runtime code must not own transport details; use Client/Transport."
 Assert-NoMatch -Root (Join-Path $clientRoot "GameLaunch") -Pattern "HttpClient|HttpRequestMessage|HttpResponseMessage|WebClient|Socket" -Message "Game launch code must not own network transport details."
 
@@ -77,5 +76,15 @@ Assert-NoMatch -Root (Join-Path $clientRoot "Agent") -Pattern "\b(class|record)\
 
 Assert-NoMatch -Root (Join-Path $moduleRoot "*\Domain") -Pattern "IHubContext|HttpClient|WebClient|Process\.Start|File\.|Directory\.|Socket" -Message "Domain code must not perform external side effects."
 Assert-NoMatch -Root (Join-Path $moduleRoot "*\Application") -Pattern "IHubContext|HttpClient|WebClient|Process\.Start|File\.|Directory\.|Socket" -Message "Application code must use explicit side-effect ports rather than performing external effects directly."
+
+# Canonical Shared V1 contract authority: retired namespaces must never reappear.
+Assert-NoMatch -Root $sharedRoot -Pattern "namespace\s+GameNet\.Shared\.Api\b|namespace\s+GameNet\.Shared\.Contracts\.Errors\b|using\s+GameNet\.Shared\.Api\b|using\s+GameNet\.Shared\.Contracts\.Errors\b" -Message "Legacy Shared API/error namespaces are forbidden; use Shared.Contracts.V1.Api."
+
+$apiErrorDeclarations = @(Get-ChildItem $sharedRoot -Recurse -File -Filter *.cs |
+    Select-String -Pattern "\b(record|class)\s+ApiError\b")
+
+if ($apiErrorDeclarations.Count -ne 1) {
+    throw "Exactly one canonical ApiError declaration is required under Shared; found $($apiErrorDeclarations.Count)."
+}
 
 Write-Host "Architecture guard passed."

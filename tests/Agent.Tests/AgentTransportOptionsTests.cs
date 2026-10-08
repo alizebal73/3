@@ -24,6 +24,23 @@ public sealed class AgentTransportOptionsTests
     }
 
     [Fact]
+    public void Staging_rejects_http_even_when_insecure_mode_is_enabled()
+    {
+        var validator = new AgentTransportOptionsValidator(
+            new TestHostEnvironment("Staging"));
+
+        var result = validator.Validate(
+            Options.DefaultName,
+            new AgentTransportOptions
+            {
+                ServerBaseUrl = "http://127.0.0.1:5080",
+                AllowInsecureHttpForDevelopment = true
+            });
+
+        Assert.False(result.Succeeded);
+    }
+
+    [Fact]
     public void Development_accepts_http_only_when_explicitly_enabled()
     {
         var validator = new AgentTransportOptionsValidator(

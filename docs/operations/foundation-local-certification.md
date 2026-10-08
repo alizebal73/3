@@ -44,14 +44,15 @@ The evidence is invalid if the restore target is not disposable and isolated.
 ## 4. Agent gate
 
 Set:
-- GAMENET_AGENT_BOOTSTRAP_SECRET = disposable provisioning secret;
+- GAMENET_AGENT_PROVISIONING_KEY = disposable provisioning authority;
+- optionally GAMENET_AGENT_DEVICE_ID = a disposable certification DeviceId;
 - optionally GAMENET_AGENT_SERVER_URL = the certification Server URL.
 
 Run:
 
 scripts\certify-agent.ps1
 
-This builds the Windows Agent, runs Agent tests and performs a real executable/process smoke. The Agent test suite plus runtime evidence must cover:
+This builds the Windows Agent, provisions a temporary credential through the Server, runs the real executable/process smoke using the returned secret, and revokes the temporary credential during cleanup. The Agent test suite plus runtime evidence must cover:
 - durable DeviceId across restart;
 - one authoritative connection per DeviceId;
 - heartbeat renewal;
@@ -82,7 +83,22 @@ The evidence records exact Git revision, machine, OS, tool versions and SHA-256 
 
 Environment-variable presence is only prerequisite metadata; it is never accepted as proof that a certification scenario passed.
 
-## 6. Deployment and release gates
+## 6. Foundation certification tag
+
+After every required Foundation runtime/recovery/release-proof scenario passes, review `artifacts\foundation\foundation-evidence.json` and record the exact certified Git SHA.
+
+Create an immutable ancestry marker on that exact SHA:
+
+```powershell
+$sha = (git rev-parse HEAD).Trim()
+$tag = "foundation-certified-$($sha.Substring(0,12))"
+git tag -a $tag $sha -m "GameNet Foundation certified at $sha"
+git push origin $tag
+```
+
+The pre-coding gate allows business implementation only when the current commit has an ancestor matching `foundation-certified-*`. This prevents Foundation certification from becoming a verbal/manual promise.
+
+## 7. Deployment and release gates
 
 Before sign-off, on the same approved Windows environment:
 - generate idempotent migration SQL;

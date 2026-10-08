@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - foundation/engineering-complete
   pull_request:
     branches:

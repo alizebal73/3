@@ -1,5 +1,7 @@
+using System.Threading.RateLimiting;
 using GameNet.Shared.Contracts.V1.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace GameNet.Server.Infrastructure.Security;
@@ -51,6 +53,34 @@ public static class AuthExtensions
         }
 
         services.AddGameNetAuthorization();
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy("AgentToken", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    GetClientPartition(context),
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 30,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    }));
+
+            options.AddPolicy("AgentCredentialManagement", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    GetClientPartition(context),
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    }));
+        });
+
         return services;
     }
 
@@ -79,4 +109,7 @@ public static class AuthExtensions
 
         return services;
     }
+
+    private static string GetClientPartition(HttpContext context) =>
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 }

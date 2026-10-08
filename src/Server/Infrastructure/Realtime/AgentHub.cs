@@ -57,18 +57,34 @@ public sealed class AgentHub(
         AgentReconciliationRequest request)
     {
         var deviceId = RequireDeviceId();
-        _ = RequireLeaseToken();
+        var leaseToken = RequireLeaseToken();
 
         if (!string.Equals(deviceId, request.DeviceId, StringComparison.Ordinal))
             throw new HubException("Agent device identity does not match the authenticated device.");
 
-        return Task.FromResult(
-            new AgentReconciliationResponse(
-                deviceId,
-                clock.UtcNow,
-                AgentProtocolVersions.V1,
-                true,
-                AgentReconciliationScope.LeaseAndIdentity));
+        return ReconcileCurrentOwnerAsync(deviceId, leaseToken, request);
+    }
+
+    private async Task<AgentReconciliationResponse> ReconcileCurrentOwnerAsync(
+        string deviceId,
+        string leaseToken,
+        AgentReconciliationRequest request)
+    {
+        var authoritative = await leases.IsCurrentOwnerAsync(
+            deviceId,
+            Context.ConnectionId,
+            leaseToken,
+            Context.ConnectionAborted);
+
+        if (!authoritative)
+            throw new HubException("Agent connection lease is no longer authoritative.");
+
+        return new AgentReconciliationResponse(
+            deviceId,
+            clock.UtcNow,
+            AgentProtocolVersions.V1,
+            true,
+            AgentReconciliationScope.LeaseAndIdentity);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

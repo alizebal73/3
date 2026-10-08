@@ -17,6 +17,13 @@
         <KeyBinding Key="Home"
                     Modifiers="Control"
                     Command="{Binding NavigateHomeCommand}"/>
+        <KeyBinding Key="K"
+                    Modifiers="Control"
+                    Command="{Binding ToggleCommandPaletteCommand}"/>
+        <KeyBinding Key="F1"
+                    Command="{Binding ToggleHelpCommand}"/>
+        <KeyBinding Key="Escape"
+                    Command="{Binding CloseOverlaysCommand}"/>
     </Window.InputBindings>
 
     <Grid Background="{DynamicResource BrushWindow}"
@@ -63,6 +70,21 @@
                             Content="{DynamicResource Refresh}"
                             Command="{Binding RefreshCommand}"
                             AutomationProperties.Name="{DynamicResource Refresh}"/>
+
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            Content="⌕"
+                            Command="{Binding ToggleCommandPaletteCommand}"
+                            AutomationProperties.Name="{DynamicResource CommandPalette}"/>
+
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            Content="🔔"
+                            Command="{Binding ToggleNotificationCenterCommand}"
+                            AutomationProperties.Name="{DynamicResource NotificationCenter}"/>
+
+                    <Button Style="{StaticResource ToolbarButtonStyle}"
+                            Content="?"
+                            Command="{Binding ToggleHelpCommand}"
+                            AutomationProperties.Name="{DynamicResource Help}"/>
 
                     <Button Style="{StaticResource ToolbarButtonStyle}"
                             Content="{DynamicResource ToggleLanguage}"
@@ -189,5 +211,96 @@
                        Foreground="{DynamicResource BrushTextMuted}"
                        Text="{DynamicResource ArchitectureRule}"/>
         </Border>
+    
+        <Grid Grid.RowSpan="3"
+              Background="#66000000"
+              Panel.ZIndex="100"
+              Visibility="{Binding IsCommandPaletteOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Width="620"
+                    MaxHeight="560"
+                    Padding="22"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,90,0,0"
+                    Style="{StaticResource ShellCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontSize="22"
+                               FontWeight="SemiBold"
+                               Text="{DynamicResource CommandPalette}"/>
+
+                    <TextBox Grid.Row="1"
+                             Margin="0,14,0,14"
+                             Text="{Binding CommandPaletteQuery, UpdateSourceTrigger=PropertyChanged}"
+                             AutomationProperties.Name="{DynamicResource CommandPalette}"
+                             ToolTip="{DynamicResource CommandPaletteHint}"/>
+
+                    <ScrollViewer Grid.Row="2"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding CommandPaletteItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource NavButtonStyle}"
+                                            Margin="0,2"
+                                            Command="{Binding DataContext.SelectCommandPaletteItemCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            AutomationProperties.Name="{Binding DisplayName}">
+                                        <TextBlock Text="{Binding DisplayName}"/>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.RowSpan="3"
+              Background="#66000000"
+              Panel.ZIndex="100"
+              Visibility="{Binding IsHelpOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Width="720"
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Style="{StaticResource ShellCardStyle}">
+                <StackPanel>
+                    <TextBlock FontSize="22"
+                               FontWeight="SemiBold"
+                               Text="{DynamicResource HelpTitle}"/>
+                    <TextBlock Margin="0,14,0,0"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource BrushTextSecondary}"
+                               Text="{DynamicResource HelpContent}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid Grid.RowSpan="3"
+              Background="#66000000"
+              Panel.ZIndex="100"
+              Visibility="{Binding IsNotificationCenterOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Width="620"
+                    Padding="24"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,82,22,0"
+                    Style="{StaticResource ShellCardStyle}">
+                <StackPanel>
+                    <TextBlock FontSize="20"
+                               FontWeight="SemiBold"
+                               Text="{DynamicResource NotificationCenter}"/>
+                    <TextBlock Margin="0,12,0,0"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource BrushTextSecondary}"
+                               Text="{Binding NotificationSummary}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

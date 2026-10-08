@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using GameNet.Server.Infrastructure.Configuration;
 using GameNet.Shared.Contracts.V1.Security;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 
 namespace GameNet.Server.Infrastructure.Security;
@@ -40,6 +42,7 @@ public static class AgentCredentialRoutes
 
                 return Results.Ok(token);
             })
+            .RequireRateLimiting("AgentToken")
             .AllowAnonymous()
             .WithName("AgentToken");
 
@@ -67,6 +70,7 @@ public static class AgentCredentialRoutes
                     return Results.Conflict(new { error = exception.Message });
                 }
             })
+            .RequireRateLimiting("AgentCredentialManagement")
             .AllowAnonymous()
             .WithName("AgentCredentialProvision");
 
@@ -94,6 +98,7 @@ public static class AgentCredentialRoutes
                     return Results.Conflict(new { error = exception.Message });
                 }
             })
+            .RequireRateLimiting("AgentCredentialManagement")
             .AllowAnonymous()
             .WithName("AgentCredentialRotate");
 
@@ -113,6 +118,7 @@ public static class AgentCredentialRoutes
                 var revoked = await credentials.RevokeAsync(request, cancellationToken);
                 return Results.Ok(new { revoked });
             })
+            .RequireRateLimiting("AgentCredentialManagement")
             .AllowAnonymous()
             .WithName("AgentCredentialRevoke");
     }

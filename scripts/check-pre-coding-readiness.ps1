@@ -55,8 +55,67 @@ if ($moduleCs.Count -gt 0) {
 
 $featureImpl = @(Get-ChildItem (Join-Path $root "src\Desktop\Features") -Recurse -File |
     Where-Object { $_.Extension -in ".cs", ".xaml" })
-if ($featureImpl.Count -gt 0) {
-    throw "Desktop business feature implementation exists before Foundation certification."
+
+if ($moduleCs.Count -gt 0 -or $featureImpl.Count -gt 0) {
+    $certificationTags = @(
+        & git -C $root tag --merged HEAD --list "foundation-certified-*"
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    if ($certificationTags.Count -eq 0) {
+        throw "Business feature implementation requires an ancestor foundation-certified-* tag."
+    }
+
+    $latestCertificationTag = @(
+        $certificationTags |
+            Sort-Object {
+                (& git -C $root for-each-ref --format="%(creatordate:iso8601)" $_) | Select-Object -First 1
+            } -Descending
+    ) | Select-Object -First 1
+
+    if ([string]::IsNullOrWhiteSpace($latestCertificationTag)) {
+        throw "A foundation-certified-* tag is required before business implementation."
+    }
+
+    $protectedFoundationPaths = @(
+        "src/Server/Program.cs",
+        "src/Server/Composition/",
+        "src/Server/Infrastructure/",
+        "src/Server/Persistence/",
+        "src/Client/Transport/",
+        "src/Client/Identity/",
+        "src/Client/Agent/",
+        "src/Desktop/Shell/",
+        "src/Desktop/UI/",
+        "src/Desktop/Api/",
+        "src/Desktop/Localization/",
+        "src/Desktop/Resources/",
+        "src/Shared/Primitives/",
+        "src/Shared/Contracts/V1/Api/",
+        "src/Shared/Contracts/V1/Protocol/",
+        ".github/workflows/foundation-local.yml"
+    )
+
+    $changedAfterCertification = @(
+        & git -C $root diff --name-only "$latestCertificationTag..HEAD"
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    $protectedChanges = @(
+        foreach ($path in $changedAfterCertification) {
+            foreach ($protected in $protectedFoundationPaths) {
+                if ($path -eq $protected -or $protected.EndsWith("/") -and $path.StartsWith($protected, [StringComparison]::OrdinalIgnoreCase)) {
+                    $path
+                    break
+                }
+            }
+        }
+    ) | Sort-Object -Unique
+
+    if ($protectedChanges.Count -gt 0) {
+        $details = $protectedChanges -join ", "
+        throw "Foundation certification is invalidated by protected Foundation changes after ${latestCertificationTag}: $details"
+    }
+
+    Write-Host "Pre-coding gate: certified Foundation ancestor = $latestCertificationTag"
 }
 
 $workflowRoot = Join-Path $root ".github\workflows"

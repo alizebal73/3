@@ -1,13 +1,14 @@
 using System.Text.Json;
-using GameNet.Shared.Api;
-using GameNet.Shared.Contracts.Errors;
+using GameNet.Server.Infrastructure.Time;
+using GameNet.Shared.Contracts.V1.Api;
 using GameNet.Shared.Primitives;
 
 namespace GameNet.Server.Infrastructure.Observability;
 
 public sealed class ExceptionHandlingMiddleware(
     RequestDelegate next,
-    ILogger<ExceptionHandlingMiddleware> logger)
+    ILogger<ExceptionHandlingMiddleware> logger,
+    IGameClock clock)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -25,10 +26,15 @@ public sealed class ExceptionHandlingMiddleware(
                 ? id.Value
                 : context.TraceIdentifier;
 
+            var operationId = context.Items[typeof(OperationId)] is OperationId operation
+                ? operation.Value
+                : null;
+
             logger.LogError(
                 exception,
-                "Unhandled request failure. CorrelationId={CorrelationId}",
-                correlationId);
+                "Unhandled request failure. CorrelationId={CorrelationId} OperationId={OperationId}",
+                correlationId,
+                operationId);
 
             if (context.Response.HasStarted)
                 throw;
@@ -36,11 +42,19 @@ public sealed class ExceptionHandlingMiddleware(
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var payload = new ApiFailure(
-                new ApiError(
-                    "server.unhandled",
-                    "An unexpected server error occurred."),
-                correlationId);
+            var error = new ApiError(
+                ApiErrorCodes.Internal,
+                "server.unhandled",
+                correlationId,
+                operationId,
+                Retryable: false);
+
+            var payload = new ApiEnvelope<ApiError>(
+                ContractVersions.V1,
+                correlationId,
+                operationId,
+                clock.UtcNow,
+                error);
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
         }

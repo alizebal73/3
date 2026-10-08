@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace GameNet.Server.Persistence.Migrations;
 
+[DbContext(typeof(GameNetDbContext))]
+[Migration("202610070002_FoundationClosureHardening")]
 public partial class FoundationClosureHardening : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,10 +24,10 @@ public partial class FoundationClosureHardening : Migration
                 agent_version = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                 station_state = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
             },
-            constraints: table => table.PrimaryKey("PK_agent_connection_leases", x => x.device_id));
+            constraints: table => table.PrimaryKey("pk_agent_connection_leases", x => x.device_id));
 
         migrationBuilder.CreateIndex(
-            name: "IX_agent_connection_leases_LeaseExpiresAtUtc",
+            name: "ix_agent_connection_leases_lease_expires_at_utc",
             table: "agent_connection_leases",
             column: "lease_expires_at_utc");
 

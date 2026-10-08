@@ -12,7 +12,9 @@ public sealed class AgentFoundationTests
         var command = new AgentCommand<string>(
             commandId,
             "PC-04",
+            "lease-1",
             DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch.AddMinutes(1),
             "station.reconcile",
             "payload");
 

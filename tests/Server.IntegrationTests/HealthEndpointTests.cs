@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace GameNet.Server.IntegrationTests;
@@ -26,5 +27,64 @@ public sealed class HealthEndpointTests(WebApplicationFactory<Program> fixture)
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("foundation-test-1", response.Headers.GetValues("X-Correlation-Id").Single());
+    }
+
+    [Fact]
+    public async Task Operation_id_is_generated_and_returned()
+    {
+        using var client = fixture.CreateClient();
+        using var response = await client.GetAsync("/health/live");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var operationId = response.Headers.GetValues("X-Operation-Id").Single();
+        Assert.False(string.IsNullOrWhiteSpace(operationId));
+        Assert.True(operationId.Length <= 128);
+    }
+
+    [Fact]
+    public async Task Build_info_exposes_contract_and_schema_versions()
+    {
+        using var client = fixture.CreateClient();
+        using var response = await client.GetAsync("/api/v1/system/build-info");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<
+            GameNet.Shared.Contracts.V1.Api.ApiEnvelope<
+                GameNet.Shared.Contracts.V1.System.BuildInfoResponse>>();
+
+        Assert.NotNull(body);
+        Assert.Equal(GameNet.Shared.Contracts.V1.Api.ContractVersions.V1, body!.ContractVersion);
+        Assert.False(string.IsNullOrWhiteSpace(body.Data.ApplicationVersion));
+        Assert.Equal(GameNet.Shared.Contracts.V1.Api.ContractVersions.V1, body.Data.ContractVersion);
+        Assert.Equal("202610070003_AgentCredentialLifecycle", body.Data.DatabaseSchemaVersion);
+    }
+
+    [Fact]
+    public async Task Agent_token_endpoint_is_rate_limited()
+    {
+        using var client = fixture.CreateClient();
+        var sawRateLimit = false;
+
+        for (var i = 0; i < 31; i++)
+        {
+            using var requestBody = new StringContent(
+                "{\"DeviceId\":\"rate-test\",\"Secret\":\"invalid\"}",
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            using var response = await client.PostAsync(
+                "/api/v1/agent/auth/token",
+                requestBody);
+
+            if (response.StatusCode == (HttpStatusCode)429)
+            {
+                sawRateLimit = true;
+                break;
+            }
+        }
+
+        Assert.True(sawRateLimit);
     }
 }

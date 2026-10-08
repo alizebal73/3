@@ -12,6 +12,13 @@
     <sys:String x:Key="LanguagePersian">فارسی</sys:String>
     <sys:String x:Key="Refresh">به‌روزرسانی</sys:String>
     <sys:String x:Key="ToggleLanguage">زبان</sys:String>
+    <sys:String x:Key="CommandPalette">فرمان سریع</sys:String>
+    <sys:String x:Key="CommandPaletteHint">جستجوی بخش یا فرمان... (Ctrl+K)</sys:String>
+    <sys:String x:Key="Help">راهنما</sys:String>
+    <sys:String x:Key="HelpTitle">راهنمای پوسته</sys:String>
+    <sys:String x:Key="HelpContent">Ctrl+K: فرمان سریع و جستجوی بخش‌ها. F1: نمایش راهنما. Esc: بستن پنجره‌های رویی. Ctrl+R: تازه‌سازی وضعیت Server. Ctrl+L: تغییر زبان. Ctrl+Home: بازگشت به خانه.</sys:String>
+    <sys:String x:Key="NotificationCenter">مرکز اعلان</sys:String>
+    <sys:String x:Key="NoNotifications">اعلانی وجود ندارد.</sys:String>
     <sys:String x:Key="StatusOnline">سرور متصل</sys:String>
     <sys:String x:Key="StatusConnecting">در حال اتصال...</sys:String>
     <sys:String x:Key="StatusOffline">سرور در دسترس نیست</sys:String>
@@ -20,6 +27,8 @@
     <sys:String x:Key="FoundationContent">این بخش در Foundation فقط جایگاه و قرارداد خود را دارد. منطق کسب‌وکار بعد از Certification پایه اضافه می‌شود.</sys:String>
     <sys:String x:Key="OfflineMessage">ارتباط با Server برقرار نیست. برنامه باید بتواند پوسته را بدون خطا نمایش دهد؛ عملیات authoritative تا بازگشت اتصال قابل اجرا نیستند.</sys:String>
     <sys:String x:Key="BusyMessage">در حال دریافت وضعیت Server...</sys:String>
+    <sys:String x:Key="ErrorServerNotReady">Server در دسترس است، اما هنوز آماده نیست.</sys:String>
+    <sys:String x:Key="ErrorServerUnavailable">ارتباط با Server برقرار نیست.</sys:String>
     <sys:String x:Key="NavHome">خانه</sys:String>
     <sys:String x:Key="NavStations">سیستم‌ها</sys:String>
     <sys:String x:Key="NavCustomers">مشتریان</sys:String>

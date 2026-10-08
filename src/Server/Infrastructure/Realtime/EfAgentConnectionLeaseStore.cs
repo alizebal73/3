@@ -24,6 +24,14 @@ public sealed class EfAgentConnectionLeaseStore(
             cancellationToken);
     }
 
+    public Task<AgentConnectionLeaseState?> GetCurrentAsync(
+        string deviceId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceId);
+        return ReadCurrentAsync(deviceId, cancellationToken);
+    }
+
     public async Task<bool> RenewAsync(
         string deviceId,
         string connectionId,
@@ -108,6 +116,36 @@ public sealed class EfAgentConnectionLeaseStore(
             cancellationToken);
     }
 
+    public async Task<bool> IsCurrentOwnerAsync(
+        string deviceId,
+        string connectionId,
+        string leaseToken,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(deviceId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(leaseToken);
+
+        var now = clock.UtcNow;
+
+        return await dbContext.Database.SqlQueryRaw<bool>(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM agent_connection_leases
+                WHERE device_id = {0}
+                  AND connection_id = {1}
+                  AND lease_token = {2}
+                  AND lease_expires_at_utc > {3}
+            ) AS "Value"
+            """,
+            deviceId,
+            connectionId,
+            leaseToken,
+            now)
+            .SingleAsync(cancellationToken);
+    }
+
     private async Task<AgentConnectionLeaseState?> TryAcquireWithinTransactionAsync(
         AgentConnectionLeaseRequest request,
         TimeSpan leaseDuration,
@@ -127,7 +165,7 @@ public sealed class EfAgentConnectionLeaseStore(
             """,
             cancellationToken);
 
-        var current = await ReadAsync(request.DeviceId, cancellationToken);
+        var current = await ReadCurrentAsync(request.DeviceId, cancellationToken);
 
         if (current is null)
             throw new InvalidOperationException(
@@ -165,7 +203,7 @@ public sealed class EfAgentConnectionLeaseStore(
 
         if (updated != 1)
         {
-            var winner = await ReadAsync(request.DeviceId, cancellationToken);
+            var winner = await ReadCurrentAsync(request.DeviceId, cancellationToken);
             return winner is null ? null : winner with { IsAuthoritative = false };
         }
 
@@ -177,7 +215,7 @@ public sealed class EfAgentConnectionLeaseStore(
             true);
     }
 
-    private async Task<AgentConnectionLeaseState?> ReadAsync(
+    private async Task<AgentConnectionLeaseState?> ReadCurrentAsync(
         string deviceId,
         CancellationToken cancellationToken)
     {

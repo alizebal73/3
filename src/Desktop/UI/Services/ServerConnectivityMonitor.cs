@@ -42,17 +42,12 @@ public sealed class ServerConnectivityMonitor(
 
         try
         {
-            State.Busy = UiBusyState.Busy;
+            State.Busy = UiBusyState.Loading;
 
             var health = await serverClient.GetHealthAsync(cancellationToken);
 
             State.Connection =
-                health.Status.Equals(
-                    "Healthy",
-                    StringComparison.OrdinalIgnoreCase) &&
-                health.Readiness.Equals(
-                    "Ready",
-                    StringComparison.OrdinalIgnoreCase)
+                IsReadyHealthResponse(health.Status, health.Readiness)
                     ? UiConnectionState.Online
                     : UiConnectionState.Offline;
 
@@ -61,8 +56,7 @@ public sealed class ServerConnectivityMonitor(
             if (State.Connection == UiConnectionState.Offline)
             {
                 State.ErrorCode = "SERVER_NOT_READY";
-                State.ErrorMessage =
-                    "The GameNet Server is reachable but is not ready.";
+                State.ErrorMessage = null;
             }
 
             logger.LogDebug(
@@ -81,8 +75,7 @@ public sealed class ServerConnectivityMonitor(
         {
             State.Connection = UiConnectionState.Offline;
             State.ErrorCode = "SERVER_UNAVAILABLE";
-            State.ErrorMessage =
-                "The GameNet Server is unavailable.";
+            State.ErrorMessage = null;
 
             logger.LogWarning(
                 exception,
@@ -94,6 +87,10 @@ public sealed class ServerConnectivityMonitor(
             Publish();
         }
     }
+
+    public static bool IsReadyHealthResponse(string? status, string? readiness) =>
+        string.Equals(status, "ok", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(readiness, "ready", StringComparison.OrdinalIgnoreCase);
 
     private async Task RunAsync(CancellationToken cancellationToken)
     {

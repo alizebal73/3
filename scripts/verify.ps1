@@ -25,6 +25,9 @@ if ($LASTEXITCODE -ne 0) { throw "PowerShell script safety guard failed with exi
 & "$PSScriptRoot/check-engineering-gates.ps1"
 if ($LASTEXITCODE -ne 0) { throw "Engineering gate consistency check failed with exit code $LASTEXITCODE." }
 
+& "$PSScriptRoot/check-foundation-closure-contract.ps1"
+if ($LASTEXITCODE -ne 0) { throw "Foundation closure contract guard failed with exit code $LASTEXITCODE." }
+
 & "$PSScriptRoot/check-agent-security-foundation.ps1"
 if ($LASTEXITCODE -ne 0) { throw "Agent security foundation guard failed with exit code $LASTEXITCODE." }
 
@@ -54,12 +57,25 @@ if ($LASTEXITCODE -ne 0) { throw "Desktop UI foundation guard failed with exit c
 
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("tool", "restore")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("restore", "GameNet.slnx")
+Invoke-Checked -FilePath "dotnet" -ArgumentList @(
+    "ef",
+    "migrations",
+    "has-pending-model-changes",
+    "--project",
+    "src\\Server\\GameNet.Server.csproj",
+    "--startup-project",
+    "src\\Server\\GameNet.Server.csproj",
+    "--configuration",
+    "Release"
+)
+
+Write-Host "EF MODEL GATE: no pending model changes detected."
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("build", "GameNet.slnx", "--configuration", "Release", "--no-restore")
 Invoke-Checked -FilePath "dotnet" -ArgumentList @("test", "GameNet.slnx", "--configuration", "Release", "--no-build", "--no-restore")
 
 Write-Host "BUILD GATE: Release build passed."
 Write-Host "TEST GATE: Release test suite passed."
-Write-Host "LOCAL FOUNDATION VERIFICATION PASSED."
+Write-Host "LOCAL FOUNDATION BUILD/STRUCTURE GATE PASSED."
 Write-Host "Next required evidence on Windows:"
 Write-Host "1. launch src/Desktop/GameNet.Desktop.csproj and verify native window + fa/en direction;"
 Write-Host "2. start a clean PostgreSQL instance and apply/validate migrations;"

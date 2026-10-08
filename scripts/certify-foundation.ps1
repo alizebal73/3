@@ -13,8 +13,8 @@ if ([string]::IsNullOrWhiteSpace($env:GAMENET_DATABASE) -or [string]::IsNullOrWh
 }
 & "$PSScriptRoot/certify-postgresql.ps1"
 
-if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_BOOTSTRAP_SECRET)) {
-    throw "Set GAMENET_AGENT_BOOTSTRAP_SECRET before Agent certification."
+if ([string]::IsNullOrWhiteSpace($env:GAMENET_AGENT_PROVISIONING_KEY)) {
+    throw "Set GAMENET_AGENT_PROVISIONING_KEY before Agent certification."
 }
 & "$PSScriptRoot/certify-agent.ps1"
 
