@@ -2,6 +2,7 @@ using GameNet.Server.Infrastructure.Audit;
 using GameNet.Server.Infrastructure.Outbox;
 using GameNet.Server.Persistence.Configurations;
 using GameNet.Server.Persistence.Entities;
+using GameNet.Server.Modules.Stations.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameNet.Server.Persistence;
@@ -12,6 +13,7 @@ public sealed class GameNetDbContext(DbContextOptions<GameNetDbContext> options)
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
     public DbSet<IdempotencyRecord> IdempotencyRecords => Set<IdempotencyRecord>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<Station> Stations => Set<Station>();
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
@@ -54,5 +56,6 @@ public sealed class GameNetDbContext(DbContextOptions<GameNetDbContext> options)
         modelBuilder.ApplyConfiguration(new AuditEntryConfiguration());
         modelBuilder.ApplyConfiguration(new IdempotencyRecordConfiguration());
         modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
+        modelBuilder.ApplyConfiguration(new StationConfiguration());
     }
 }
