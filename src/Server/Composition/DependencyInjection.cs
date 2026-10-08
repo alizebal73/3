@@ -9,6 +9,7 @@ using GameNet.Server.Infrastructure.Realtime;
 using GameNet.Server.Infrastructure.Security;
 using GameNet.Server.Infrastructure.Time;
 using GameNet.Server.Infrastructure.Transactions;
+using GameNet.Server.Modules.Stations.Api;
 using GameNet.Server.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -42,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<ITransactionCoordinator, EfTransactionCoordinator>();
         services.AddScoped<IAgentConnectionLeaseStore, EfAgentConnectionLeaseStore>();
         services.AddScoped<IAgentCredentialService, AgentCredentialService>();
+        services.AddGameNetModule(new StationsModule());
         services.AddSingleton<IAgentAccessTokenIssuer, AgentAccessTokenIssuer>();
 
         services.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
