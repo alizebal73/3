@@ -2,6 +2,7 @@ using GameNet.Desktop.Api;
 using GameNet.Desktop.Localization;
 using GameNet.Desktop.Shell;
 using GameNet.Desktop.UI.Services;
+using GameNet.Desktop.UI.Stations;
 using GameNet.Desktop.UI.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,6 +42,7 @@ public static class DesktopHost
         builder.Services.AddSingleton<LanguageService>();
         builder.Services.AddSingleton<ServerConnectivityMonitor>();
         builder.Services.AddSingleton<ShellViewModel>();
+        builder.Services.AddSingleton<StationsViewModel>();
 
         builder.Services.AddHttpClient<IGameNetServerClient, GameNetServerClient>((provider, client) =>
         {
